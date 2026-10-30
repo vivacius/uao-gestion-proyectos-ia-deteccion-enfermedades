@@ -1,0 +1,38 @@
+# Entornos virtuales y cachés de Python
+.venv/
+venv/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# Caché local de Hugging Face
+.cache/
+
+# Pesos pesados del modelo (no subir a Git; conservar archivos de configuración ligeros)
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.onnx
+
+# Archivos de sistema operativo e IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# Herramientas locales y temporales de LaTeX
+.tools/
+*.zip
+*.aux
+*.out
+*.toc
+*.xdv
+*.synctex.gz
