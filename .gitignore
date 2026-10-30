@@ -27,3 +27,12 @@ Thumbs.db
 .vscode/
 .idea/
 *.log
+
+# Herramientas locales y temporales de LaTeX
+.tools/
+*.zip
+*.aux
+*.out
+*.toc
+*.xdv
+*.synctex.gz

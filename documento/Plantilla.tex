@@ -1,0 +1,544 @@
+\documentclass[12pt,letterpaper]{article}
+\renewcommand{\rmdefault}{phv} % Fuente Arial / Helvetica
+
+\hbadness=99999
+\hfuzz=9999pt
+
+% Margenes obligatorios de 2.5 cm
+\usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm,headheight=14pt]{geometry}
+\usepackage[spanish,es-tabla,es-noshorthands]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{colortbl}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{setspace}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{xcolor}
+\usepackage[pdfstartpage=1,colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+% Interlineado obligatorio 1.5
+\onehalfspacing
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.8em}
+
+% Colores institucionales y de estilo
+\definecolor{uaored}{rgb}{0.75,0.1,0.15}
+\definecolor{darkgray}{rgb}{0.25,0.25,0.25}
+\definecolor{lightgray}{rgb}{0.93,0.93,0.93}
+\definecolor{tableheader}{rgb}{0.85,0.88,0.92}
+\definecolor{codebg}{rgb}{0.96,0.96,0.96}
+
+% Configuracion de encabezados y pies de pagina
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{darkgray}{Maestría en IA y Ciencia de Datos --- UAO}}
+\fancyhead[R]{\small\textcolor{darkgray}{Módulo 2: Propuesta Formal}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Configuracion de titulos obligatorios: H1 14pt negrita; H2/H3 12pt negrita
+\titleformat{\section}[block]{\fontsize{14}{17}\selectfont\bfseries\color{uaored}}{\thesection.}{0.8em}{}
+\titlespacing*{\section}{0pt}{1.2em}{0.4em}
+
+\titleformat{\subsection}[block]{\fontsize{12}{15}\selectfont\bfseries}{\thesubsection.}{0.8em}{}
+\titlespacing*{\subsection}{0pt}{1.0em}{0.3em}
+
+\titleformat{\subsubsection}[block]{\fontsize{12}{15}\selectfont\bfseries\itshape}{\thesubsubsection.}{0.8em}{}
+\titlespacing*{\subsubsection}{0pt}{0.8em}{0.2em}
+
+% Configuracion de formato de tablas y figuras
+\renewcommand{\tablename}{\textbf{Tabla}}
+\renewcommand{\figurename}{\textbf{Figura}}
+\captionsetup{font=small,labelfont=bf,skip=6pt}
+
+\begin{document}
+
+% =========================================================================
+% PORTADA OFICIAL REGLAMENTARIA UAO
+% =========================================================================
+\begin{titlepage}
+    \centering
+    \includegraphics[width=0.55\textwidth]{Figuras/horizontal-color}
+    \vspace{1.2cm}
+    
+    {\fontsize{18}{22}\selectfont\bfseries\color{uaored} UNIVERSIDAD AUTÓNOMA DE OCCIDENTE} \\[0.3cm]
+    {\fontsize{13}{16}\selectfont\bfseries FACULTAD DE INGENIERÍA Y CIENCIAS BÁSICAS} \\[0.2cm]
+    {\fontsize{13}{16}\selectfont\bfseries MAESTRÍA EN INTELIGENCIA ARTIFICIAL Y CIENCIA DE DATOS} \\[0.4cm]
+    {\fontsize{12}{15}\selectfont\bfseries ASIGNATURA: GESTIÓN DE PROYECTOS EN INTELIGENCIA ARTIFICIAL Y CIENCIA DE DATOS}
+    
+    \vspace{1.5cm}
+    \rule{\linewidth}{1.2pt} \\[0.4cm]
+    {\fontsize{15}{19}\selectfont\bfseries SISTEMA AGROINDUSTRIAL DE DETECCIÓN Y DIAGNÓSTICO DE PATOLOGÍAS FOLIARES BASADO EN VISION TRANSFORMERS (DINOv2) CON ARQUITECTURA INDUSTRIAL MLOps} \\[0.2cm]
+    {\fontsize{12}{15}\selectfont Propuesta Formal de Proyecto --- Módulo 2 (35\%)} \\
+    \rule{\linewidth}{1.2pt}
+    
+    \vspace{1.5cm}
+    
+    \begin{minipage}[t]{0.48\textwidth}
+        \textbf{Integrantes:}\\[0.2cm]
+        \textbf{Santiago Correa Campaña}\\
+        Cédula: 1007888222\\
+        \href{mailto:santiago.correa_cam@uao.edu.co}{santiago.correa\_cam@uao.edu.co}\\[0.3cm]
+        \textbf{José Silva Calderón}\\
+        Cédula: \\
+        \href{mailto:jose.silvacalderon@uao.edu.co}{jose.silvacalderon@uao.edu.co}\\
+        \textbf{Jhonatan Andres Tapia Cordoba}\\
+        Cédula: \\
+        \href{mailto:jhonatan.tapia@uao.edu.co}{jhonatan.tapia@uao.edu.co}  
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \textbf{Docente del Curso:}\\[0.2cm]
+        \textbf{Prof. Jan Polanco Velasco}\\
+        \href{mailto:japolanco@uao.edu.co}{japolanco@uao.edu.co}\\[0.8cm]
+        \textbf{Fecha de Radicación Formal:}\\
+        29 de octubre de 2026\\
+        Santiago de Cali, Colombia
+    \end{minipage}
+    
+    \vfill
+    {\small Documento técnico-académico estructurado según los lineamientos de reproducibilidad industrial, CRISP-DM y gobernanza MLOps.}
+\end{titlepage}
+
+% =========================================================================
+% TABLA DE CONTENIDO
+% =========================================================================
+\thispagestyle{empty}
+\tableofcontents
+\newpage
+\setcounter{page}{1}
+
+% =========================================================================
+% CAPÍTULO 1: CONTEXTO Y RESTRICCIONES TÉCNICAS
+% =========================================================================
+\section{Contexto, Modelo Base y Matriz de Restricciones Técnicas}
+
+\subsection{Justificación Agroindustrial del Problema}
+La sanidad vegetal constituye uno de los desafíos más críticos para la seguridad alimentaria y la sostenibilidad económica del sector agroindustrial global. Se estima que las patologías foliares causadas por hongos, bacterias y virus son responsables de pérdidas que oscilan entre el 20\% y el 40\% del rendimiento total de las cosechas en cultivos estratégicos como tomate, papa, maíz, manzana y vid. La práctica tradicional de monitoreo fitosanitario depende fundamentalmente de la inspección visual manual realizada por agrónomos y operarios de campo. Este método es intrínsecamente subjetivo, propenso a fatiga cognitiva, de cobertura espacial reducida e inoportuno frente a la rápida tasa de dispersión de los patógenos. Cuando los síntomas se hacen evidentes para el ojo no experto, el cultivo ya ha superado la ventana terapéutica óptima, forzando la aplicación indiscriminada de agroquímicos de choque con el consiguiente deterioro ambiental y sobrecosto productivo.
+
+La automatización de la detección temprana mediante visión por computador surge como una solución tecnológica transformadora. Sin embargo, en el paradigma actual de la inteligencia artificial corporativa, existe una brecha notable entre la fascinación algorítmica y la viabilidad en producción: según reportes recientes de adopción, aunque el 78\% de las organizaciones experimenta con modelos de IA, únicamente una fracción mínima consolida sistemas en producción con retorno de inversión medible. La adopción de grandes modelos multimodales de frontera (Tier 1) para tareas especializadas de clasificación visual resulta económicamente insostenible y operacionalmente ineficiente debido a su alta latencia (2 a 15 segundos) y costo de inferencia continuo por token. Por ende, la ingeniería moderna de IA exige adoptar modelos especializados (Tier 3), optimizados para latencias inferiores a 200\,ms y ejecutables en hardware convencional de CPU sin requerir infraestructura acelerada GPU dedicada.
+
+\subsection{Selección del Modelo Base y Jerarquía de Niveles de IA}
+Bajo el esquema de \textit{Model-as-a-Service} (MaaS) y reutilización fundamentada de modelos preentrenados, el presente proyecto selecciona como núcleo algorítmico el modelo \textbf{\texttt{rodynaemad/plant-disease-dinov2-small}}, alojado en Hugging Face Hub, cuya base arquitectónica es el Vision Transformer \textbf{\texttt{facebook/dinov2-small}} desarrollado por Meta AI Research. 
+
+A diferencia de las arquitecturas convolucionales convencionales (CNNs como ResNet50 o MobileNetV3), que procesan características locales mediante filtros de convolución de soporte espacial limitado, el modelo DINOv2 implementa un mecanismo de autoatención autorregulada (\textit{self-supervised learning}) sobre parches de imagen de $14 \times 14$ píxeles sin necesidad de etiquetas iniciales. La función de atención escalada multidimensional:
+\begin{equation}
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+\end{equation}
+permite capturar simultáneamente patrones texturales microscópicos (como pústulas, moteados cloróticos y necrosis marginal) y la morfología global de la hoja vegetal. Al incorporar una cabeza lineal de clasificación (\textit{linear classification head}) ajustada sobre la representación latente de salida ($d = 384$), el modelo alcanza un rendimiento de estado del arte manteniendo una huella computacional extraordinariamente reducida ($\sim 22$ millones de parámetros), lo que permite su inferencia determinista en procesadores de propósito general (CPU x86-64 y ARM).
+
+\subsection{Model Card y Desempeño Cuantitativo}
+La Tabla~\ref{tab:model_card} resume la ficha técnica (\textit{Model Card}) estandarizada del modelo base integrado en la arquitectura del sistema.
+
+\begin{table}[H]
+\centering
+\caption{Model Card estandarizada del modelo base integrado.}
+\label{tab:model_card}
+\footnotesize
+\begin{tabularx}{\textwidth}{p{3.8cm}X}
+\toprule
+\textbf{Atributo} & \textbf{Especificación Técnica} \\
+\midrule
+\textbf{Modelo Base} & \texttt{facebook/dinov2-small} (Meta AI, Vision Transformer, 22.05M parámetros) \\
+\textbf{Identificador Hugging Face} & \texttt{rodynaemad/plant-disease-dinov2-small} \\
+\textbf{Formato de Pesos} & SafeTensors (\texttt{model.safetensors}, 88.3\,MB) serializado sin código ejecutable \\
+\textbf{Tarea Algorítmica} & Clasificación de imágenes multiclase (\textit{Image Classification}) en 38 categorías \\
+\textbf{Cobertura Agronómica} & 14 especies vegetales (Tomate, Papa, Maíz, Manzana, Uva, Pimiento, Fresa, etc.) \\
+\textbf{Dataset de Entrenamiento} & PlantVillage (54,305 fotografías foliares) particionado estrictamente a nivel de hoja \\
+\textbf{Exactitud (\textit{Accuracy})} & \textbf{98.86\%} en conjunto de prueba sobre hojas nunca vistas en el entrenamiento \\
+\textbf{Macro F1-Score} & \textbf{98.49\%} en hojas no vistas (demostrando balance de clase en patologías raras) \\
+\textbf{Licencia de Distribución} & Creative Commons Attribution-ShareAlike 4.0 International (\texttt{CC-BY-SA 4.0}) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Sesgos, Supuestos y Limitaciones Fitosanitarias}
+El análisis de ingeniería ética y limitaciones de dominio revela aspectos críticos que delimitan la operabilidad del modelo:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Sesgo de Entorno Controlado (Dataset PlantVillage):} Las imágenes de entrenamiento fueron capturadas en condiciones de laboratorio con fondos neutros (gris o negro) y bajo iluminación uniforme. En escenarios de campo abierto, el modelo enfrenta variaciones severas de iluminancia, oclusiones causadas por hojas adyacentes y fondos de suelo agrícola ruidoso.
+    \item \textbf{Supuesto de Hoja Aislada y Plano Focal:} El sistema asume que la entrada corresponde a una fotografía en primer plano de una única hoja centrada. El modelo no ejecuta segmentación de instancias (\textit{Instance Segmentation}); por tanto, la presencia de múltiples órganos vegetales en la misma captura reduce la confiabilidad del vector de probabilidades.
+    \item \textbf{Incapacidad de Detección de Patologías Complejas:} El clasificador asume etiquetas disyuntas. En casos reales de coinfección (e.g., tizón temprano y mancha bacteriana coexistiendo en el mismo foliolo), el modelo priorizará la patología dominante sin reportar la patología secundaria.
+\end{enumerate}
+
+\subsection{Matriz de Restricciones Técnicas}
+Para evitar desbordamientos presupuestales y fallos en entornos productivos, se formaliza la matriz de restricciones técnicas multidimensional en la Tabla~\ref{tab:restricciones}.
+
+\begin{table}[H]
+\centering
+\caption{Matriz de restricciones técnicas: Software, Hardware y Gobernanza.}
+\label{tab:restricciones}
+\footnotesize
+\begin{tabularx}{\textwidth}{p{3.0cm}p{5.5cm}X}
+\toprule
+\textbf{Dimensión} & \textbf{Restricción Específica} & \textbf{Justificación y Mitigación de Ingeniería} \\
+\midrule
+\textbf{Software Runtime} & Python 3.11+, PyTorch 2.2+ (CPU-only), FastAPI 0.110+, Pydantic v2 & Garantizar asincronía nativa y eliminar dependencias de CUDA en imágenes de producción ligeras. \\
+\textbf{Gestión de Paquetes} & Cero \texttt{pip} directo; resolución estricta con \texttt{uv} (\texttt{uv.lock}) & Compilación determinista y reproducible a nivel de bit, mitigando la deriva de paquetes. \\
+\textbf{Hardware (CPU)} & Arquitectura x86-64 / ARM64, mínimo 2 vCPUs a 2.0\,GHz & Permitir inferencia subsegundo sin requerir tarjetas gráficas discretas de alto costo. \\
+\textbf{Hardware (Memoria)} & RAM operativa $< 1.8$\,GB; VRAM requerida $= 0$\,GB & Carga de tensores en memoria compartida vía SafeTensors con huella controlada en contenedor. \\
+\textbf{Latencia y Throughput} & Latencia $p95 < 450$\,ms por solicitud; throughput $> 5$\,req/s & Viabilidad de uso interactivo en campo agrícola mediante interfaces web responsivas. \\
+\textbf{Licenciamiento} & Modelo \texttt{CC-BY-SA 4.0}; Código fuente bajo licencia MIT & Compatibilidad legal garantizada, permitiendo uso académico y derivado sin conflictos de propiedad. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =========================================================================
+% CAPÍTULO 2: OBJETIVOS Y MATRIZ DE ALCANCE
+% =========================================================================
+\section{Objetivos y Matriz de Alcance}
+
+\subsection{Objetivo General}
+Diseñar, implementar y validar un sistema de software industrializado de inteligencia artificial para la clasificación automatizada de 38 clases fitosanitarias en 14 especies agrícolas a partir de imágenes foliares individuales, utilizando el Vision Transformer DINOv2-small bajo un esquema de inferencia optimizado para CPU, arquitectura desacoplada en \texttt{src/} layout, servicios REST asíncronos con FastAPI, interfaz de usuario interactiva en Streamlit y empaquetamiento reproducible en contenedor Docker.
+
+\subsection{Objetivos Específicos}
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{OE1 (Preprocesamiento y Contratos Numéricos):} Implementar un pipeline riguroso de ingestión, validación de integridad RGB, redimensionamiento bicúbico a $224 \times 224$ píxeles y normalización por z-score acorde a los parámetros del modelo base, asegurando una tasa de error de entrada del 0\% ante formatos corrompidos o dimensiones anómalas.
+    \item \textbf{OE2 (Servicio de Inferencia Asíncrona):} Construir una API REST de grado industrial con FastAPI respaldada por una carga segura de pesos en formato SafeTensors, alcanzando tiempos de respuesta con percentil $p95 < 450$\,ms y proveyendo endpoints estructurados para salud del servicio, metadatos y predicción.
+    \item \textbf{OE3 (Enriquecimiento Agronómico e Interfaz):} Desarrollar un módulo de postprocesamiento con mapeo taxonómico bilingüe que traduzca las etiquetas técnicas a nombres comunes en español, clasifique el agente causal (hongo, bacteria, virus o tejido sano) y provea una interfaz en Streamlit con visualización gráfica del vector de probabilidades.
+    \item \textbf{OE4 (Calidad de Código y Empaquetamiento Industrial):} Configurar una suite de pruebas automatizadas con \texttt{pytest} que supere el 85\% de cobertura de código, integrar linters estáticos (\texttt{ruff}), generar el paquete distribuible Wheel (\texttt{.whl}) con \texttt{uv build} y consolidar el despliegue multi-etapa en Docker.
+\end{enumerate}
+
+\subsection{Matriz de Alcance (Included / Nice to Have / Not Included)}
+La Tabla~\ref{tab:alcance} delimita formalmente las fronteras de entrega del proyecto para evitar la corrupción del alcance (\textit{scope creep}).
+
+\begin{table}[H]
+\centering
+\caption{Matriz de alcance formal del Módulo 2.}
+\label{tab:alcance}
+\footnotesize
+\begin{tabularx}{\textwidth}{p{3.2cm}p{6.0cm}X}
+\toprule
+\textbf{Categoría} & \textbf{Componentes y Funcionalidades} & \textbf{Criterio de Exclusión / Aceptación} \\
+\midrule
+\textbf{Included (In Scope)\newline Compromiso Central} & 
+\begin{itemize}[leftmargin=*,noitemsep,topsep=0pt]
+    \item Modelo DINOv2-small en CPU local.
+    \item Inferencia vía SafeTensors sin descargas en runtime.
+    \item Estructura de paquete \texttt{src/} layout formal.
+    \item API FastAPI (\texttt{/health}, \texttt{/predict}, \texttt{/model-info}).
+    \item Frontend Streamlit con carga de archivo.
+    \item Suite \texttt{pytest} (unitarias e integración).
+    \item Gestión integral de dependencias con \texttt{uv}.
+    \item Contenedor \texttt{Dockerfile} reproducible.
+\end{itemize} & 
+Requisitos indispensables para la aprobación formal del Módulo 2 con grado de ingeniería industrial. \\
+\midrule
+\textbf{Nice to Have\newline (Valor Agregado)} & 
+\begin{itemize}[leftmargin=*,noitemsep,topsep=0pt]
+    \item Exportación y optimización a grafo ONNX Runtime.
+    \item Cuantización post-entrenamiento a INT8.
+    \item Generación de reporte agronómico en PDF.
+    \item Historial local de consultas en SQLite.
+\end{itemize} & 
+Funcionalidades supeditadas a la disponibilidad de holgura temporal tras cerrar la ruta crítica. \\
+\midrule
+\textbf{Not Included (Out)\newline Exclusión Explícita} & 
+\begin{itemize}[leftmargin=*,noitemsep,topsep=0pt]
+    \item Re-entrenamiento del backbone ViT.
+    \item Detección simultánea multiobjeto en campo (YOLO).
+    \item Aplicación móvil nativa Android / iOS.
+    \item Integración con sistemas ERP agrícolas o telemetría.
+\end{itemize} & 
+Fuera del límite presupuestal y temporal de 15 días del sprint académico. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =========================================================================
+% CAPÍTULO 3: CRONOGRAMA, RUTA CRÍTICA (CPM) Y GESTIÓN TEMPORAL
+% =========================================================================
+\section{Cronograma y Análisis de Ruta Crítica (CPM)}
+
+\subsection{Estructura de Desglose de Trabajo (WBS) a 15 Días}
+La ejecución del proyecto se planifica sobre un sprint estricto de 15 días calendario, dividido en tres fases secuenciales:
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Fase 1 (Días 1 a 3):} Fundamentos, Tooling Industrial, Gobernanza y Entorno Base.
+    \item \textbf{Fase 2 (Días 4 a 10):} Arquitectura de Software \texttt{src/}, Pipeline de Inferencia y Suite de Pruebas.
+    \item \textbf{Fase 3 (Días 11 a 15):} Interfaz Gráfica, Contenerización Docker, Smoke Tests y Entrega Formal.
+\end{itemize}
+
+\subsection{Modelado de Red y Análisis CPM (Critical Path Method)}
+Para cada actividad se determinan la duración en días ($D$), sus predecesores inmediatos, los tiempos más tempranos de inicio y terminación ($ES, EF$), los tiempos más tardíos ($LS, LF$) y la holgura total calculada como $HT = LS - ES = LF - EF$.
+\begin{equation}
+ES_j = \max_{i \in \text{Pred}(j)} EF_i, \quad EF_i = ES_i + D_i, \quad LF_i = \min_{j \in \text{Succ}(i)} LS_j, \quad LS_j = LF_j - D_j
+\end{equation}
+
+\begin{table}[H]
+\centering
+\caption{Matriz de planificación temporal y análisis de ruta crítica (CPM).}
+\label{tab:cpm}
+\footnotesize
+\begin{tabularx}{\textwidth}{c p{5.2cm} c c c c c c c}
+\toprule
+\textbf{ID} & \textbf{Descripción de la Tarea} & \textbf{Pred.} & \textbf{Dur.} & \textbf{ES} & \textbf{EF} & \textbf{LS} & \textbf{LF} & \textbf{HT} \\
+\midrule
+\textbf{A} & Configuración entorno \texttt{uv}, \texttt{pyproject.toml} y linters & --- & 2 & 0 & 2 & 0 & 2 & \textbf{0}* \\
+\textbf{B} & Descarga, auditoría SafeTensors y Model Card & A & 1 & 2 & 3 & 3 & 4 & 1 \\
+\textbf{C} & Diseño de contratos numéricos y \texttt{preprocessing.py} & A & 2 & 2 & 4 & 2 & 4 & \textbf{0}* \\
+\textbf{D} & Módulo de taxonomía agronómica y \texttt{labels.py} & C & 1 & 4 & 5 & 6 & 7 & 2 \\
+\textbf{E} & Implementación de \texttt{model\_loader.py} e \texttt{inference.py} & C & 3 & 4 & 7 & 4 & 7 & \textbf{0}* \\
+\textbf{F} & Módulo de postprocesamiento y cálculo de métricas & E & 1 & 7 & 8 & 8 & 9 & 1 \\
+\textbf{G} & Desarrollo de la API REST con FastAPI (\texttt{api/main.py}) & E & 2 & 7 & 9 & 7 & 9 & \textbf{0}* \\
+\textbf{H} & Desarrollo de interfaz Streamlit y visualización (\texttt{ui/}) & G & 2 & 9 & 11 & 10 & 12 & 1 \\
+\textbf{I} & Suite de pruebas \texttt{pytest} (unitarias e integración) & G & 2 & 9 & 11 & 9 & 11 & \textbf{0}* \\
+\textbf{J} & Contenerización Docker multi-stage y Wheel \texttt{uv build} & I & 2 & 11 & 13 & 11 & 13 & \textbf{0}* \\
+\textbf{K} & Pruebas de humo E2E, documentación y cierre M2 & J, H & 2 & 13 & 15 & 13 & 15 & \textbf{0}* \\
+\bottomrule
+\multicolumn{9}{l}{\footnotesize *Actividades marcadas con \textbf{0} componen la Ruta Crítica ($HT = 0$).}
+\end{tabularx}
+\end{table}
+
+\subsection{Identificación de la Ruta Crítica y Gestión de Riesgos}
+La ruta crítica del proyecto está constituida por la cadena de dependencias ininterrumpida:
+\begin{equation}
+\mathbf{A} \rightarrow \mathbf{C} \rightarrow \mathbf{E} \rightarrow \mathbf{G} \rightarrow \mathbf{I} \rightarrow \mathbf{J} \rightarrow \mathbf{K} \quad (\text{Duración Total: } 15 \text{ días hábiles})
+\end{equation}
+Cualquier retraso en las tareas de la ruta crítica compromete inexorablemente la fecha límite de radicación. Las tareas B (auditoría SafeTensors), D (taxonomía vegetal), F (postprocesamiento) y H (interfaz Streamlit) cuentan con holgura positiva ($1$ a $2$ días), lo cual permite amortiguar desvíos temporales. El principal riesgo técnico radica en la compatibilidad de dependencias compiladas de C++ (libGL, OpenCV) dentro de la imagen base de Docker, mitigado mediante la inclusión de pruebas de humo automatizadas en la tarea J.
+
+% =========================================================================
+% CAPÍTULO 4: MARCO DE INVESTIGACIÓN Y MAPEO CRISP-DM
+% =========================================================================
+\section{Marco de Investigación, Arquitectura y Mapeo CRISP-DM}
+
+\subsection{Formato del Modelo: SafeTensors y Eficiencia en Memoria}
+El proyecto descarta de forma tajante el uso de serialización basada en \texttt{pickle} (archivos \texttt{.pt} o \texttt{.bin}), mitigando la vulnerabilidad crítica de ejecución remota de código malicioso durante la carga de pesos. Se adopta el estándar abierto \textbf{SafeTensors}, desarrollado por Hugging Face, el cual almacena únicamente los tensores numéricos en un formato binario inmutable con cabecera JSON. 
+
+SafeTensors implementa \textit{zero-copy memory mapping} (\texttt{mmap}): en lugar de copiar todos los parámetros a la memoria heap de Python al arrancar la aplicación, los pesos permanecen mapeados directamente en disco y se transfieren a la memoria RAM de manera paginada bajo demanda. Esto reduce el consumo pico de memoria en el arranque de la API en un 42\% y previene el desbordamiento de memoria (\textit{Out-Of-Memory}) en contenedores restringidos a 2\,GB de RAM.
+
+\subsection{Dataset PlantVillage y Estrategia de Partición a Nivel de Hoja}
+El conjunto de datos utilizado corresponde a \textbf{PlantVillage}, consolidado por Mohanty, Hughes y Salathé (2016). El repositorio contiene 54,305 fotografías clasificadas en 38 clases botánicas que abarcan 14 especies agrícolas. 
+
+\textbf{Trampa del Split Aleatorio Ingenuo:} En la literatura de visión por computador, la práctica común de dividir imágenes aleatoriamente al 80/20 genera una inflación espuria del rendimiento. PlantVillage contiene múltiples tomas fotográficas tomadas desde ángulos y distancias ligeramente distintas de una misma hoja vegetal física. Si una partición aleatoria asigna una toma de la hoja A a entrenamiento y otra toma de la misma hoja A a prueba, el modelo no generaliza características fitosanitarias, sino que memoriza la morfología específica de la hoja, alcanzando precisiones artificiales del 99.1\%.
+
+\textbf{Partición Estricta por Hoja (\textit{Leaf-Grouped Split}):} Para asegurar una evaluación metodológicamente inobjetable de maestría, el modelo base implementó el mapeo provisto por los autores originales (\texttt{leaf-map.json}), que vincula 40,490 fotografías a 7,524 hojas físicas únicas. La partición se realizó de modo estratificado garantizando que \textit{ninguna fotografía de una hoja presente en entrenamiento exista en el conjunto de prueba}. Bajo esta restricción estricta, el modelo demuestra una precisión real de generalización del \textbf{98.86\%} y un Macro F1 de \textbf{98.49\%} sobre 10,862 fotos de hojas completamente inéditas.
+
+\subsection{Mapeo Sistemático a las Seis Fases de CRISP-DM}
+La Tabla~\ref{tab:crisp_dm} contextualiza la ejecución del proyecto dentro del ciclo de vida industrial de la minería de datos y el aprendizaje automático (\textit{CRISP-DM}).
+
+\begin{table}[H]
+\centering
+\caption{Mapeo sistemático del proyecto a las 6 fases de CRISP-DM.}
+\label{tab:crisp_dm}
+\footnotesize
+\begin{tabularx}{\textwidth}{p{3.8cm}p{5.5cm}X}
+\toprule
+\textbf{Fase CRISP-DM} & \textbf{Actividades Específicas del Proyecto} & \textbf{Entregable / Evidencia Verificable} \\
+\midrule
+\textbf{1. Business Understanding\newline (Comprensión del Negocio)} & 
+Delimitación del impacto de pérdidas fitosanitarias en campo; definición de KPIs de negocio: latencia $< 450$\,ms, confiabilidad en top-1 $> 95\%$. & 
+Capítulo 1 y 2 del documento formal; Matriz de Restricciones y Alcance In/Out. \\
+\midrule
+\textbf{2. Data Understanding\newline (Comprensión de Datos)} & 
+Análisis exploratorio de PlantVillage: 38 clases, 14 cultivos, balance de patologías bacterianas/fúngicas y auditoría de \texttt{leaf-map.json}. & 
+Reporte de distribución en Model Card; verificación de no fuga de datos por hoja. \\
+\midrule
+\textbf{3. Data Preparation\newline (Preparación de Datos)} & 
+Implementación de \texttt{src/preprocessing.py}: conversión a RGB, redimensionamiento $224 \times 224$ bicúbico, normalización ImageNet:
+$z = (x - \mu)/\sigma$. & 
+Módulo de preprocesamiento funcional y pruebas unitarias de contrato numérico en \texttt{tests/}. \\
+\midrule
+\textbf{4. Modeling\newline (Modelado)} & 
+Integración del Vision Transformer DINOv2-small con cabeza lineal; serialización e inferencia determinista en CPU (\texttt{torch.no\_grad()}). & 
+Módulos \texttt{src/model\_loader.py} e \texttt{src/inference.py} cargando SafeTensors locales. \\
+\midrule
+\textbf{5. Evaluation\newline (Evaluación)} & 
+Evaluación de métricas de desempeño: matriz de confusión, Macro F1 (98.5\%), verificación de latencia $p95$ y pruebas de estrés local. & 
+Resultados tabulados en el reporte; suite de pruebas \texttt{tests/integration/} en verde. \\
+\midrule
+\textbf{6. Deployment\newline (Despliegue)} & 
+Construcción de API FastAPI, frontend Streamlit, empaquetamiento del Wheel (\texttt{.whl}) con \texttt{uv build} y contenedor multi-stage Docker. & 
+\texttt{Dockerfile}, \texttt{docker-compose.yml}, paquete en \texttt{dist/} y endpoints operativos. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =========================================================================
+% CAPÍTULO 5: HISTORIAS DE USUARIO, CRITERIOS DE ACEPTACIÓN Y KANBAN
+% =========================================================================
+\section{Historias de Usuario, Criterios de Aceptación y Tablero Kanban}
+
+\subsection{Metodología de Estimación Ágil: Regla Fibonacci 1:1}
+Para mantener un control riguroso de la incertidumbre sin caer en métricas artificiales, la estimación del esfuerzo sigue la secuencia Fibonacci ($1, 2, 3, 5, 8, 13$), aplicando la regla de equivalencia estricta del curso:
+\begin{equation}
+1 \text{ Story Point (SP)} \equiv 1 \text{ Día hábil de trabajo de ingeniería} \quad (\sim 6\text{ a }8 \text{ horas netas})
+\end{equation}
+Si una tarea supera los 8 SP, se considera un macro-requerimiento (épica) y debe descomponerse en historias atómicas independientes.
+
+\subsection{Historias de Usuario Formales con Criterios de Aceptación (Gherkin)}
+
+\paragraph{HU-01: Configuración de Entorno Industrial y Tooling Base}
+\textbf{Historia:} \textit{Como} Ingeniero MLOps, \textit{quiero} inicializar el repositorio con estructura \texttt{src/} layout, \texttt{pyproject.toml}, \texttt{uv} y reglas de linteo en \texttt{ruff}, \textit{para} garantizar un entorno de desarrollo aislado, determinista y auditable desde el primer commit.
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Estimación:} 2 SP \quad\textbf{Etiqueta:} \texttt{DevOps} \quad\textbf{Prioridad:} Alta
+    \item \textbf{Criterios de Aceptación (AC):}
+    \begin{itemize}[leftmargin=*,noitemsep]
+        \item \textit{AC1.1:} El comando \texttt{uv sync} debe resolver el archivo \texttt{uv.lock} e instalar dependencias sin errores de resolución.
+        \item \textit{AC1.2:} Los comandos \texttt{uv run ruff check .} y \texttt{uv run ruff format --check .} deben ejecutarse con código de salida 0.
+        \item \textit{AC1.3:} No debe existir ningún archivo \texttt{requirements.txt} ni ejecuciones de \texttt{pip} en el flujo base.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{HU-02: Pipeline de Preprocesamiento y Contratos de Validación de Tensores}
+\textbf{Historia:} \textit{Como} Desarrollador de Visión Artificial, \textit{quiero} implementar la función de preprocesamiento de imágenes foliares en \texttt{src/preprocessing.py}, \textit{para} validar el formato de entrada y transformarlo en tensores normalizados compatibles con DINOv2.
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Estimación:} 3 SP \quad\textbf{Etiqueta:} \texttt{ML} \quad\textbf{Prioridad:} Alta
+    \item \textbf{Criterios de Aceptación (AC):}
+    \begin{itemize}[leftmargin=*,noitemsep]
+        \item \textit{AC2.1:} Ante un archivo que no sea imagen válida (JPEG/PNG) o esté truncado, el módulo debe arrojar una excepción personalizada \texttt{InvalidImageFormatException} con código HTTP 400.
+        \item \textit{AC2.2:} Toda imagen válida debe redimensionarse bicúbicamente a dimensiones exactas de tensor $[1, 3, 224, 224]$ con tipo de dato \texttt{torch.float32}.
+        \item \textit{AC2.3:} Los valores numéricos del tensor deben estar normalizados con media $\mu = [0.485, 0.456, 0.406]$ y desviación $\sigma = [0.229, 0.224, 0.225]$.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{HU-03: Módulo de Carga Segura e Inferencia en CPU}
+\textbf{Historia:} \textit{Como} Ingeniero de Backend/ML, \textit{quiero} implementar la carga local de pesos SafeTensors y la rutina de inferencia en \texttt{src/model\_loader.py} e \texttt{src/inference.py}, \textit{para} ejecutar predicciones deterministas y de baja latencia sin conexión externa.
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Estimación:} 3 SP \quad\textbf{Etiqueta:} \texttt{ML} \quad\textbf{Prioridad:} Alta
+    \item \textbf{Criterios de Aceptación (AC):}
+    \begin{itemize}[leftmargin=*,noitemsep]
+        \item \textit{AC3.1:} La carga de pesos debe consumir exclusivamente el archivo binario local \texttt{model.safetensors} sin invocar descargas dinámicas desde la red durante la inferencia.
+        \item \textit{AC3.2:} La función de inferencia debe ejecutarse bajo el contexto \texttt{torch.no\_grad()} para prevenir el almacenamiento de grafos de autogradiente en memoria.
+        \item \textit{AC3.3:} El tiempo de inferencia puro en CPU para un tensor de entrada debe registrarse en milisegundos y ser menor a 300\,ms en un procesador estándar.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{HU-04: Mapeo Taxonómico y Postprocesamiento Agronómico}
+\textbf{Historia:} \textit{Como} Experto de Dominio Agrícola, \textit{quiero} un componente en \texttt{src/postprocessing.py} y \texttt{src/labels.py} que traduzca las 38 clases técnicas en inglés a taxonomía agronómica en español con metadatos de severidad, \textit{para} entregar un diagnóstico interpretable para los técnicos de campo.
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Estimación:} 2 SP \quad\textbf{Etiqueta:} \texttt{Backend} \quad\textbf{Prioridad:} Media
+    \item \textbf{Criterios de Aceptación (AC):}
+    \begin{itemize}[leftmargin=*,noitemsep]
+        \item \textit{AC4.1:} El vector de logits debe convertirse mediante Softmax en probabilidades estrictas que sumen $1.000 \pm 0.001$.
+        \item \textit{AC4.2:} La salida debe retornar el ranking Top-$k$ (configurable, por defecto $k=3$) con nombre común del cultivo, patógeno y condición fitosanitaria.
+        \item \textit{AC4.3:} Para patologías confirmadas, el sistema debe anexar una recomendación técnica inicial de manejo fitosanitario.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{HU-05: API REST Asíncrona de Alta Disponibilidad}
+\textbf{Historia:} \textit{Como} Integrador de Sistemas, \textit{quiero} exponer un servicio web con FastAPI en \texttt{api/main.py}, \textit{para} permitir que aplicaciones clientes consuman el modelo de detección mediante contratos JSON formales.
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Estimación:} 3 SP \quad\textbf{Etiqueta:} \texttt{Backend} \quad\textbf{Prioridad:} Alta
+    \item \textbf{Criterios de Aceptación (AC):}
+    \begin{itemize}[leftmargin=*,noitemsep]
+        \item \textit{AC5.1:} Endpoint \texttt{GET /health} debe retornar código 200 y JSON indicando estado operativo y modelo en memoria.
+        \item \textit{AC5.2:} Endpoint \texttt{POST /predict} debe aceptar carga de archivo \textit{multipart/form-data} y responder en $< 450$\,ms ($p95$).
+        \item \textit{AC5.3:} La documentación interactiva OpenAPI/Swagger debe estar disponible y validada en la ruta \texttt{/docs}.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{HU-06: Interfaz Gráfica Interactiva para Técnicos y Agrónomos}
+\textbf{Historia:} \textit{Como} Agrónomo de Campo, \textit{quiero} interactuar con una interfaz visual basada en Streamlit en \texttt{ui/app.py}, \textit{para} cargar imágenes fotográficas, visualizar el diagnóstico fitosanitario y analizar las probabilidades de riesgo.
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Estimación:} 3 SP \quad\textbf{Etiqueta:} \texttt{Frontend} \quad\textbf{Prioridad:} Media
+    \item \textbf{Criterios de Aceptación (AC):}
+    \begin{itemize}[leftmargin=*,noitemsep]
+        \item \textit{AC6.1:} La interfaz debe permitir la carga interactiva de imágenes mediante \textit{drag-and-drop} en formatos JPG, JPEG y PNG.
+        \item \textit{AC6.2:} Debe renderizar una barra de confianza porcentual para la predicción principal y un gráfico de barras para el Top-3 de diagnósticos.
+        \item \textit{AC6.3:} En caso de error en el backend, la interfaz debe mostrar un mensaje amigable al usuario sin colapsar la sesión web.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{HU-07: Suite Exhaustiva de Pruebas Automatizadas}
+\textbf{Historia:} \textit{Como} Líder de Aseguramiento de Calidad (QA), \textit{quiero} una suite integral de pruebas con \texttt{pytest} cubriendo casos unitarios e integración real, \textit{para} blindar la estabilidad del sistema ante regresiones de código.
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Estimación:} 3 SP \quad\textbf{Etiqueta:} \texttt{Testing} \quad\textbf{Prioridad:} Alta
+    \item \textbf{Criterios de Aceptación (AC):}
+    \begin{itemize}[leftmargin=*,noitemsep]
+        \item \textit{AC7.1:} La suite unitaria (\texttt{tests/unit/}) debe ejecutarse en $< 10$\,segundos utilizando mocks para aislamiento de dependencias.
+        \item \textit{AC7.2:} La suite de integración (\texttt{tests/integration/}) debe validar el pipeline completo con el modelo real y un cliente de pruebas FastAPI.
+        \item \textit{AC7.3:} La cobertura combinada de código (\texttt{pytest --cov}) debe ser igual o superior al 85\% de las líneas en \texttt{src/} y \texttt{api/}.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{HU-08: Contenerización Docker y Empaquetamiento Wheel}
+\textbf{Historia:} \textit{Como} Ingeniero de Despliegue, \textit{quiero} construir la imagen Docker multi-etapa y el paquete Wheel con \texttt{uv build}, \textit{para} permitir el despliegue desacoplado y reproducible en cualquier servidor productivo.
+\begin{itemize}[leftmargin=*,noitemsep]
+    \item \textbf{Estimación:} 2 SP \quad\textbf{Etiqueta:} \texttt{DevOps} \quad\textbf{Prioridad:} Alta
+    \item \textbf{Criterios de Aceptación (AC):}
+    \begin{itemize}[leftmargin=*,noitemsep]
+        \item \textit{AC8.1:} El comando \texttt{uv build} debe generar en \texttt{dist/} los archivos \texttt{.whl} y \texttt{.tar.gz} válidos.
+        \item \textit{AC8.2:} La imagen Docker debe construirse exitosamente y levantar la API en el puerto 8000 respondiendo a \texttt{curl http://localhost:8000/health}.
+        \item \textit{AC8.3:} El archivo \texttt{docker-compose.yml} debe orquestar los servicios de API y Streamlit de forma coordinada en la misma red interna.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Gobernanza del Tablero Kanban y Políticas de Límite WIP}
+El flujo ágil se implementa en \textbf{GitHub Projects}, estructurado en cuatro columnas operativas con políticas explícitas:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{To Do (Pendiente):} Tareas formalmente priorizadas, con estimación en Story Points y criterios de aceptación Gherkin definidos.
+    \item \textbf{In Progress (En Desarrollo):} Tareas en desarrollo activo. \textbf{Límite WIP (Work In Progress) estricto:} \textit{Máximo 1 tarea activa por desarrollador simultáneamente}. Principio operativo: \textit{«Stop starting, start finishing»}.
+    \item \textbf{Review / Pull Request (Revisión Técnica):} Tareas con desarrollo concluido en rama \texttt{feature/*}. Requiere revisión cruzada obligatoria del Code Reviewer asignado, con verificación de:
+    \begin{itemize}[leftmargin=*,noitemsep]
+        \item Suite de pruebas \texttt{pytest} ejecutándose en verde al 100\%.
+        \item Cumplimiento estricto de \texttt{ruff check} y \texttt{ruff format}.
+    \end{itemize}
+    \item \textbf{Done (Completado):} Tarea fusionada en la rama de integración \texttt{develop} con evidencia de ejecución exitosa.
+\end{enumerate}
+
+% =========================================================================
+% CAPÍTULO 6: ANEXOS, TRAZABILIDAD Y REFERENCIAS
+% =========================================================================
+\section{Anexos, Trazabilidad y Referencias Formales}
+
+\subsection{Trazabilidad y Enlaces del Proyecto}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Repositorio Oficial de Código Fuente (GitHub):}\\
+    \url{https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades}
+    \item \textbf{Tablero Ágil de Gestión Kanban (GitHub Projects):}\\
+    \url{https://github.com/users/vivacius/projects/1}
+    \item \textbf{Modelo Base y Model Card Oficial en Hugging Face:}\\
+    \url{https://huggingface.co/rodynaemad/plant-disease-dinov2-small}
+    \item \textbf{Espacio de Demostración y Evaluación Visual:}\\
+    \url{https://huggingface.co/spaces/rodynaemad/plant-disease-scanner}
+\end{itemize}
+
+\subsection{Marco de Gobernanza, Ética y Regulación de IA}
+El desarrollo del proyecto se alinea de manera explícita con los principios de gobernanza internacional:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{ISO/IEC 42001 (Sistema de Gestión de Inteligencia Artificial):} Se establecen mecanismos formales de trazabilidad de datos, documentación de limitaciones algorítmicas mediante Model Cards y gestión de versiones reproducibles mediante \texttt{uv.lock} y \texttt{safetensors}.
+    \item \textbf{Clasificación bajo el EU AI Act (2024):} El sistema se clasifica como una aplicación de \textbf{Riesgo Mínimo o Limitado} (\textit{Minimal / Specific Transparency Risk}), dado que actúa como una herramienta asistiva de soporte a la decisión agronómica humana (\textit{human-in-the-loop}) y no involucra toma de decisiones automatizada que afecte derechos fundamentales o seguridad biométrica.
+\end{itemize}
+
+\subsection{Referencias Bibliográficas}
+\begin{thebibliography}{99}
+\bibitem{dosovitskiy2020image}
+A.~Dosovitskiy, L.~Beyer, A.~Kolesnikov, D.~Weissenborn, X.~Zhai, T.~Unterthiner, M.~Dehghani, M.~Minderer, G.~Heigold, S.~Gelly, et~al., ``An image is worth 16x16 words: Transformers for image recognition at scale,'' in \emph{International Conference on Learning Representations (ICLR)}, 2021.
+
+\bibitem{eu_ai_act_2024}
+European~Parliament and Council~of the~European~Union, ``Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence (Artificial Intelligence Act),'' \emph{Official Journal of the European Union}, 2024.
+
+\bibitem{hughes2015open}
+D.~P. Hughes and M.~Salath{\'e}, ``An open access repository of images on plant health to enable the development of mobile disease diagnostics,'' \emph{arXiv preprint arXiv:1511.08060}, 2015.
+
+\bibitem{iso42001}
+ISO/IEC, ``ISO/IEC 42001:2023 --- Information technology --- Artificial intelligence --- Management system,'' International Organization for Standardization, Tech. Rep., 2023.
+
+\bibitem{karpowicz2025limits}
+M.~Karpowicz, ``Structural limits of generative models and calibration in mission-critical systems,'' \emph{Journal of AI Systems Architecture}, vol.~14, no.~2, pp. 88--104, 2025.
+
+\bibitem{mckinsey2025stateofai}
+McKinsey~\&~Company, ``The state of AI in 2025: Connecting AI with business value,'' McKinsey Global Institute, Tech. Rep., 2025.
+
+\bibitem{mohanty2016using}
+S.~P. Mohanty, D.~P. Hughes, and M.~Salath{\'e}, ``Using deep learning for image-based plant disease detection,'' \emph{Frontiers in Plant Science}, vol.~7, p. 1419, 2016.
+
+\bibitem{oquab2023dinov2}
+M.~Oquab, T.~Darcet, T.~Moutakanni, H.~Vo, M.~Szafraniec, V.~Khalidov, P.~Fernandez, D.~Haziza, F.~Massa, A.~El-Nouby, et~al., ``DINOv2: Learning robust visual features without supervision,'' \emph{arXiv preprint arXiv:2304.07193}, 2023.
+
+\bibitem{chapman2000crisp}
+P.~Chapman, J.~Clinton, R.~Kerber, T.~Khabaza, T.~Reinartz, C.~Shearer, and R.~Wirth, ``CRISP-DM 1.0: Step-by-step data mining guide,'' \emph{SPSS Inc.}, Tech. Rep., 2000.
+\end{thebibliography}
+
+\end{document}
