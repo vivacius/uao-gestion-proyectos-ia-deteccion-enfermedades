@@ -34,13 +34,13 @@
 % Interlineado reglamentario 1.5 y espaciado de párrafos
 \onehalfspacing
 \setlength{\parindent}{0em}
-\setlength{\parskip}{0.4em}
-\setlist{nosep,topsep=2pt,partopsep=0pt}
+\setlength{\parskip}{0.35em}
+\setlist{nosep,topsep=1pt,partopsep=0pt}
 
 % Ajuste compacto de la Tabla de Contenido para una sola página
-\setlength{\cftbeforesecskip}{5pt}
-\setlength{\cftbeforesubsecskip}{2pt}
-\setlength{\cftbeforesubsubsecskip}{1pt}
+\setlength{\cftbeforesecskip}{4pt}
+\setlength{\cftbeforesubsecskip}{1.5pt}
+\setlength{\cftbeforesubsubsecskip}{0.5pt}
 
 % Colores institucionales y de visualización
 \definecolor{uaored}{rgb}{0.75,0.1,0.15}
@@ -61,66 +61,65 @@
 
 % Jerarquía de títulos reglamentaria: H1 14pt negrita; H2/H3 12pt negrita
 \titleformat{\section}[block]{\fontsize{14}{17}\selectfont\bfseries\color{uaored}}{\thesection.}{0.8em}{}
-\titlespacing*{\section}{0pt}{1.0em}{0.3em}
+\titlespacing*{\section}{0pt}{0.8em}{0.25em}
 
 \titleformat{\subsection}[block]{\fontsize{12}{15}\selectfont\bfseries}{\thesubsection.}{0.8em}{}
-\titlespacing*{\subsection}{0pt}{0.8em}{0.2em}
+\titlespacing*{\subsection}{0pt}{0.6em}{0.15em}
 
 \titleformat{\subsubsection}[block]{\fontsize{12}{15}\selectfont\bfseries\itshape}{\thesubsubsection.}{0.8em}{}
-\titlespacing*{\subsubsection}{0pt}{0.6em}{0.15em}
+\titlespacing*{\subsubsection}{0pt}{0.5em}{0.1em}
 
 % Formato de epígrafes de tablas y figuras
 \renewcommand{\tablename}{\textbf{Tabla}}
 \renewcommand{\figurename}{\textbf{Figura}}
-\captionsetup{font=small,labelfont=bf,skip=5pt}
+\captionsetup{font=small,labelfont=bf,skip=4pt}
 
 \begin{document}
 
 % =========================================================================
-% PORTADA OFICIAL REGLAMENTARIA UAO
+% PORTADA OFICIAL REGLAMENTARIA UAO (4 INTEGRANTES)
 % =========================================================================
 \begin{titlepage}
     \centering
-    \includegraphics[width=0.52\textwidth]{Figuras/horizontal-color}
-    \vspace{1.0cm}
+    \includegraphics[width=0.48\textwidth]{Figuras/horizontal-color}
+    \vspace{0.8cm}
     
-    {\fontsize{17}{21}\selectfont\bfseries\color{uaored} UNIVERSIDAD AUTÓNOMA DE OCCIDENTE} \\[0.3cm]
-    {\fontsize{13}{16}\selectfont\bfseries FACULTAD DE INGENIERÍA Y CIENCIAS BÁSICAS} \\[0.2cm]
-    {\fontsize{13}{16}\selectfont\bfseries MAESTRÍA EN INTELIGENCIA ARTIFICIAL Y CIENCIA DE DATOS} \\[0.4cm]
-    {\fontsize{12}{15}\selectfont\bfseries ASIGNATURA: GESTIÓN DE PROYECTOS EN INTELIGENCIA ARTIFICIAL Y CIENCIA DE DATOS}
+    {\fontsize{16}{20}\selectfont\bfseries\color{uaored} UNIVERSIDAD AUTÓNOMA DE OCCIDENTE} \\[0.25cm]
+    {\fontsize{12}{15}\selectfont\bfseries FACULTAD DE INGENIERÍA Y CIENCIAS BÁSICAS} \\[0.15cm]
+    {\fontsize{12}{15}\selectfont\bfseries MAESTRÍA EN INTELIGENCIA ARTIFICIAL Y CIENCIA DE DATOS} \\[0.3cm]
+    {\fontsize{11}{14}\selectfont\bfseries ASIGNATURA: GESTIÓN DE PROYECTOS EN INTELIGENCIA ARTIFICIAL Y CIENCIA DE DATOS}
     
-    \vspace{1.2cm}
-    \rule{\linewidth}{1.2pt} \\[0.35cm]
-    {\fontsize{14}{18}\selectfont\bfseries SISTEMA AGROINDUSTRIAL DE SOPORTE AL CRIBADO FITOSANITARIO PRELIMINAR BASADO EN VISION TRANSFORMERS (DINOv2) CON ARQUITECTURA INDUSTRIAL MLOps} \\[0.25cm]
-    {\fontsize{12}{15}\selectfont Propuesta Formal de Proyecto --- Módulo 2 (35\%)} \\
+    \vspace{0.9cm}
+    \rule{\linewidth}{1.2pt} \\[0.3cm]
+    {\fontsize{13}{17}\selectfont\bfseries SISTEMA AGROINDUSTRIAL DE SOPORTE AL CRIBADO FITOSANITARIO PRELIMINAR BASADO EN VISION TRANSFORMERS (DINOv2) CON ARQUITECTURA INDUSTRIAL MLOps} \\[0.2cm]
+    {\fontsize{11}{14}\selectfont Propuesta Formal de Proyecto --- Módulo 2 (35\%)} \\
     \rule{\linewidth}{1.2pt}
     
-    \vspace{1.2cm}
+    \vspace{0.9cm}
     
-    \begin{minipage}[t]{0.52\textwidth}
-        \textbf{Integrantes (Grupo de Proyecto):}\\[0.2cm]
-        \textbf{Santiago Correa Campaña}\\
-        Cédula: 1007888222\\
-        \href{mailto:santiago.correa_cam@uao.edu.co}{santiago.correa\_cam@uao.edu.co}\\[0.25cm]
-        \textbf{José Silva Calderón}\\
-        Cédula: 1144075114\\
-        \href{mailto:jose.silvacalderon@uao.edu.co}{jose.silvacalderon@uao.edu.co}\\[0.25cm]
-        \textbf{Jhonatan Andrés Tapia Córdoba}\\
-        Cédula: 1144068366\\
-        \href{mailto:jhonatan.tapia@uao.edu.co}{jhonatan.tapia@uao.edu.co}
+    \begin{minipage}[t]{0.55\textwidth}
+        \textbf{Integrantes (Grupo de Proyecto):}\\[0.15cm]
+        \textbf{Santiago Correa Campaña} --- C.C. 1007888222\\
+        \href{mailto:santiago.correa_cam@uao.edu.co}{\footnotesize santiago.correa\_cam@uao.edu.co}\\[0.15cm]
+        \textbf{José Silva Calderón} --- C.C. 1144075114\\
+        \href{mailto:jose.silvacalderon@uao.edu.co}{\footnotesize jose.silvacalderon@uao.edu.co}\\[0.15cm]
+        \textbf{Jhonatan Andrés Tapia Córdoba} --- C.C. 1144068366\\
+        \href{mailto:jhonatan.tapia@uao.edu.co}{\footnotesize jhonatan.tapia@uao.edu.co}\\[0.15cm]
+        \textbf{John Restrepo Aparicio} --- C.C. 94539864\\
+        \href{mailto:john.restrepo@uao.edu.co}{\footnotesize john.restrepo@uao.edu.co}
     \end{minipage}
     \hfill
-    \begin{minipage}[t]{0.44\textwidth}
-        \textbf{Docente del Curso:}\\[0.2cm]
+    \begin{minipage}[t]{0.41\textwidth}
+        \textbf{Docente del Curso:}\\[0.15cm]
         \textbf{Prof. Jan Polanco Velasco}\\
-        \href{mailto:japolanco@uao.edu.co}{japolanco@uao.edu.co}\\[0.7cm]
+        \href{mailto:japolanco@uao.edu.co}{japolanco@uao.edu.co}\\[0.6cm]
         \textbf{Fecha de Radicación Formal:}\\
         29 de octubre de 2026\\
         Santiago de Cali, Colombia
     \end{minipage}
     
     \vfill
-    {\small Documento técnico-académico de formulación estructurado bajo estándares de reproducibilidad industrial, ciclo de vida CRISP-DM, gobernanza MLOps y estimación ágil.}
+    {\footnotesize Documento técnico-académico estructurado bajo estándares de reproducibilidad industrial, ciclo de vida CRISP-DM, gobernanza MLOps, tablero Kanban y estimación ágil.}
 \end{titlepage}
 
 % =========================================================================
@@ -346,7 +345,7 @@ La Figura~\ref{fig:gantt_visual} ilustra el cronograma visual consolidado, difer
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=0.72cm, y=-0.50cm]
+\begin{tikzpicture}[x=0.72cm, y=-0.48cm]
     % Eje horizontal de días hábiles
     \foreach \d in {0,1,...,15} {
         \draw[gray!20, dotted] (\d, 0) -- (\d, 12);
@@ -461,7 +460,7 @@ La Tabla~\ref{tab:crisp_dm} detalla la correspondencia metodológica con el cicl
 % =========================================================================
 \section{Historias de Usuario, Criterios de Aceptación y Tablero Kanban}
 
-\subsection{Estimación Fibonacci 1:1, Capacidad del Equipo y Paralelismo}
+\subsection{Estimación Fibonacci 1:1, Capacidad del Equipo (4 Integrantes) y Paralelismo}
 La estimación del esfuerzo relativo utiliza la secuencia Fibonacci ($1$, $2$, $3$, $5$, $8$, $13$), aplicando la directriz académica:
 \begin{equation}
 1 \text{ SP} \equiv 1 \text{ Día hábil de ingeniería} \quad (\sim 6\text{--}8 \text{ h de trabajo neto})
@@ -469,153 +468,152 @@ La estimación del esfuerzo relativo utiliza la secuencia Fibonacci ($1$, $2$, $
 El backlog técnico consta de 8 Historias de Usuario (HU-01 a HU-08) que totalizan \textbf{21 Story Points}. 
 
 \textbf{Análisis de Capacidad y Factibilidad a 15 Días:}
-El equipo de trabajo está compuesto por \textbf{3 integrantes} (Santiago Correa, José Silva y Jhonatan Tapia). Sobre la ventana de 15 días hábiles del proyecto, la capacidad nominal del equipo es:
+El equipo de trabajo está compuesto por \textbf{4 integrantes} (Santiago Correa, José Silva, Jhonatan Tapia y John Restrepo). Sobre la ventana de 15 días hábiles del proyecto, la capacidad nominal del equipo es:
 \begin{equation}
-\text{Capacidad Nominal} = 3 \text{ desarrolladores} \times 15 \text{ días} = 45 \text{ días-persona (SP)}
+\text{Capacidad Nominal} = 4 \text{ desarrolladores} \times 15 \text{ días} = 60 \text{ días-persona (SP)}
 \end{equation}
-El esfuerzo total de 21 SP representa una tasa de ocupación del \textbf{46.7\%} de la capacidad bruta. Esta relación demuestra la total viabilidad del proyecto:
+El esfuerzo total de 21 SP representa una tasa de ocupación del \textbf{35.0\%} de la capacidad bruta. Esta relación garantiza la viabilidad técnica:
 \begin{itemize}[leftmargin=*,noitemsep]
     \item \textbf{Diferenciación entre Esfuerzo y Duración:} El esfuerzo acumulado (21 SP) mide la carga de trabajo individual; la duración del proyecto (15 días) obedece a la secuencia crítica de precedencias (CPM).
-    \item \textbf{Trabajo Paralelo y Límite WIP:} Mientras un integrante lidera la actividad en la ruta crítica, los otros dos miembros ejecutan en paralelo las tareas no críticas (auditoría de pesos, taxonomía, interfaz visual) o asumen la revisión cruzada de código (\textit{Code Review}).
-    \item \textbf{Colchón de Contingencia (53.3\% restante):} Provee la holgura necesaria para standups diarios, depuración de fallos en pruebas de integración, auditorías de estilo y elaboración de la documentación técnica formal.
+    \item \textbf{Trabajo Paralelo y Límite WIP:} Los 4 integrantes asumen tareas concurrentes respetando estrictamente el límite WIP ($\le 1$ tarea activa por persona, máximo 4 en progreso global).
+    \item \textbf{Colchón de Contingencia (65.0\% restante):} Provee holgura suficiente para revisiones cruzadas de código (*Peer Code Reviews* en PR), sincronizaciones diarias y pruebas de integración.
 \end{itemize}
 
 \subsection{Matriz de Trazabilidad entre Historias, CPM y Entregables}
-La Tabla~\ref{tab:trazabilidad} sincroniza el backlog de historias con el cronograma y los artefactos de software.
+La Tabla~\ref{tab:trazabilidad} sincroniza el backlog de historias con el cronograma, los tickets de GitHub Issues (\#4 a \#11) y los artefactos de software.
 
 \begin{table}[H]
 \centering
-\caption{Matriz de trazabilidad: Historias de usuario, CPM, responsables y entregables.}
+\caption{Matriz de trazabilidad: Historias, tickets GitHub, CPM, responsables y entregables.}
 \label{tab:trazabilidad}
 \footnotesize
-\setlength{\tabcolsep}{3.2pt}
-\begin{tabularx}{\textwidth}{l c l c X >{\raggedright\arraybackslash}p{3.5cm}}
+\setlength{\tabcolsep}{3.0pt}
+\begin{tabularx}{\textwidth}{l c c l c X >{\raggedright\arraybackslash}p{3.2cm}}
 \toprule
-\textbf{Historia} & \textbf{CPM} & \textbf{Responsable} & \textbf{SP} & \textbf{Criterio de Aceptación Clave} & \textbf{Entregable en Repositorio} \\
+\textbf{Historia} & \textbf{Issue} & \textbf{CPM} & \textbf{Responsable} & \textbf{SP} & \textbf{Criterio de Aceptación Clave} & \textbf{Entregable en Repositorio} \\
 \midrule
-\textbf{HU-01} & A & Santiago Correa & 2 & \texttt{uv sync} y \texttt{ruff check} con código 0 & \texttt{pyproject.toml}, \texttt{uv.lock} \\
-\textbf{HU-02} & C & José Silva & 3 & Tensor normalizado $[1, 3, 224, 224]$ & \texttt{src/preprocessing.py} \\
-\textbf{HU-03} & E & Santiago Correa & 3 & Inferencia local SafeTensors $< 300$\,ms & \texttt{src/model\_loader.py}, \texttt{src/inference.py} \\
-\textbf{HU-04} & D, F & Jhonatan Tapia & 2 & Taxonomía ES, filtro $\tau < 0.60$ y disclaimer & \texttt{src/labels.py}, \texttt{src/}\allowbreak\texttt{postprocessing.py} \\
-\textbf{HU-05} & G & José Silva & 3 & Endpoints HTTP 200 y $p95 < 450$\,ms & \texttt{api/main.py}, \texttt{api/schemas.py} \\
-\textbf{HU-06} & H & Jhonatan Tapia & 3 & Visualización Top-$k$ y alerta de certeza & \texttt{ui/app.py}, \texttt{ui/api\_client.py} \\
-\textbf{HU-07} & I & Santiago Correa & 3 & Cobertura combinada $\ge 85\%$ en pytest & \texttt{tests/unit/}, \allowbreak \texttt{tests/}\allowbreak\texttt{integration/} \\
-\textbf{HU-08} & J & José Silva & 2 & Wheel compilado e imagen Docker funcional & \texttt{Dockerfile}, \texttt{docker-compose.yml} \\
+\textbf{HU-01} & \#4 & A & Santiago Correa & 2 & \texttt{uv sync} y \texttt{ruff check} con código 0 & \texttt{pyproject.toml}, \texttt{uv.lock} \\
+\textbf{HU-02} & \#5 & C & José Silva & 3 & Tensor normalizado $[1, 3, 224, 224]$ & \texttt{src/preprocessing.py} \\
+\textbf{HU-03} & \#6 & E & Jhonatan Tapia & 3 & Inferencia local SafeTensors $< 300$\,ms & \texttt{src/model\_loader.py}, \texttt{src/inference.py} \\
+\textbf{HU-04} & \#7 & D, F & John Restrepo & 2 & Taxonomía ES, filtro $\tau < 0.60$ y disclaimer & \texttt{src/labels.py}, \texttt{src/}\allowbreak\texttt{postprocessing.py} \\
+\textbf{HU-05} & \#8 & G & Jhonatan Tapia & 3 & Endpoints HTTP 200 y $p95 < 450$\,ms & \texttt{api/main.py}, \texttt{api/schemas.py} \\
+\textbf{HU-06} & \#9 & H & John Restrepo & 3 & Visualización Top-$k$ y alerta de certeza & \texttt{ui/app.py}, \texttt{ui/api\_client.py} \\
+\textbf{HU-07} & \#10 & I & Santiago Correa & 3 & Cobertura combinada $\ge 85\%$ en pytest & \texttt{tests/unit/}, \allowbreak \texttt{tests/}\allowbreak\texttt{integration/} \\
+\textbf{HU-08} & \#11 & J & José Silva & 2 & Wheel compilado e imagen Docker funcional & \texttt{Dockerfile}, \texttt{docker-compose.yml} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsection{Historias de Usuario Formales con Criterios de Aceptación (Gherkin)}
 
-\paragraph{HU-01: Configuración de Entorno Industrial y Tooling Base}
-\textbf{Historia:} \textit{Como} Ingeniero MLOps, \textit{quiero} inicializar el repositorio con estructura modular \texttt{src/} layout, configuración centralizada en \texttt{pyproject.toml}, gestor de paquetes \texttt{uv} y reglas de linteo en \texttt{ruff}, \textit{para} garantizar un entorno de desarrollo aislado, determinista y auditable desde el primer commit.
+\paragraph{HU-01: Configuración de Entorno Industrial y Tooling Base (Ticket \#4)}
+\textbf{Atributos:} 2 SP $\cdot$ Etiqueta: \texttt{DevOps} $\cdot$ Responsable: Santiago Correa\\
+\textbf{Historia:} \textit{Como} Ingeniero MLOps, \textit{quiero} inicializar el repositorio con estructura modular \texttt{src/} layout, configuración en \texttt{pyproject.toml}, gestor \texttt{uv} y linters en \texttt{ruff}, \textit{para} garantizar un entorno aislado, determinista y auditable desde el primer commit.
 \begin{itemize}[leftmargin=*,noitemsep]
-    \item \textbf{Estimación:} 2 SP \quad\textbf{Etiqueta:} \texttt{DevOps} \quad\textbf{Responsable:} Santiago Correa
-    \item \textbf{Criterios de Aceptación (AC):}
-    \begin{itemize}[leftmargin=*,noitemsep]
-        \item \textit{AC1.1:} El comando \texttt{uv sync} debe resolver el archivo \texttt{uv.lock} e instalar dependencias completas sin errores de resolución.
-        \item \textit{AC1.2:} Los comandos \texttt{uv run ruff check .} y \texttt{uv run ruff format --check .} deben ejecutarse con código de salida 0.
-        \item \textit{AC1.3:} No debe existir ningún archivo \texttt{requirements.txt} ni ejecuciones de \texttt{pip} directo en el flujo base.
-    \end{itemize}
+    \item \textit{AC1.1:} El comando \texttt{uv sync} debe resolver el archivo \texttt{uv.lock} e instalar dependencias completas sin errores.
+    \item \textit{AC1.2:} Los comandos \texttt{uv run ruff check .} y \texttt{uv run ruff format --check .} deben ejecutarse con código de salida 0.
+    \item \textit{AC1.3:} Prohibición estricta de archivos \texttt{requirements.txt} o invocaciones directas a \texttt{pip}.
 \end{itemize}
 
-\paragraph{HU-02: Pipeline de Preprocesamiento y Contratos de Validación de Tensores}
-\textbf{Historia:} \textit{Como} Desarrollador de Visión Computacional, \textit{quiero} implementar la función de ingestión y preprocesamiento de imágenes foliares en \texttt{src/preprocessing.py}, \textit{para} validar el formato de entrada y transformarlo en tensores numéricos normalizados compatibles con DINOv2.
+\paragraph{HU-02: Preprocesamiento y Contratos de Validación de Tensores (Ticket \#5)}
+\textbf{Atributos:} 3 SP $\cdot$ Etiqueta: \texttt{ML} $\cdot$ Responsable: José Silva\\
+\textbf{Historia:} \textit{Como} Desarrollador de Visión Computacional, \textit{quiero} implementar la función de ingestión y preprocesamiento en \texttt{src/preprocessing.py}, \textit{para} validar el formato de entrada y transformarlo en tensores numéricos normalizados compatibles con DINOv2.
 \begin{itemize}[leftmargin=*,noitemsep]
-    \item \textbf{Estimación:} 3 SP \quad\textbf{Etiqueta:} \texttt{ML} \quad\textbf{Responsable:} José Silva
-    \item \textbf{Criterios de Aceptación (AC):}
-    \begin{itemize}[leftmargin=*,noitemsep]
-        \item \textit{AC2.1:} Ante un archivo que no sea imagen válida (JPEG/PNG) o esté truncado, el módulo debe arrojar una excepción personalizada \texttt{InvalidImageFormatException} mapeada a código HTTP 400.
-        \item \textit{AC2.2:} Toda imagen válida debe redimensionarse bicúbicamente a dimensiones de tensor $[1, 3, 224, 224]$ con tipo de dato \texttt{torch.float32}.
-        \item \textit{AC2.3:} Los valores numéricos del tensor deben estar normalizados con media $\mu = [0.485, 0.456, 0.406]$ y desviación estándar $\sigma = [0.229, 0.224, 0.225]$.
-    \end{itemize}
+    \item \textit{AC2.1:} Archivos no imagen o corruptos deben arrojar excepción personalizada \texttt{InvalidImageFormatException} (HTTP 400).
+    \item \textit{AC2.2:} Toda imagen válida debe redimensionarse bicúbicamente a dimensiones exactas de tensor $[1, 3, 224, 224]$ (\texttt{torch.float32}).
+    \item \textit{AC2.3:} Normalización numérica estándar ImageNet con media $\mu = [0.485, 0.456, 0.406]$ y desviación $\sigma = [0.229, 0.224, 0.225]$.
 \end{itemize}
 
-\paragraph{HU-03: Módulo de Carga Segura e Inferencia en CPU}
-\textbf{Historia:} \textit{Como} Ingeniero de Backend/ML, \textit{quiero} implementar la carga local de pesos SafeTensors y la rutina de inferencia en \texttt{src/model\_loader.py} e \texttt{src/inference.py}, \textit{para} ejecutar predicciones deterministas y de baja latencia sin descargas dinámicas en tiempo de ejecución.
+\paragraph{HU-03: Módulo de Carga Segura e Inferencia en CPU (Ticket \#6)}
+\textbf{Atributos:} 3 SP $\cdot$ Etiqueta: \texttt{ML} $\cdot$ Responsable: Jhonatan Tapia\\
+\textbf{Historia:} \textit{Como} Ingeniero de Backend/ML, \textit{quiero} implementar la carga local de pesos SafeTensors y la rutina de inferencia en \texttt{src/model\_loader.py} e \texttt{src/inference.py}, \textit{para} ejecutar predicciones deterministas y de baja latencia sin descargas en runtime.
 \begin{itemize}[leftmargin=*,noitemsep]
-    \item \textbf{Estimación:} 3 SP \quad\textbf{Etiqueta:} \texttt{ML} \quad\textbf{Responsable:} Santiago Correa
-    \item \textbf{Criterios de Aceptación (AC):}
-    \begin{itemize}[leftmargin=*,noitemsep]
-        \item \textit{AC3.1:} La carga de pesos debe consumir exclusivamente el archivo binario local \texttt{model.safetensors} sin invocar descargas dinámicas desde la red durante la inferencia.
-        \item \textit{AC3.2:} La función de inferencia debe ejecutarse bajo el contexto \texttt{torch.no\_grad()} para prevenir fugas de grafos de autogradiente en memoria.
-        \item \textit{AC3.3:} El tiempo de inferencia puro en CPU para un tensor de entrada debe registrarse en milisegundos y ser menor a 300\,ms en un procesador de 2 vCPUs.
-    \end{itemize}
+    \item \textit{AC3.1:} Carga exclusiva de pesos locales desde \texttt{model.safetensors} sin conexión a red en runtime.
+    \item \textit{AC3.2:} Inferencia ejecutada bajo contexto \texttt{torch.no\_grad()} para prevenir fugas de grafos de autogradiente en memoria.
+    \item \textit{AC3.3:} Tiempo de inferencia puro en CPU registrado en milisegundos y menor a 300\,ms en host de 2 vCPUs.
 \end{itemize}
 
-\paragraph{HU-04: Mapeo Taxonómico, Filtro de Incertidumbre y Postprocesamiento}
-\textbf{Historia:} \textit{Como} Especialista de Dominio Agrícola, \textit{quiero} un componente en \texttt{src/}\allowbreak\texttt{post}\allowbreak\texttt{processing.py} y \texttt{src/labels.py} que traduzca las 38 clases técnicas a taxonomía agronómica en español, incorpore un filtro de baja certeza ($\tau = 0.60$) y adjunte un descargo de responsabilidad agronómico, \textit{para} entregar un resultado orientativo que no sustituya la inspección profesional en campo.
+\paragraph{HU-04: Mapeo Taxonómico, Filtro de Incertidumbre y Postprocesamiento (Ticket \#7)}
+\textbf{Atributos:} 2 SP $\cdot$ Etiqueta: \texttt{Backend} $\cdot$ Responsable: John Restrepo\\
+\textbf{Historia:} \textit{Como} Especialista de Dominio Agrícola, \textit{quiero} un componente en \texttt{src/}\allowbreak\texttt{post}\allowbreak\texttt{processing.py} y \texttt{src/labels.py} que traduzca las 38 clases a español, incorpore un filtro de baja certeza ($\tau = 0.60$) y adjunte un descargo agronómico, \textit{para} entregar un resultado orientativo que no sustituya la inspección pericial en campo.
 \begin{itemize}[leftmargin=*,noitemsep]
-    \item \textbf{Estimación:} 2 SP \quad\textbf{Etiqueta:} \texttt{Backend} \quad\textbf{Responsable:} Jhonatan Tapia
-    \item \textbf{Criterios de Aceptación (AC):}
-    \begin{itemize}[leftmargin=*,noitemsep]
-        \item \textit{AC4.1:} El vector de logits debe convertirse mediante Softmax en probabilidades estrictas que sumen $1.000 \pm 0.001$.
-        \item \textit{AC4.2:} La salida debe estructurar el ranking Top-$k$ ($k=3$) con nombre común del cultivo, patógeno y agente causal (hongo, bacteria, virus o tejido sano).
-        \item \textit{AC4.3:} Si la probabilidad máxima es menor a $0.60$, el sistema debe clasificar la condición como \textit{«Muestra con incertidumbre alta / Muestra atípica»} y no presentar un diagnóstico afirmativo.
-        \item \textit{AC4.4:} La respuesta debe incluir invariablemente la advertencia: \textit{«Resultado orientativo preliminar; no sustituye la inspección fitosanitaria experta de un agrónomo en campo ni autoriza la aplicación no regulada de agroquímicos»}.
-    \end{itemize}
+    \item \textit{AC4.1:} Logits convertidos vía Softmax en probabilidades sumando estrictamente $1.000 \pm 0.001$.
+    \item \textit{AC4.2:} Salida estructurada con ranking Top-$3$, nombre común del cultivo, patógeno y agente causal.
+    \item \textit{AC4.3:} Si la probabilidad máxima es $< 0.60$, el sistema etiqueta la salida como \textit{«Muestra con incertidumbre alta / Muestra atípica»}.
+    \item \textit{AC4.4:} Inclusión obligatoria de advertencia agronómica que prohíbe el uso de la salida como prescripción de agroquímicos.
 \end{itemize}
 
-\paragraph{HU-05: API REST Asíncrona de Alta Disponibilidad}
-\textbf{Historia:} \textit{Como} Integrador de Sistemas, \textit{quiero} exponer un servicio web con FastAPI en \texttt{api/main.py}, \textit{para} permitir que aplicaciones clientes consuman el modelo de cribado mediante contratos de datos JSON formales y validados.
+\paragraph{HU-05: API REST Asíncrona de Alta Disponibilidad (Ticket \#8)}
+\textbf{Atributos:} 3 SP $\cdot$ Etiqueta: \texttt{Backend} $\cdot$ Responsable: Jhonatan Tapia\\
+\textbf{Historia:} \textit{Como} Integrador de Sistemas, \textit{quiero} exponer un servicio web con FastAPI en \texttt{api/main.py}, \textit{para} permitir que aplicaciones clientes consuman el modelo mediante contratos de datos JSON formales y validados.
 \begin{itemize}[leftmargin=*,noitemsep]
-    \item \textbf{Estimación:} 3 SP \quad\textbf{Etiqueta:} \texttt{Backend} \quad\textbf{Responsable:} José Silva
-    \item \textbf{Criterios de Aceptación (AC):}
-    \begin{itemize}[leftmargin=*,noitemsep]
-        \item \textit{AC5.1:} Endpoint \texttt{GET /health} debe retornar código HTTP 200 y JSON indicando estado operativo y modelo cargado en memoria.
-        \item \textit{AC5.2:} Endpoint \texttt{POST /predict} debe aceptar carga de archivo \textit{multipart/form-data} y responder dentro de la meta $p95 < 450$\,ms en red local.
-        \item \textit{AC5.3:} La documentación interactiva OpenAPI/Swagger debe estar validada y accesible en la ruta \texttt{/docs}.
-    \end{itemize}
+    \item \textit{AC5.1:} Endpoint \texttt{GET /health} retornando código 200 y JSON con estado del servicio y modelo cargado.
+    \item \textit{AC5.2:} Endpoint \texttt{POST /predict} aceptando archivos \textit{multipart/form-data} y respondiendo en meta $p95 < 450$\,ms.
+    \item \textit{AC5.3:} Documentación OpenAPI/Swagger interactiva accesible y validada en \texttt{/docs}.
 \end{itemize}
 
-\paragraph{HU-06: Interfaz Gráfica Interactiva para Técnicos de Campo}
+\paragraph{HU-06: Interfaz Gráfica Interactiva para Técnicos de Campo (Ticket \#9)}
+\textbf{Atributos:} 3 SP $\cdot$ Etiqueta: \texttt{Frontend} $\cdot$ Responsable: John Restrepo\\
 \textbf{Historia:} \textit{Como} Técnico Agrícola, \textit{quiero} interactuar con una interfaz visual basada en Streamlit en \texttt{ui/app.py}, \textit{para} cargar imágenes foliares, visualizar el cribado fitosanitario y analizar gráficamente las probabilidades de riesgo.
 \begin{itemize}[leftmargin=*,noitemsep]
-    \item \textbf{Estimación:} 3 SP \quad\textbf{Etiqueta:} \texttt{Frontend} \quad\textbf{Responsable:} Jhonatan Tapia
-    \item \textbf{Criterios de Aceptación (AC):}
-    \begin{itemize}[leftmargin=*,noitemsep]
-        \item \textit{AC6.1:} La interfaz debe permitir la carga interactiva de imágenes mediante \textit{drag-and-drop} en formatos JPG, JPEG y PNG.
-        \item \textit{AC6.2:} Debe renderizar una barra de confianza porcentual y un gráfico discriminado para el Top-3 de predicciones, resaltando visualmente si se activa la advertencia de incertidumbre ($\tau < 0.60$).
-        \item \textit{AC6.3:} En caso de error de red o formato inválido en el backend, debe desplegar un mensaje descriptivo sin interrumpir la sesión web.
-    \end{itemize}
+    \item \textit{AC6.1:} Carga interactiva mediante \textit{drag-and-drop} en formatos JPG, JPEG y PNG.
+    \item \textit{AC6.2:} Renderizado de barra de confianza porcentual y gráfico Top-$3$, alertando visualmente si se activa el umbral $\tau < 0.60$.
+    \item \textit{AC6.3:} Manejo descriptivo de excepciones ante errores de red o archivos no válidos sin colapsar la sesión web.
 \end{itemize}
 
-\paragraph{HU-07: Suite Exhaustiva de Pruebas Automatizadas}
+\paragraph{HU-07: Suite Exhaustiva de Pruebas Automatizadas (Ticket \#10)}
+\textbf{Atributos:} 3 SP $\cdot$ Etiqueta: \texttt{Testing} $\cdot$ Responsable: Santiago Correa\\
 \textbf{Historia:} \textit{Como} Líder de Aseguramiento de Calidad (QA), \textit{quiero} una suite integral de pruebas con \texttt{pytest} cubriendo pruebas unitarias e integración de API, \textit{para} blindar la estabilidad del sistema ante regresiones de código.
 \begin{itemize}[leftmargin=*,noitemsep]
-    \item \textbf{Estimación:} 3 SP \quad\textbf{Etiqueta:} \texttt{Testing} \quad\textbf{Responsable:} Santiago Correa
-    \item \textbf{Criterios de Aceptación (AC):}
-    \begin{itemize}[leftmargin=*,noitemsep]
-        \item \textit{AC7.1:} La suite unitaria (\texttt{tests/unit/}) debe ejecutarse en $< 10$\,segundos utilizando mocks para aislamiento de dependencias.
-        \item \textit{AC7.2:} La suite de integración (\texttt{tests/integration/}) debe validar el pipeline completo con el modelo real y un cliente de pruebas FastAPI.
-        \item \textit{AC7.3:} La cobertura combinada de código (\texttt{pytest --cov}) debe ser igual o superior al 85\% de las líneas en \texttt{src/} y \texttt{api/}.
-    \end{itemize}
+    \item \textit{AC7.1:} Suite unitaria (\texttt{tests/unit/}) ejecutándose en $< 10$\,segundos con aislamiento mediante mocks.
+    \item \textit{AC7.2:} Suite de integración (\texttt{tests/integration/}) validando el pipeline completo con el modelo real y cliente FastAPI.
+    \item \textit{AC7.3:} Cobertura combinada de código (\texttt{pytest --cov}) igual o superior al 85\% en \texttt{src/} y \texttt{api/}.
 \end{itemize}
 
-\paragraph{HU-08: Contenerización Docker y Empaquetamiento Wheel}
+\paragraph{HU-08: Contenerización Docker y Empaquetamiento Wheel (Ticket \#11)}
+\textbf{Atributos:} 2 SP $\cdot$ Etiqueta: \texttt{DevOps} $\cdot$ Responsable: José Silva\\
 \textbf{Historia:} \textit{Como} Ingeniero de Despliegue, \textit{quiero} construir la imagen Docker multi-etapa y el paquete Wheel con \texttt{uv build}, \textit{para} permitir el despliegue desacoplado y reproducible en servidores productivos.
 \begin{itemize}[leftmargin=*,noitemsep]
-    \item \textbf{Estimación:} 2 SP \quad\textbf{Etiqueta:} \texttt{DevOps} \quad\textbf{Responsable:} José Silva
-    \item \textbf{Criterios de Aceptación (AC):}
-    \begin{itemize}[leftmargin=*,noitemsep]
-        \item \textit{AC8.1:} El comando \texttt{uv build} debe generar en \texttt{dist/} los archivos \texttt{.whl} y \texttt{.tar.gz} válidos.
-        \item \textit{AC8.2:} La imagen Docker debe construirse exitosamente y levantar la API en el puerto 8000 respondiendo a \texttt{curl http://localhost:8000/health}.
-        \item \textit{AC8.3:} El archivo \texttt{docker-compose.yml} debe orquestar los servicios de API y Streamlit de forma coordinada en la misma red interna.
-    \end{itemize}
+    \item \textit{AC8.1:} Generación exitosa de archivos \texttt{.whl} y \texttt{.tar.gz} en \texttt{dist/} mediante \texttt{uv build}.
+    \item \textit{AC8.2:} Construcción exitosa de la imagen Docker respondiendo a \texttt{curl http://localhost:8000/health}.
+    \item \textit{AC8.3:} Orquestación unificada de API y Streamlit mediante \texttt{docker-compose.yml} en red interna compartida.
 \end{itemize}
 
-\subsection{Gobernanza del Tablero Kanban y Políticas de Límite WIP}
-El flujo ágil se implementa en \textbf{GitHub Projects}, estructurado en cuatro columnas operativas con políticas explícitas:
+\subsection{Gobernanza del Tablero Kanban, Políticas WIP y Estructura Visual}
+El flujo de trabajo ágil se gestiona a través de \textbf{GitHub Projects}, estructurado en cuatro columnas operativas con políticas explícitas y límites WIP (*Work In Progress*):
 \begin{enumerate}[leftmargin=*]
-    \item \textbf{To Do (Pendiente):} Tareas formalmente priorizadas, con estimación en Story Points y criterios de aceptación definidos.
-    \item \textbf{In Progress (En Desarrollo):} Tareas en desarrollo activo. \textbf{Límite WIP (Work In Progress) estricto:} \textit{Máximo 1 tarea activa por desarrollador simultáneamente} (límite WIP global del equipo = 3 tareas activas). Principio operativo: \textit{«Stop starting, start finishing»}.
-    \item \textbf{Review / Pull Request (Revisión Técnica):} Tareas con desarrollo concluido en rama \texttt{feature/*}. Requiere revisión cruzada obligatoria del Code Reviewer asignado (otro integrante del equipo), con verificación de:
-    \begin{itemize}[leftmargin=*,noitemsep]
-        \item Suite de pruebas \texttt{pytest} ejecutándose en verde al 100\%.
-        \item Cumplimiento estricto de \texttt{ruff check} y \texttt{ruff format}.
-    \end{itemize}
-    \item \textbf{Done (Completado):} Tarea fusionada en la rama de integración \texttt{develop} con evidencia de ejecución exitosa.
+    \item \textbf{To Do (Pendiente):} Backlog de tareas estimadas en Fibonacci 1:1, priorizadas según la ruta crítica CPM.
+    \item \textbf{In Progress (En Desarrollo):} Tareas en desarrollo activo. \textbf{Límite WIP estricto:} \textit{Máximo 1 tarea activa por desarrollador simultáneamente} (Límite WIP global del equipo = 4 tareas activas). Principio operativo: \textit{«Stop starting, start finishing»}.
+    \item \textbf{Review / PR (Revisión Técnica):} Tareas concluidas en rama \texttt{feature/*}. Requiere revisión cruzada obligatoria (*Code Review*) por otro integrante con tests verdes al 100\% y linteo \texttt{ruff} impecable.
+    \item \textbf{Done (Completado):} Tareas fusionadas a la rama de integración \texttt{develop} con verificación de integración continua.
 \end{enumerate}
+
+La Tabla~\ref{tab:kanban_board} ilustra la distribución del tablero Kanban y el estado sincronizado de los tickets en GitHub Projects.
+
+\begin{table}[H]
+\centering
+\caption{Estructura del Tablero Kanban y sincronización con GitHub Projects.}
+\label{tab:kanban_board}
+\footnotesize
+\begin{tabularx}{\textwidth}{p{3.2cm} p{3.4cm} p{4.0cm} X}
+\toprule
+\textbf{Columna: To Do\newline (WIP: $\infty$)} & \textbf{Columna: In Progress\newline (WIP: máx. 4)} & \textbf{Columna: Review / PR\newline (WIP: máx. 2)} & \textbf{Columna: Done\newline (Merged en \texttt{develop})} \\
+\midrule
+\textit{Backlog refinado:} & \textit{En curso:} & \textit{En revisión de pares:} & \textit{Completadas en sprint:} \\
+\textbf{\#9 [Frontend] 3 SP} & \textbf{\#7 [Backend] 2 SP} & \textbf{\#6 [ML] 3 SP} & \textbf{\#4 [DevOps] 2 SP} \\
+HU-06: UI Streamlit & HU-04: Postproceso e & HU-03: Loader SafeTensors & HU-01: Entorno \texttt{uv} y \\
+(John Restrepo) & incertidumbre (John R.) & e inferencia (Jhonatan T.) & tooling base (Santiago C.) \\
+\addlinespace[2pt]
+\textbf{\#10 [Testing] 3 SP} & \textbf{\#8 [Backend] 3 SP} & \textbf{PR \#3 [Docs]}: Propuesta & \textbf{\#5 [ML] 3 SP} \\
+HU-07: Tests \texttt{pytest} & HU-05: API REST FastAPI & formal M2 y PDF (Santiago C. & HU-02: Preprocesamiento \\
+(Santiago Correa) & (Jhonatan Tapia) & $\rightarrow$ Rev: José Silva) & y tensores (José Silva) \\
+\addlinespace[2pt]
+\textbf{\#11 [DevOps] 2 SP} & & & \\
+HU-08: Docker y Wheel & & & \\
+(José Silva) & & & \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 % =========================================================================
 % CAPÍTULO 6: ANEXOS, TRAZABILIDAD Y REFERENCIAS
@@ -629,6 +627,8 @@ El flujo ágil se implementa en \textbf{GitHub Projects}, estructurado en cuatro
     \url{https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades}
     \item \textbf{Tablero Ágil de Gestión Kanban (GitHub Projects):}\\
     \url{https://github.com/users/vivacius/projects/1}
+    \item \textbf{Tickets de Historias de Usuario (GitHub Issues \#4 a \#11):}\\
+    \url{https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues}
     \item \textbf{Modelo Base y Model Card Oficial en Hugging Face:}\\
     \url{https://huggingface.co/rodynaemad/plant-disease-dinov2-small}
     \item \textbf{Espacio de Demostración y Evaluación Visual:}\\
