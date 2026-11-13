@@ -119,11 +119,7 @@ def parse_category_label(raw_label: str) -> CategoryMetadata:
     plant_en = clean_identifier(raw_plant)
     condition_en = clean_identifier(raw_condition)
 
-    plant_es = (
-        PLANT_TRANSLATIONS_ES.get(raw_plant)
-        or PLANT_TRANSLATIONS_ES.get(plant_en)
-        or plant_en
-    )
+    plant_es = PLANT_TRANSLATIONS_ES.get(raw_plant) or PLANT_TRANSLATIONS_ES.get(plant_en) or plant_en
 
     if raw_condition == "unknown":
         condition_es = "Condición no especificada"
