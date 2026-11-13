@@ -36,3 +36,17 @@ Thumbs.db
 *.toc
 *.xdv
 *.synctex.gz
+
+# Configuración y estado local de agentes (excluyendo infraestructura compartida)
+.gemini/*
+!.gemini/commands/
+!.gemini/commands/**
+*.local
+*.local.*
+*.db
+*.sqlite
+*.sqlite3
+engram.db
+
+# Skills de terceros en cuarentena preventiva de seguridad (SkillSpector CRITICAL)
+.agents/skills/archify/
