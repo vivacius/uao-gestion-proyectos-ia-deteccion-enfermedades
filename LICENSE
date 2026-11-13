@@ -1,0 +1,62 @@
+MIT License
+
+SCOPE OF THIS LICENSE
+
+This MIT License applies only to the original source code authored by the
+project team identified below, including `src/`, `api/`, frontend code, and
+`tests/`, together with original documentation authored for this project. It
+does not apply to third-party model weights, upstream architectures, datasets,
+model cards, or other externally sourced materials, which remain governed by
+their respective licenses. No ownership is claimed over those third-party
+components.
+
+Copyright (c) 2026 Grupo 2 — Maestría en Inteligencia Artificial y Ciencia de Datos
+(UAO): Santiago Correa Campana, José Isaac Silva Calderón, Jhonatan Andrés Tapia
+Córdoba y John Restrepo Aparicio
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-------------------------------------------------------------------------------
+THIRD-PARTY MODEL WEIGHTS AND DATASET ATTRIBUTIONS / AVISO DE COMPONENTES DE
+TERCEROS
+-------------------------------------------------------------------------------
+
+The MIT License above applies exclusively to the original source code in this
+repository, including `src/`, `api/`, frontend code, and `tests/`. Third-party
+artifacts retain their own licenses and required attributions:
+
+1. Model weights: `rodynaemad/plant-disease-dinov2-small`
+   (`model.safetensors`) by Rodayna Emad Mohamed, Pharos University in
+   Alexandria. The Model Card for these adapted weights declares the Creative
+   Commons Attribution-ShareAlike 4.0 International license (CC BY-SA 4.0).
+   This license applies to the distributed weights and does not relicense the
+   underlying dataset.
+2. Base architecture: `facebook/dinov2-small` by Meta AI Research. Licensed
+   under the Apache License, Version 2.0 (Apache 2.0).
+3. Training dataset: PlantVillage by Hughes & Salathé (2015) and Mohanty,
+   Hughes & Salathé (2016). The `mohanty/PlantVillage` distribution on Hugging
+   Face declares the Creative Commons Attribution-ShareAlike 3.0 Unported
+   license (CC BY-SA 3.0). Users must comply with the dataset license and its
+   ShareAlike obligations independently of the adapted model weights.
+
+La licencia MIT anterior aplica exclusivamente al código fuente original de
+este repositorio, incluidos `src/`, `api/`, frontend y `tests/`. Los artefactos
+de terceros conservan las licencias y atribuciones obligatorias indicadas. La
+licencia MIT no relicencia ni sustituye las licencias del modelo ajustado, la
+arquitectura base o el dataset PlantVillage.
