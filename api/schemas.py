@@ -24,6 +24,23 @@ class HealthResponse(BaseModel):
     detail: str | None = Field(default=None, description="Detalle adicional o mensaje de error si aplica.")
 
 
+class ModelInfoResponse(BaseModel):
+    """Esquema de respuesta del endpoint ``GET /model-info``."""
+
+    model_name: str = Field(
+        default="rodynaemad/plant-disease-dinov2-small",
+        description="Identificador del modelo base preentrenado.",
+    )
+    architecture: str | None = Field(
+        default="Dinov2ForImageClassification",
+        description="Arquitectura interna de la red neuronal.",
+    )
+    device: str = Field(default="cpu", description="Dispositivo de cómputo activo.")
+    num_classes: int = Field(default=38, description="Cantidad de clases fitosanitarias soportadas.")
+    model_available: bool = Field(..., description="Indica si el modelo está cargado y disponible.")
+    model_path: str | None = Field(default=None, description="Ruta local desde donde se cargaron los pesos.")
+
+
 class TopPredictionSchema(BaseModel):
     """Esquema para cada una de las categorías más probables (Top-3)."""
 

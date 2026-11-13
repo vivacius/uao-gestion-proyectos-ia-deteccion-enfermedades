@@ -22,14 +22,10 @@ def resolve_model_dir() -> Path:
         return Path(env_model_dir).resolve()
 
     subdir_candidate = BASE_DIR / "modelo_plantas"
-    if (subdir_candidate / "config.json").is_file() and (
-        subdir_candidate / "model.safetensors"
-    ).is_file():
+    if (subdir_candidate / "config.json").is_file() and (subdir_candidate / "model.safetensors").is_file():
         return subdir_candidate
 
-    if (BASE_DIR / "config.json").is_file() and (
-        BASE_DIR / "model.safetensors"
-    ).is_file():
+    if (BASE_DIR / "config.json").is_file() and (BASE_DIR / "model.safetensors").is_file():
         return BASE_DIR
 
     return subdir_candidate

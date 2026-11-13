@@ -46,9 +46,7 @@ def verify_model_files(model_dir: Path | str | None = None) -> Path:
     target_dir = Path(model_dir).resolve() if model_dir is not None else MODEL_DIR.resolve()
 
     if not target_dir.exists() or not target_dir.is_dir():
-        raise ModelLoadError(
-            f"El directorio del modelo no existe o no es válido: '{target_dir}'."
-        )
+        raise ModelLoadError(f"El directorio del modelo no existe o no es válido: '{target_dir}'.")
 
     missing_files: list[str] = []
     empty_files: list[str] = []
@@ -93,9 +91,7 @@ def load_model_from_disk(model_dir: Path | str | None = None) -> ModelBundle:
         model.to(device)
         model.eval()
     except Exception as exc:
-        raise ModelLoadError(
-            f"Error al cargar el modelo local desde '{target_dir}': {exc}"
-        ) from exc
+        raise ModelLoadError(f"Error al cargar el modelo local desde '{target_dir}': {exc}") from exc
 
     raw_id2label = getattr(model.config, "id2label", {}) or {}
     id2label: dict[int, str] = {int(k): str(v) for k, v in raw_id2label.items()}
@@ -125,8 +121,10 @@ def get_model_bundle(
     """Obtiene la instancia en caché del modelo o la carga si aún no está inicializada."""
     global _CACHED_BUNDLE
     with _BUNDLE_LOCK:
-        if _CACHED_BUNDLE is None or force_reload or (
-            model_dir is not None and Path(model_dir).resolve() != _CACHED_BUNDLE.model_dir
+        if (
+            _CACHED_BUNDLE is None
+            or force_reload
+            or (model_dir is not None and Path(model_dir).resolve() != _CACHED_BUNDLE.model_dir)
         ):
             _CACHED_BUNDLE = load_model_from_disk(model_dir)
         return _CACHED_BUNDLE

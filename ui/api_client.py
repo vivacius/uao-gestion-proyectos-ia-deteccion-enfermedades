@@ -95,8 +95,7 @@ def request_image_prediction(
         error_detail = payload.get("detail")
         if isinstance(error_detail, list):
             error_detail = "; ".join(
-                item.get("msg", str(item)) if isinstance(item, dict) else str(item)
-                for item in error_detail
+                item.get("msg", str(item)) if isinstance(item, dict) else str(item) for item in error_detail
             )
         elif not error_detail:
             error_detail = f"El servidor devolvió un error (código HTTP {response.status_code})."
