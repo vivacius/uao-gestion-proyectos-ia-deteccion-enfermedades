@@ -10,13 +10,12 @@ Uso:
 from __future__ import annotations
 
 import json
-import mimetypes
+import sys
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
-import sys
 
 WEB_DIR = Path(__file__).resolve().parent
-PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 3000
+PORT = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 3000
 
 
 class AgroScanPreviewHandler(SimpleHTTPRequestHandler):
@@ -130,11 +129,11 @@ class AgroScanPreviewHandler(SimpleHTTPRequestHandler):
 
 def run():
     server = HTTPServer(("127.0.0.1", PORT), AgroScanPreviewHandler)
-    print(f"\n=======================================================")
-    print(f" Servidor de Previsualización AgroScan AI")
+    print("\n=======================================================")
+    print(" Servidor de Previsualización AgroScan AI")
     print(f" URL Local: http://127.0.0.1:{PORT}")
     print(f" Directorio Web: {WEB_DIR}")
-    print(f"=======================================================\n")
+    print("=======================================================\n")
     print("Presiona Ctrl + C para detener el servidor.\n")
     try:
         server.serve_forever()
