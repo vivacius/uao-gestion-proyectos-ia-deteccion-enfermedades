@@ -9,3 +9,6 @@ htmlcov/
 .git/
 .gitignore
 *.log
+dist/
+build/
+*.egg-info/

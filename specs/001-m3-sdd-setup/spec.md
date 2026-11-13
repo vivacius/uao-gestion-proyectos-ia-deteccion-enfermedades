@@ -10,7 +10,7 @@
 ## 1. Resumen Ejecutivo y Propósito
 El objetivo de esta unidad es dejar preparado el repositorio del Grupo 2 (Universidad Autónoma de Occidente) para que sus cuatro integrantes adopten de forma unificada la metodología Spec-Driven Development (SDD), la Constitución del proyecto, las directrices operativas de agentes (`AGENTS.md`), la diagramación arquitectónica profesional con Archify, el control de seguridad de skills con SkillSpector, la memoria técnica con Engram MCP y el flujo estricto de Gitflow y revisión por PR.
 
-Asimismo, se incorpora formalmente la totalidad del backlog aprobado en el Módulo 2 (8 Historias de Usuario, 25 Criterios de Aceptación Gherkin y 21 Story Points) como línea base viva para la ejecución técnica del Módulo 3 en inferencia CPU, FastAPI, Streamlit y Pytest AAA.
+Asimismo, se incorpora formalmente la totalidad del backlog aprobado en el Módulo 2 (8 Historias de Usuario, 25 Criterios de Aceptación Gherkin y 21 Story Points) como línea base viva para la ejecución técnica del Módulo 3 en inferencia CPU, FastAPI, frontend web desacoplado, aplicación de escritorio Tkinter y Pytest AAA.
 
 ---
 
@@ -23,9 +23,9 @@ Asimismo, se incorpora formalmente la totalidad del backlog aprobado en el Módu
 | **HU-03** | #6 | ML | Jhonatan Tapia | 3 | `src/model_loader.py`, `src/inference.py` | Carga local de `model.safetensors` sin descargas runtime; inferencia CPU con `torch.no_grad()`; meta inferencia pura $< 300$\,ms ($N=1$). |
 | **HU-04** | #7 | Backend | John Restrepo | 2 | `src/postprocessing.py`, `src/labels.py` | Vector Softmax ($1.000 \pm 0.001$), 38 clases en español, Top-3, filtro $\tau=0.60$ ("Muestra con incertidumbre alta") y descargo agronómico no prescriptivo. |
 | **HU-05** | #8 | Backend | Jhonatan Tapia | 3 | `api/main.py`, `api/schemas.py` | Endpoints `GET /health` (200), `POST /predict` (meta E2E $p95 < 450$\,ms) y `GET /docs` OpenAPI interactivo. |
-| **HU-06** | #9 | Frontend | John Restrepo | 3 | `ui/app.py`, `ui/api_client.py` | Carga interactiva JPG/JPEG/PNG, barra porcentual, gráfico Top-3, alerta si certeza $< 0.60$ y manejo robusto de errores sin colapso de sesión. |
+| **HU-06** | #9 | Frontend | John Restrepo | 3 | `ui/web/`, `ui/desktop_app.py`, `ui/api_client.py` | Carga interactiva JPG/JPEG/PNG en frontend web y app de escritorio, barra porcentual, gráfico Top-3, alerta si certeza $< 0.60$ y manejo robusto de errores sin colapso de la interfaz. |
 | **HU-07** | #10 | Testing | Santiago Correa | 3 | `tests/unit/`, `tests/integration/` | Suite unitaria en $< 10$\,s con mocks; suite de integración E2E con TestClient; cobertura combinada $\ge 85\%$ en `src/` y `api/`. |
-| **HU-08** | #11 | DevOps | José Silva | 2 | `Dockerfile`, `docker-compose.yml` | Construcción de paquete Wheel (`uv build`) y contenedor Docker CPU multi-etapa validado con `GET /health` HTTP 200. *(Nota: Implementación aplazada a M4 según alcance de unidad).* |
+| **HU-08** | #11 | DevOps | José Silva | 2 | `Dockerfile`, `docker-compose.yml` | Construcción de paquete Wheel (`uv build`) y contenedor Docker CPU multi-etapa validado con `GET /health` HTTP 200. *(Nota: implementación local en M4; PR pendiente de autorización).* |
 
 **Total Acumulado:** 8 Historias de Usuario, 25 Criterios de Aceptación, 21 Story Points.
 
@@ -86,11 +86,11 @@ Asimismo, se incorpora formalmente la totalidad del backlog aprobado en el Módu
 
 ### HU-06: Interfaz Gráfica para Técnicos de Campo
 - **Responsable:** John Restrepo (Frontend) | **Estimación:** 3 SP | **Ticket:** #9 | **Prioridad:** P3
-- **Narrativa:** *Como* Técnico Agrícola, *quiero* interactuar con una interfaz Streamlit en `ui/app.py`, *para* cargar imágenes foliares, visualizar el cribado fitosanitario y analizar gráficamente las probabilidades.
+- **Narrativa:** *Como* Técnico Agrícola, *quiero* interactuar con el frontend web desacoplado (`ui/web/`) o con la aplicación de escritorio Tkinter (`ui/desktop_app.py`), *para* cargar imágenes foliares, visualizar el cribado fitosanitario y analizar gráficamente las probabilidades.
 - **Escenarios de Aceptación:**
-  1. **AC6.1:** **Dada** la interfaz en Streamlit, **cuando** se realiza carga interactiva mediante *drag-and-drop*, **entonces** el sistema admite formatos JPG, JPEG y PNG.
+  1. **AC6.1:** **Dada** la interfaz web o la aplicación de escritorio, **cuando** se realiza carga interactiva mediante *drag-and-drop* o selector de archivos, **entonces** el sistema admite formatos JPG, JPEG y PNG.
   2. **AC6.2:** **Dada** la respuesta JSON, **cuando** se renderiza la vista, **entonces** muestra barra porcentual y gráfico Top-$3$, alertando si la certeza es $< 0.60$ ($\tau = 0.60$).
-  3. **AC6.3:** **Dado** un error de red o archivo no válido, **cuando** se maneja la excepción, **entonces** muestra un mensaje descriptivo sin colapsar la sesión web.
+  3. **AC6.3:** **Dado** un error de red o archivo no válido, **cuando** se maneja la excepción, **entonces** muestra un mensaje descriptivo sin colapsar la interfaz.
 
 ---
 
@@ -110,8 +110,8 @@ Asimismo, se incorpora formalmente la totalidad del backlog aprobado en el Módu
 - **Escenarios de Aceptación:**
   1. **AC8.1:** **Dado** `pyproject.toml`, **cuando** se ejecuta `uv build`, **entonces** genera exitosamente los archivos `.whl` y `.tar.gz` en `dist/`.
   2. **AC8.2:** **Dada** la imagen Docker construida y activa, **cuando** se consulta `curl http://localhost:8000/health`, **entonces** responde exitosamente con HTTP 200.
-  3. **AC8.3:** **Dado** `docker-compose.yml`, **cuando** se despliegan los contenedores, **entonces** opera la orquestación unificada de API y Streamlit en red interna compartida.
-- *Nota de delimitación M3:* La ejecución de HU-08 queda diferida para el Módulo 4 de acuerdo con la planificación académica.
+  3. **AC8.3:** **Dado** `docker-compose.yml`, **cuando** se despliega el contenedor de la API, **entonces** la aplicación de escritorio Tkinter y el frontend web pueden consumir el servicio en `http://127.0.0.1:8000` de forma coordinada.
+- *Nota de delimitación M3:* La implementación local de HU-08 se desarrolla en el Módulo 4; el PR queda pendiente de autorización.
 
 ---
 

@@ -1,10 +1,14 @@
+# La app de escritorio Tkinter y el frontend web se ejecutan en el host y
+# consumen la API publicada en http://127.0.0.1:8000. Este compose solo
+# levanta el servicio de inferencia.
 services:
   api:
+    image: plant-disease-app:local
     build:
       context: .
       dockerfile: Dockerfile
     container_name: plant-disease-api
-    command: ["uv", "run", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
     ports:
       - "8000:8000"
     environment:
@@ -15,30 +19,5 @@ services:
       interval: 15s
       timeout: 5s
       retries: 3
-      start_period: 15s
-    restart: unless-stopped
-
-  ui:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: plant-disease-ui
-    command:
-      [
-        "uv",
-        "run",
-        "streamlit",
-        "run",
-        "ui/app.py",
-        "--server.address=0.0.0.0",
-        "--server.port=8501",
-        "--server.headless=true"
-      ]
-    ports:
-      - "8501:8501"
-    environment:
-      - API_BASE_URL=http://api:8000
-    depends_on:
-      api:
-        condition: service_healthy
+      start_period: 30s
     restart: unless-stopped

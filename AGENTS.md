@@ -46,13 +46,13 @@ Este repositorio capitaliza los **aprendizajes acumulativos del Módulo 1 (M1)**
 | **HU-03** (3 SP) | Jhonatan Tapia | ML | Gemini / Antigravity | Carga segura SafeTensors e inferencia CPU $< 300$\,ms. |
 | **HU-04** (2 SP) | John Restrepo | Backend | Gemini / Antigravity | Postproceso, mapeo a español, filtro $\tau=0.60$ y descargo agronómico. |
 | **HU-05** (3 SP) | Jhonatan Tapia | Backend | Gemini / Antigravity | API REST asíncrona FastAPI, OpenAPI y contratos Pydantic. |
-| **HU-06** (3 SP) | John Restrepo | Frontend | Gemini / Antigravity | Interfaz Streamlit para técnicos de campo (Top-3 y alertas). |
+| **HU-06** (3 SP) | John Restrepo | Frontend | Gemini / Antigravity | Frontend web desacoplado (HTML/CSS/JS) y app de escritorio Tkinter para técnicos de campo (Top-3 y alertas). |
 | **HU-07** (3 SP) | Santiago Correa | Testing | Gemini / Antigravity | Suite `pytest` AAA (unitarias + integración), cobertura $\ge 85\%$. |
 | **HU-08** (2 SP) | José Silva | DevOps | Gemini / Antigravity | Empaquetado Wheel (`uv build`) y contenerización Docker CPU (M4). |
 
 - **Revisor de Código General (Code Reviewer):** Jhonatan Tapia.
 - **Revisión Cruzada Obligatoria:** Todo PR requiere revisión aprobada de un compañero distinto del autor del cambio.
-- **Separación de Alcance M3 vs M4:** HU-01 a HU-07 corresponden al Módulo 3 (inferencia CPU DINOv2, FastAPI, Streamlit, Pytest). HU-08 queda expresamente diferida para el Módulo 4 (Docker multi-etapa y empaquetado Wheel).
+- **Separación de Alcance M3 vs M4:** HU-01 a HU-07 corresponden al Módulo 3 (inferencia CPU DINOv2, FastAPI, frontend web desacoplado, aplicación de escritorio Tkinter y Pytest). HU-08 corresponde al Módulo 4 (Docker multi-etapa y empaquetado Wheel).
 
 ---
 

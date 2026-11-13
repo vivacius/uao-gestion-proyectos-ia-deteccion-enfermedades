@@ -13,7 +13,7 @@
 - **Clarificación / Decisión:** **NO.** Las actividades de contenerización (Docker multi-etapa), orquestación (Docker Compose) y distribución en Wheel (`uv build`) pertenecen a la **HU-08 (Ticket #11, José Silva)** y quedan expresamente diferidas para el **Módulo 4**. En el Módulo 3 el foco técnico exclusivo es:
   1. Inferencia local con DINOv2 en CPU.
   2. Servicio REST asíncrono con FastAPI (`api/`).
-  3. Interfaz web para técnicos con Streamlit (`ui/`).
+  3. Frontend web desacoplado (`ui/web/`) y aplicación de escritorio Tkinter (`ui/desktop_app.py`) para técnicos.
   4. Suite automatizada con pytest AAA y cobertura $\ge 85\%$ (`tests/`).
 
 ### Q2: Estrategia de carga de pesos y conectividad de red en runtime

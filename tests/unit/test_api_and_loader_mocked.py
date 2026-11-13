@@ -1,4 +1,4 @@
-"""Pruebas unitarias con mocks para cargador del modelo, manejo de errores en API y cliente Streamlit."""
+"""Pruebas unitarias con mocks para cargador del modelo, manejo de errores en API y cliente de la interfaz."""
 
 from __future__ import annotations
 
@@ -236,7 +236,7 @@ def test_api_predict_handles_generic_app_error_with_400(valid_jpeg_bytes: bytes)
 
 @pytest.mark.unit
 def test_ui_api_client_handles_connection_and_timeout_errors(valid_jpeg_bytes: bytes) -> None:
-    """Verifica que el cliente HTTP de Streamlit maneje caídas de conexión y timeouts."""
+    """Verifica que el cliente HTTP de la interfaz maneje caídas de conexión y timeouts."""
     with patch("ui.api_client.requests.get", side_effect=requests.ConnectionError()):
         health_res = fetch_api_health(base_url="http://127.0.0.1:9999")
     assert health_res.success is False
@@ -268,7 +268,7 @@ def test_ui_api_client_handles_connection_and_timeout_errors(valid_jpeg_bytes: b
 
 @pytest.mark.unit
 def test_ui_api_client_handles_degraded_and_error_responses(valid_jpeg_bytes: bytes) -> None:
-    """Verifica el manejo de respuestas HTTP no exitosas en el cliente de Streamlit."""
+    """Verifica el manejo de respuestas HTTP no exitosas en el cliente de la interfaz."""
     mock_degraded = MagicMock()
     mock_degraded.status_code = 200
     mock_degraded.json.return_value = {
@@ -293,7 +293,7 @@ def test_ui_api_client_handles_degraded_and_error_responses(valid_jpeg_bytes: by
 
 @pytest.mark.unit
 def test_ui_api_client_success_parsing(valid_jpeg_bytes: bytes) -> None:
-    """Verifica que el cliente HTTP de Streamlit procese respuestas exitosas de /health y /predict."""
+    """Verifica que el cliente HTTP de la interfaz procese respuestas exitosas de /health y /predict."""
     mock_get_resp = MagicMock()
     mock_get_resp.status_code = 200
     mock_get_resp.json.return_value = {"status": "ok", "model_available": True, "num_classes": 38}

@@ -22,7 +22,8 @@
 │   └── schemas.py          # Contratos Pydantic de entrada y salida     │
 │                                                                        │
 │   ui/                                                                  │
-│   ├── app.py              # Frontend Streamlit interactivo             │
+│   ├── desktop_app.py      # Aplicación de escritorio Tkinter            │
+│   ├── web/                # Frontend web HTML/CSS/JS (HU-06)           │
 │   └── api_client.py       # Cliente HTTP desacoplado hacia la API      │
 │                                                                        │
 │   tests/                                                               │
@@ -38,7 +39,7 @@
 - **Lenguaje y Entorno:** Python 3.13 administrado exclusivamente con `uv`.
 - **Framework de Inferencia:** PyTorch 2.6.0 (CPU) + SafeTensors.
 - **Servicio Web:** FastAPI 0.115+ / Uvicorn / Pydantic v2.
-- **Interfaz de Usuario:** Streamlit 1.42+.
+- **Interfaz de Usuario:** Tkinter (incluido en la biblioteca estándar de Python) y frontend web HTML5/CSS3/JavaScript Vanilla.
 - **Calidad y Testing:** Pytest 8.3+, Pytest-Cov, Ruff 0.9+.
 - **Gobernanza y SDD:** GitHub Spec Kit 1.2.2 con integración Gemini.
 

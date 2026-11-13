@@ -67,16 +67,16 @@
 - [ ] **TSK-05-03:** Habilitar documentación OpenAPI interactiva en `/docs` con esquemas y respuestas tipadas (AC5.3).
 
 ### HU-06: Interfaz Gráfica para Técnicos de Campo (3 SP · John Restrepo)
-- [ ] **TSK-06-01:** Construir aplicación Streamlit en `ui/app.py` con cargador interactivo de archivos JPG, JPEG y PNG (AC6.1).
+- [ ] **TSK-06-01:** Construir frontend web desacoplado en `ui/web/` y aplicación de escritorio Tkinter en `ui/desktop_app.py`, con carga interactiva de archivos JPG, JPEG y PNG (AC6.1).
 - [ ] **TSK-06-02:** Visualizar barra porcentual de confianza y gráfico Top-3, desplegando alerta si la certeza es menor a $0.60$ (AC6.2).
-- [ ] **TSK-06-03:** Integrar cliente HTTP desacoplado (`ui/api_client.py`) con manejo resiliente de errores sin colapso de la sesión web (AC6.3).
+- [ ] **TSK-06-03:** Integrar clientes HTTP desacoplados (`ui/api_client.py` y `ui/web/app.js`) con manejo resiliente de errores sin colapso de la interfaz (AC6.3).
 
 ### HU-07: Suite de Pruebas Automatizadas (3 SP · Santiago Correa)
 - [ ] **TSK-07-01:** Construir suite unitaria (`tests/unit/`) aislada con mocks y tiempo de corrida inferior a 10 segundos (AC7.1).
 - [ ] **TSK-07-02:** Construir suite de integración (`tests/integration/`) con TestClient de FastAPI validando el flujo E2E real (AC7.2).
 - [ ] **TSK-07-03:** Configurar medición de cobertura `pytest --cov` garantizando $\ge 85\%$ sobre `src/` y `api/` (AC7.3).
 
-### HU-08: Contenerización y Empaquetado Wheel (2 SP · José Silva — Diferido a M4)
-- [ ] **TSK-08-01:** Generar artefactos `.whl` y `.tar.gz` en `dist/` usando `uv build` (AC8.1).
-- [ ] **TSK-08-02:** Construir imagen Docker multi-etapa para CPU y validar respuesta HTTP 200 en `GET /health` (AC8.2).
-- [ ] **TSK-08-03:** Orquestar servicios de API y Streamlit mediante `docker-compose.yml` en red interna compartida (AC8.3).
+### HU-08: Contenerización y Empaquetado Wheel (2 SP · José Silva — Módulo 4, implementación local)
+- [x] **TSK-08-01:** Generar artefactos `.whl` y `.tar.gz` en `dist/` usando `uv build` (AC8.1).
+- [x] **TSK-08-02:** Construir imagen Docker multi-etapa para CPU y validar respuesta HTTP 200 en `GET /health` (AC8.2).
+- [x] **TSK-08-03:** Orquestar el servicio de API mediante `docker-compose.yml` y validar la app de escritorio y el frontend web contra la API publicada (AC8.3).

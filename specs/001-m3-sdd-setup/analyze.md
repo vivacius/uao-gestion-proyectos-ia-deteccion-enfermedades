@@ -22,9 +22,9 @@
 | **HU-03** | AC3.1, AC3.2, AC3.3 | TSK-03-01, TSK-03-02, TSK-03-03 | Jhonatan Tapia | 3 | **100% Alineado** (SafeTensors, CPU determinista, $< 300$\,ms). |
 | **HU-04** | AC4.1, AC4.2, AC4.3, AC4.4 | TSK-04-01 a TSK-04-04 | John Restrepo | 2 | **100% Alineado** (Softmax, 38 clases ES, filtro $\tau=0.60$, descargo). |
 | **HU-05** | AC5.1, AC5.2, AC5.3 | TSK-05-01, TSK-05-02, TSK-05-03 | Jhonatan Tapia | 3 | **100% Alineado** (FastAPI, $p95 < 450$\,ms, OpenAPI docs). |
-| **HU-06** | AC6.1, AC6.2, AC6.3 | TSK-06-01, TSK-06-02, TSK-06-03 | John Restrepo | 3 | **100% Alineado** (Streamlit, Top-3, alerta baja certeza). |
+| **HU-06** | AC6.1, AC6.2, AC6.3 | TSK-06-01, TSK-06-02, TSK-06-03 | John Restrepo | 3 | **100% Alineado** (frontend web + Tkinter, Top-3, alerta baja certeza). |
 | **HU-07** | AC7.1, AC7.2, AC7.3 | TSK-07-01, TSK-07-02, TSK-07-03 | Santiago Correa | 3 | **100% Alineado** (Unitarias $< 10$\,s, integración, $\ge 85\%$ cov). |
-| **HU-08** | AC8.1, AC8.2, AC8.3 | TSK-08-01, TSK-08-02, TSK-08-03 | José Silva | 2 | **100% Alineado** (Docker CPU, Wheel; diferido a M4). |
+| **HU-08** | AC8.1, AC8.2, AC8.3 | TSK-08-01, TSK-08-02, TSK-08-03 | José Silva | 2 | **100% Alineado** (Docker CPU y Wheel; implementación local en M4, PR pendiente). |
 
 **Métricas de Consistencia:**
 - Historias de Usuario rastreadas: 8 / 8 (100%).
@@ -40,7 +40,7 @@
    - *Hallazgo:* En la plantilla inicial de tareas se podría intentar implementar la contenerización Docker y el paquete Wheel de inmediato.
    - *Resolución:* En `clarify.md` y `plan.md` se delimita explícitamente que la HU-08 corresponde a M4. No se bloquea el desarrollo de M3 y se mantiene la trazabilidad.
 2. **Dependencias entre Componentes:**
-   - *Flujo detectado:* Ingestión (`preprocessing.py`) ➔ Carga/Inferencia (`inference.py`) ➔ Postproceso (`postprocessing.py`) ➔ API (`api/main.py`) ➔ UI (`ui/app.py`).
+   - *Flujo detectado:* Ingestión (`preprocessing.py`) ➔ Carga/Inferencia (`inference.py`) ➔ Postproceso (`postprocessing.py`) ➔ API (`api/main.py`) ➔ Interfaces de usuario (`ui/web/` y `ui/desktop_app.py`).
    - *Resolución:* Las tareas técnicas en `tasks.md` están ordenadas siguiendo este grafo acíclico dirigido (DAG), permitiendo además la prueba desacoplada de cada módulo con mocks (HU-07).
 3. **Manejo de Ramas en Spec Kit:**
    - *Hallazgo:* Los agentes automáticos podrían invocar scripts que creen ramas sin supervisión de Gitflow.

@@ -28,7 +28,7 @@ Este checklist valida la completitud, claridad, testeabilidad y consistencia de 
 - [x] **Inferencia CPU Determinista:** Uso estricto de `safetensors.torch` para carga local, sin llamadas de red en runtime y evaluación bajo `torch.no_grad()`.
 - [x] **Postprocesamiento y Negocio:** Vector Softmax sumando $1.000 \pm 0.001$, 38 clases en español, filtro de incertidumbre con umbral $\tau = 0.60$ y leyenda de descargo agronómico obligatorio (no prescriptivo).
 - [x] **Servicio API:** FastAPI asíncrono con `GET /health` (200), `POST /predict` y `GET /docs` interactivo.
-- [x] **Frontend:** Streamlit para carga por drag-and-drop (JPG, JPEG, PNG), gráfico Top-3 y alerta de baja certeza.
+- [x] **Frontend:** frontend web desacoplado y aplicación de escritorio Tkinter con carga de archivos (JPG, JPEG, PNG), gráfico Top-3 y alerta de baja certeza.
 
 ---
 

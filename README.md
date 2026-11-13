@@ -16,7 +16,7 @@
 
 Aplicación modular de Inteligencia Artificial para la **clasificación asistida de posibles enfermedades foliares en cultivos agrícolas** a partir de fotografías de hojas. Desarrollada para la asignatura **Gestión de Proyectos en IA y Ciencia de Datos (UAO)** bajo arquitectura desacoplada **Model-as-a-Service (MaaS)** con **FastAPI**, gestión reproducible de dependencias con **`uv`** (Python 3.13) y ejecución íntegra en **CPU** mediante **PyTorch**, **SafeTensors** y **Hugging Face Transformers**.
 
-> **Decisión arquitectónica M3 (D-01):** Por decisión confirmada del equipo, la interfaz gráfica para la entrega del Módulo 3 **NO utiliza Streamlit**; el frontend web independiente consume la API FastAPI exclusivamente vía HTTP sin cargar pesos del modelo.
+> **Decisión arquitectónica M3 (D-01):** Las interfaces gráficas del proyecto son la **aplicación de escritorio Tkinter** (`ui/desktop_app.py`) y el **frontend web desacoplado** (`ui/web/`); ambas consumen la API FastAPI exclusivamente vía HTTP y no cargan pesos del modelo.
 
 ---
 
@@ -56,9 +56,14 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 ├── api/                             # Capa de servicio REST (Model-as-a-Service con FastAPI)
 │   ├── schemas.py                   # Modelos de datos y validación con Pydantic v2
 │   └── main.py                      # Endpoints GET /health, GET /model-info y POST /predict
-├── ui/                              # Capa de presentación (Escritorio Tkinter operativo M3 y transición web)
+├── ui/                              # Capa de presentación (app Tkinter + frontend web)
 │   ├── api_client.py                # Cliente HTTP desacoplado que consume la API REST (sin duplicar el modelo)
-│   └── desktop_app.py               # Interfaz gráfica nativa de escritorio en español (Tkinter — operativa M3)
+│   ├── desktop_app.py               # Interfaz gráfica nativa de escritorio en español (Tkinter — operativa M3)
+│   └── web/                         # Frontend desacoplado HTML5/CSS3/JS Vanilla (HU-06)
+│       ├── index.html               # Estructura semántica y captura de imágenes
+│       ├── styles.css               # Diseño responsive y alertas visuales
+│       ├── app.js                   # Cliente fetch contra /health y /predict
+│       └── preview_server.py        # Servidor local de previsualización con mocks
 ├── docs/                            # Documentación técnica, diagramas Archify y guías de reproducción
 │   ├── architecture/                # Diagramas C4/componentes (.html, .svg, .json)
 │   └── getting-started.md           # Guía de arranque reproducible en Windows con uv y Spec Kit
@@ -76,10 +81,10 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 > Consulta el diagrama visual de arquitectura en [`docs/architecture/system-architecture.svg`](docs/architecture/system-architecture.svg) (o la vista interactiva [`docs/architecture/system-architecture.html`](docs/architecture/system-architecture.html)).
 
 ### Flujo de comunicación
-1. El usuario carga una fotografía foliar en la **interfaz de escritorio en Tkinter (`ui/desktop_app.py`)** (o en la nueva interfaz web independiente sin Streamlit en curso bajo HU-06), que se comunica vía HTTP con el backend.
-2. El cliente (`ui/api_client.py`) envía la imagen mediante `POST /predict` (`multipart/form-data`) al backend **FastAPI** (`api/main.py`), **sin cargar pesos ni importar PyTorch/Transformers en la capa de presentación**.
+1. El usuario carga una fotografía foliar desde la **aplicación de escritorio Tkinter (`ui/desktop_app.py`)** o desde el **frontend web desacoplado (`ui/web/`)**; ambas interfaces se comunican vía HTTP con el backend.
+2. El cliente HTTP (`ui/api_client.py` en escritorio o `ui/web/app.js` en web) envía la imagen mediante `POST /predict` (`multipart/form-data`) al backend **FastAPI** (`api/main.py`), **sin cargar pesos ni importar PyTorch/Transformers en la capa de presentación**.
 3. **FastAPI** delega en `src/inference.py`, que valida la imagen (`src/preprocessing.py`), aplica las transformaciones exactas de `preprocessor_config.json`, ejecuta el pase hacia adelante (`forward`) sobre **CPU** con `torch.no_grad()` y formatea el Top-3 (`src/postprocessing.py`).
-4. La respuesta JSON estructurada regresa al frontend, mostrando la predicción, probabilidades Top-3, advertencia por baja confianza ($\tau = 0.60$) y descargo agronómico.
+4. La respuesta JSON estructurada regresa a la interfaz de escritorio o web, mostrando la predicción, probabilidades Top-3, advertencia por baja confianza ($\tau = 0.60$) y descargo agronómico.
 
 ---
 
@@ -182,13 +187,19 @@ uv run uvicorn api.main:app --host 127.0.0.1 --port 8000
 ```
 La API quedará disponible en `http://127.0.0.1:8000` (Swagger UI en `http://127.0.0.1:8000/docs`).
 
-### Paso 5: Iniciar la Interfaz Gráfica Operativa (Tkinter)
+### Paso 5: Iniciar las interfaces de usuario (Tkinter y web)
 En una **segunda ventana de PowerShell** (manteniendo la API FastAPI activa), inicie la interfaz gráfica de escritorio en Tkinter:
 ```powershell
 uv run python ui/desktop_app.py
 ```
 
-> **Nota M3 (D-01):** La interfaz Streamlit fue retirada de la entrega M3. Como interfaz operativa inmediata se dispone de la aplicación de escritorio **Tkinter (`ui/desktop_app.py`)**, mientras la interfaz web desacoplada en HTML/CSS/JS avanza bajo **HU-06 (Issue #9)**. Ambas consumen la API FastAPI exclusivamente vía HTTP.
+Para el frontend web desacoplado, inicie el servidor de previsualización local:
+```powershell
+uv run python ui/web/preview_server.py
+```
+El frontend quedará disponible en `http://127.0.0.1:3000`. El servidor de previsualización incluye respuestas simuladas para probar la interfaz sin cargar el modelo; para usar la API real, configure la URL `http://127.0.0.1:8000` desde el panel de ajustes de la interfaz web.
+
+> **Nota M3 (D-01):** Las interfaces operativas son la **aplicación de escritorio Tkinter (`ui/desktop_app.py`)** y el **frontend web desacoplado (`ui/web/`)**. Ambas consumen la API FastAPI exclusivamente vía HTTP.
 
 ---
 
@@ -300,9 +311,26 @@ Recibe un archivo de imagen (`file`, formatos `JPG`, `JPEG` o `PNG`, hasta `10 M
 
 ---
 
-## 🐳 8. Contenerización Docker y Empaquetado Wheel (Diferido a Módulo 4 — HU-08)
+## 🐳 8. Contenerización Docker y Empaquetado Wheel (HU-08 — Módulo 4)
 
-> **Nota de alcance (M3 vs. M4):** De acuerdo con la planificación académica y `AGENTS.md`, la historia **HU-08 (#11)** (*Wheel `uv build`, imagen Docker multi-etapa y `docker-compose.yml`*) queda **expresamente diferida para el Módulo 4**. Los archivos `Dockerfile` y `docker-compose.yml` presentes en el repositorio serán actualizados y validados en M4 una vez consolidado el nuevo frontend sin Streamlit.
+La HU-08 se implementa localmente sobre la base actual de `develop`; el Pull Request se abrirá cuando el equipo lo autorice.
+
+### 8.1 Empaquetado Wheel
+
+```powershell
+uv build
+```
+
+Genera `dist/plant_disease_classifier-1.0.0-py3-none-any.whl` y el sdist correspondiente. El Wheel incluye los paquetes `src` y `api`, y se validó su instalación en un entorno limpio.
+
+### 8.2 API en Docker
+
+```powershell
+docker compose up -d --build
+Invoke-RestMethod http://127.0.0.1:8000/health
+```
+
+El `docker-compose.yml` levanta únicamente el servicio `api` en `http://127.0.0.1:8000`; la aplicación Tkinter y el frontend web se ejecutan en el host y consumen esa API. No se containeriza la GUI de escritorio porque Tkinter requiere un entorno gráfico nativo.
 
 ---
 
