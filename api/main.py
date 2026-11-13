@@ -10,7 +10,7 @@ from fastapi import FastAPI, File, Request, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from api.schemas import ErrorResponse, HealthResponse, PredictionResponse
+from api.schemas import ErrorResponse, HealthResponse, ModelInfoResponse, PredictionResponse
 from src.config import DEFAULT_TOP_K, DEVICE
 from src.exceptions import (
     ImageValidationError,
@@ -143,6 +143,35 @@ def health_check() -> HealthResponse:
             num_classes=0,
             model_path=None,
             detail=str(exc),
+        )
+
+
+@app.get(
+    "/model-info",
+    response_model=ModelInfoResponse,
+    summary="Consultar metadatos e información técnica del modelo",
+    tags=["Información del Modelo"],
+)
+def model_info() -> ModelInfoResponse:
+    """Retorna metadatos técnicos y estado de disponibilidad del modelo DINOv2-small en CPU."""
+    try:
+        bundle = get_model_bundle()
+        return ModelInfoResponse(
+            model_name="rodynaemad/plant-disease-dinov2-small",
+            architecture=bundle.architecture,
+            device=str(bundle.device),
+            num_classes=len(bundle.id2label),
+            model_available=True,
+            model_path=str(bundle.model_dir),
+        )
+    except ModelLoadError:
+        return ModelInfoResponse(
+            model_name="rodynaemad/plant-disease-dinov2-small",
+            architecture=None,
+            device=DEVICE,
+            num_classes=0,
+            model_available=False,
+            model_path=None,
         )
 
 

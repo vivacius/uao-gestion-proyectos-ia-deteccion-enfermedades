@@ -6,11 +6,11 @@
 ![Python 3.13](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)
 ![uv](https://img.shields.io/badge/uv-package%20manager-DE5FE9?logo=uv&logoColor=white)
 ![Ruff](https://img.shields.io/badge/code%20style-ruff-D7FF64?logo=ruff&logoColor=black)
-![pytest](https://img.shields.io/badge/pytest-145%20unit%20%7C%206%20integration-0A9EDC?logo=pytest&logoColor=white)
+![pytest](https://img.shields.io/badge/pytest-158%20unit%20%7C%206%20integration-0A9EDC?logo=pytest&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend%20CPU-009688?logo=fastapi&logoColor=white)
 ![License](https://img.shields.io/badge/Model%20License-CC%20BY--SA%204.0-lightgrey)
 
-> **Estado de CI (T-04):** El workflow de GitHub Actions (`.github/workflows/ci.yml`) se encuentra en revisión en PR hacia `develop`; no se publica badge de CI en verde hasta completar el formateo coordinado en `develop` y su ejecución exitosa.
+> **Estado de CI (T-04):** El workflow de GitHub Actions (`.github/workflows/ci.yml`) ya se encuentra integrado en `develop` (PR #19); aún no se publica badge de CI en verde porque `ruff format --check .` permanece pendiente de formateo coordinado sobre 5 archivos en `develop`.
 
 ---
 
@@ -55,8 +55,10 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 │   └── inference.py                 # Orquestador del flujo de inferencia y medición de latencia (ms)
 ├── api/                             # Capa de servicio REST (Model-as-a-Service con FastAPI)
 │   ├── schemas.py                   # Modelos de datos y validación con Pydantic v2
-│   └── main.py                      # Endpoints GET /health y POST /predict y manejadores de errores
-├── ui/                              # Capa de presentación web (en migración a frontend sin Streamlit - HU-06)
+│   └── main.py                      # Endpoints GET /health, GET /model-info y POST /predict
+├── ui/                              # Capa de presentación (Escritorio Tkinter operativo M3 y transición web)
+│   ├── api_client.py                # Cliente HTTP desacoplado que consume la API REST (sin duplicar el modelo)
+│   └── desktop_app.py               # Interfaz gráfica nativa de escritorio en español (Tkinter — operativa M3)
 ├── docs/                            # Documentación técnica, diagramas Archify y guías de reproducción
 │   ├── architecture/                # Diagramas C4/componentes (.html, .svg, .json)
 │   └── getting-started.md           # Guía de arranque reproducible en Windows con uv y Spec Kit
@@ -74,8 +76,8 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 > Consulta el diagrama visual de arquitectura en [`docs/architecture/system-architecture.svg`](docs/architecture/system-architecture.svg) (o la vista interactiva [`docs/architecture/system-architecture.html`](docs/architecture/system-architecture.html)).
 
 ### Flujo de comunicación
-1. El usuario carga una fotografía foliar en la **interfaz web independiente (sin Streamlit)**, que se comunica vía HTTP con el backend.
-2. El frontend envía la imagen mediante `POST /predict` (`multipart/form-data`) al backend **FastAPI** (`api/main.py`), **sin cargar pesos ni importar PyTorch/Transformers en la capa de presentación**.
+1. El usuario carga una fotografía foliar en la **interfaz de escritorio en Tkinter (`ui/desktop_app.py`)** (o en la nueva interfaz web independiente sin Streamlit en curso bajo HU-06), que se comunica vía HTTP con el backend.
+2. El cliente (`ui/api_client.py`) envía la imagen mediante `POST /predict` (`multipart/form-data`) al backend **FastAPI** (`api/main.py`), **sin cargar pesos ni importar PyTorch/Transformers en la capa de presentación**.
 3. **FastAPI** delega en `src/inference.py`, que valida la imagen (`src/preprocessing.py`), aplica las transformaciones exactas de `preprocessor_config.json`, ejecuta el pase hacia adelante (`forward`) sobre **CPU** con `torch.no_grad()` y formatea el Top-3 (`src/postprocessing.py`).
 4. La respuesta JSON estructurada regresa al frontend, mostrando la predicción, probabilidades Top-3, advertencia por baja confianza ($\tau = 0.60$) y descargo agronómico.
 
@@ -180,8 +182,13 @@ uv run uvicorn api.main:app --host 127.0.0.1 --port 8000
 ```
 La API quedará disponible en `http://127.0.0.1:8000` (Swagger UI en `http://127.0.0.1:8000/docs`).
 
-### Paso 5: Interfaz Web para Técnicos de Campo (HU-06)
-> **Nota M3 (D-01):** La interfaz Streamlit fue retirada de la entrega M3. La nueva interfaz web desacoplada (sin Streamlit) consume la API FastAPI por HTTP y está en desarrollo bajo **HU-06 (Issue #9)**; las instrucciones de arranque definitivas se completarán al integrarse dicho PR.
+### Paso 5: Iniciar la Interfaz Gráfica Operativa (Tkinter)
+En una **segunda ventana de PowerShell** (manteniendo la API FastAPI activa), inicie la interfaz gráfica de escritorio en Tkinter:
+```powershell
+uv run python ui/desktop_app.py
+```
+
+> **Nota M3 (D-01):** La interfaz Streamlit fue retirada de la entrega M3. Como interfaz operativa inmediata se dispone de la aplicación de escritorio **Tkinter (`ui/desktop_app.py`)**, mientras la interfaz web desacoplada en HTML/CSS/JS avanza bajo **HU-06 (Issue #9)**. Ambas consumen la API FastAPI exclusivamente vía HTTP.
 
 ---
 
@@ -205,6 +212,21 @@ Verifica el estado del servicio y si el modelo local se cargó correctamente en 
   "num_classes": 38,
   "model_path": "/app/modelo_plantas",
   "detail": "Servicio operativo y modelo cargado correctamente en CPU."
+}
+```
+
+### Endpoint `GET /model-info`
+Retorna los metadatos técnicos del modelo DINOv2-small cargado en CPU y su ruta local de pesos (`ModelInfoResponse`).
+
+**Ejemplo de respuesta (`200 OK`):**
+```json
+{
+  "model_name": "rodynaemad/plant-disease-dinov2-small",
+  "architecture": "Dinov2ForImageClassification",
+  "device": "cpu",
+  "num_classes": 38,
+  "model_available": true,
+  "model_path": "C:/.../modelo_plantas"
 }
 ```
 
