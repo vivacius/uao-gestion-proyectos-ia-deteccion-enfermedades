@@ -205,9 +205,10 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 ├── api/                             # Capa de servicio REST (Model-as-a-Service con FastAPI)
 │   ├── schemas.py                   # Modelos de datos y validación con Pydantic v2
 │   └── main.py                      # Endpoints GET /health y POST /predict y manejadores de errores
-├── ui/                              # Capa de presentación web (Streamlit)
+├── ui/                              # Capa de presentación (Web en Streamlit y Escritorio en Tkinter)
 │   ├── api_client.py                # Cliente HTTP desacoplado que consume la API REST (sin duplicar el modelo)
-│   └── app.py                       # Interfaz gráfica en español para usuarios finales
+│   ├── app.py                       # Interfaz gráfica web en español (Streamlit)
+│   └── desktop_app.py               # Interfaz gráfica nativa de escritorio en español (Tkinter)
 ├── tests/                           # Suite de pruebas automatizadas con pytest
 │   ├── conftest.py                  # Generadores de imágenes sintéticas (JPG, PNG, RGBA, grises, corruptas, GIF)
 │   ├── unit/                        # Pruebas unitarias rápidas (etiquetas, preprocesamiento, mocks de API/UI)
@@ -325,8 +326,15 @@ uv run uvicorn api.main:app --host 127.0.0.1 --port 8000
 ```
 La API quedará disponible en `http://127.0.0.1:8000`.
 
-### Paso 4: Iniciar la Interfaz Gráfica (Streamlit)
-En una **segunda ventana de PowerShell** (manteniendo la API activa), ejecute:
+### Paso 4: Iniciar la Interfaz Gráfica (Tkinter o Streamlit)
+En una **segunda ventana de PowerShell** (manteniendo la API activa), elija cualquiera de las dos interfaces gráficas disponibles:
+
+**Opción A — Interfaz de Escritorio en Tkinter (`ui/desktop_app.py`):**
+```powershell
+uv run python ui/desktop_app.py
+```
+
+**Opción B — Interfaz Web en Streamlit (`ui/app.py`):**
 ```powershell
 uv run streamlit run ui/app.py --server.port 8501
 ```
