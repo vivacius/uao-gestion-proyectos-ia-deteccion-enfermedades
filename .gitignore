@@ -48,5 +48,12 @@ Thumbs.db
 *.sqlite3
 engram.db
 
+# Tracking local y artefactos de MLflow
+mlruns/
+mlartifacts/
+.mlflow/
+mlflow_data/
+mlflow_tracking.db
+
 # Skills de terceros en cuarentena preventiva de seguridad (SkillSpector CRITICAL)
 .agents/skills/archify/
