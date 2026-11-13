@@ -53,6 +53,7 @@ class TestWebAssetsIntegrity:
         assert "/predict" in js_content, "app.js debe consumir la ruta /predict."
         assert "/health" in js_content, "app.js debe consumir la ruta /health."
         assert "is_uncertain" in js_content, "app.js debe evaluar el flag de incertidumbre del backend."
+        assert "agroscanai.online" in js_content, "app.js debe soportar resolución de dominio en producción."
 
 
 @pytest.mark.unit
