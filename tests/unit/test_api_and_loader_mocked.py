@@ -3,16 +3,30 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
+import torch
 from fastapi.testclient import TestClient
 
 from api.main import app
 from src.config import resolve_model_dir
-from src.exceptions import InferenceError, ModelLoadError, PlantDiseaseAppError
-from src.model_loader import clear_model_cache, load_model_from_disk, verify_model_files
+from src.exceptions import (
+    ImageValidationError,
+    InferenceError,
+    ModelLoadError,
+    PlantDiseaseAppError,
+)
+from src.inference import predict_from_bytes
+from src.model_loader import (
+    ModelBundle,
+    clear_model_cache,
+    get_model_bundle,
+    load_model_from_disk,
+    verify_model_files,
+)
 from src.postprocessing import ClassificationResult, TopPredictionItem
 from ui.api_client import fetch_api_health, request_image_prediction
 
@@ -302,3 +316,171 @@ def test_ui_api_client_success_parsing(valid_jpeg_bytes: bytes) -> None:
     assert pred_res.success is True
     assert pred_res.data is not None
     assert pred_res.data["predicted_category"] == "Apple___healthy"
+
+
+@pytest.mark.unit
+def test_load_model_from_disk_success_with_mocks(tmp_path: Path) -> None:
+    """Verifica la carga local exitosa del procesador y modelo DINOv2 usando mocks sin pesos reales."""
+    # Arrange
+    (tmp_path / "config.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "preprocessor_config.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "model.safetensors").write_bytes(b"dummy-weights")
+
+    mock_processor = MagicMock()
+    mock_model = MagicMock()
+    mock_model.config = SimpleNamespace(
+        id2label={0: "Apple___healthy", 1: "Tomato___Late_blight"},
+        label2id={"Apple___healthy": 0, "Tomato___Late_blight": 1},
+        architectures=["Dinov2ForImageClassification"],
+    )
+
+    # Act
+    with (
+        patch("src.model_loader.AutoImageProcessor.from_pretrained", return_value=mock_processor) as p_proc,
+        patch(
+            "src.model_loader.AutoModelForImageClassification.from_pretrained",
+            return_value=mock_model,
+        ) as p_model,
+    ):
+        bundle = load_model_from_disk(tmp_path)
+
+    # Assert
+    p_proc.assert_called_once_with(str(tmp_path.resolve()), local_files_only=True)
+    p_model.assert_called_once_with(str(tmp_path.resolve()), local_files_only=True)
+    mock_model.to.assert_called_once_with(torch.device("cpu"))
+    mock_model.eval.assert_called_once()
+    assert bundle.architecture == "Dinov2ForImageClassification"
+    assert bundle.id2label == {0: "Apple___healthy", 1: "Tomato___Late_blight"}
+    assert bundle.label2id == {"Apple___healthy": 0, "Tomato___Late_blight": 1}
+
+
+@pytest.mark.unit
+def test_get_model_bundle_singleton_caching_and_force_reload(tmp_path: Path) -> None:
+    """Verifica el patrón singleton de get_model_bundle, force_reload y cambio de directorio."""
+    # Arrange
+    clear_model_cache()
+    dir_a = tmp_path / "a"
+    dir_b = tmp_path / "b"
+    bundle_a = MagicMock(spec=ModelBundle, model_dir=dir_a.resolve())
+    bundle_b = MagicMock(spec=ModelBundle, model_dir=dir_b.resolve())
+
+    try:
+        # Act
+        with patch("src.model_loader.load_model_from_disk", side_effect=[bundle_a, bundle_a, bundle_b]) as m:
+            first = get_model_bundle(dir_a)
+            second = get_model_bundle(dir_a)
+            reloaded = get_model_bundle(dir_a, force_reload=True)
+            switched = get_model_bundle(dir_b)
+
+        # Assert
+        assert first is bundle_a
+        assert second is bundle_a
+        assert reloaded is bundle_a
+        assert switched is bundle_b
+        assert m.call_count == 3
+    finally:
+        clear_model_cache()
+
+
+@pytest.mark.unit
+def test_predict_from_bytes_success_with_mocked_bundle(valid_jpeg_bytes: bytes) -> None:
+    """Verifica el flujo completo de predict_from_bytes aislando el modelo con un ModelBundle simulado."""
+
+    # Arrange
+    def fake_processor(*, images, return_tensors):  # noqa: ANN001, ANN202
+        assert return_tensors == "pt"
+        return {"pixel_values": torch.zeros((1, 3, 224, 224), dtype=torch.float32)}
+
+    fake_model = MagicMock()
+    fake_model.return_value = SimpleNamespace(logits=torch.tensor([[0.2, 4.5, -1.0]]))
+
+    bundle = ModelBundle(
+        model=fake_model,
+        processor=fake_processor,
+        device=torch.device("cpu"),
+        model_dir=Path("."),
+        id2label={0: "Apple___Apple_scab", 1: "Tomato___Late_blight", 2: "Tomato___healthy"},
+        label2id={"Apple___Apple_scab": 0, "Tomato___Late_blight": 1, "Tomato___healthy": 2},
+        architecture="Dinov2ForImageClassification",
+    )
+
+    # Act
+    result = predict_from_bytes(
+        image_bytes=valid_jpeg_bytes,
+        filename="hoja.jpg",
+        content_type="image/jpeg",
+        top_k=3,
+        bundle=bundle,
+    )
+
+    # Assert
+    fake_model.assert_called_once()
+    assert result.predicted_category == "Tomato___Late_blight"
+    assert result.class_id == 1
+    assert len(result.top_predictions) == 3
+    assert result.inference_time_ms >= 0.0
+
+
+@pytest.mark.unit
+def test_predict_from_bytes_wraps_unexpected_error_as_inference_error(valid_jpeg_bytes: bytes) -> None:
+    """Verifica que fallos inesperados durante el forward se envuelvan en InferenceError."""
+
+    # Arrange
+    def fake_processor(*, images, return_tensors):  # noqa: ANN001, ANN202
+        return {"pixel_values": torch.zeros((1, 3, 224, 224), dtype=torch.float32)}
+
+    fake_model = MagicMock(side_effect=RuntimeError("Fallo de tensor en CPU"))
+    bundle = ModelBundle(
+        model=fake_model,
+        processor=fake_processor,
+        device=torch.device("cpu"),
+        model_dir=Path("."),
+        id2label={0: "Apple___healthy"},
+        label2id={"Apple___healthy": 0},
+        architecture="Dinov2ForImageClassification",
+    )
+
+    # Act / Assert
+    with pytest.raises(InferenceError, match="Fallo de tensor en CPU"):
+        predict_from_bytes(image_bytes=valid_jpeg_bytes, filename="hoja.jpg", bundle=bundle)
+
+
+@pytest.mark.unit
+def test_predict_from_bytes_propagates_image_validation_error(valid_jpeg_bytes: bytes) -> None:
+    """Verifica que ImageValidationError se propague sin ser envuelta en InferenceError."""
+    # Arrange
+    bundle = MagicMock(spec=ModelBundle, processor=MagicMock(), device=torch.device("cpu"))
+
+    # Act / Assert
+    with patch("src.inference.preprocess_image", side_effect=ImageValidationError("Tensor inválido")):
+        with pytest.raises(ImageValidationError, match="Tensor inválido"):
+            predict_from_bytes(image_bytes=valid_jpeg_bytes, filename="hoja.jpg", bundle=bundle)
+
+
+@pytest.mark.unit
+def test_api_lifespan_preloads_model_and_handles_load_error_with_mocks() -> None:
+    """Verifica el arranque lifespan de FastAPI tanto en carga exitosa como degradada usando mocks."""
+    # Arrange & Act (caso exitoso)
+    fake_bundle = SimpleNamespace(
+        architecture="Dinov2ForImageClassification",
+        device=torch.device("cpu"),
+        id2label={0: "Apple___healthy"},
+        model_dir=Path("."),
+    )
+    with patch("api.main.get_model_bundle", return_value=fake_bundle) as mock_ok:
+        with TestClient(app) as client:
+            resp_ok = client.get("/health")
+
+    # Assert (caso exitoso)
+    mock_ok.assert_called()
+    assert resp_ok.status_code == 200
+    assert resp_ok.json()["status"] == "ok"
+
+    # Arrange & Act (caso degradado)
+    with patch("api.main.get_model_bundle", side_effect=ModelLoadError("Sin pesos")):
+        with TestClient(app) as client:
+            resp_deg = client.get("/health")
+
+    # Assert (caso degradado)
+    assert resp_deg.status_code == 200
+    assert resp_deg.json()["status"] == "degraded"
