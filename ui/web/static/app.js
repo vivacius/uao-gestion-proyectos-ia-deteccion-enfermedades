@@ -9,11 +9,19 @@
   'use strict';
 
   // --- Configuración y Estado Global ---
-  const DEFAULT_API_URL = window.location.origin.startsWith('http')
-    ? window.location.origin
-    : 'http://127.0.0.1:8000';
+  // Prioriza el mismo origen (window.location.origin) para despliegues unificados y uso local,
+  // permitiendo sobrescribir dinámicamente el endpoint mediante el panel de configuración (localStorage).
+  function getInitialApiUrl() {
+    const saved = localStorage.getItem('agroscan_api_url');
+    if (saved) return saved;
 
-  let currentApiUrl = localStorage.getItem('agroscan_api_url') || DEFAULT_API_URL;
+    return window.location.origin.startsWith('http')
+      ? window.location.origin
+      : 'http://127.0.0.1:8000';
+  }
+
+  const DEFAULT_API_URL = getInitialApiUrl();
+  let currentApiUrl = DEFAULT_API_URL;
   let selectedFile = null;
 
   // --- Elementos del DOM ---
