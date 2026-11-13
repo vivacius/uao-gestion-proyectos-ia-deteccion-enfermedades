@@ -54,9 +54,7 @@ def predict_from_bytes(
     except (ImageValidationError, ModelLoadError):
         raise
     except Exception as exc:
-        raise InferenceError(
-            f"Ocurrió un error interno durante la inferencia del modelo: {exc}"
-        ) from exc
+        raise InferenceError(f"Ocurrió un error interno durante la inferencia del modelo: {exc}") from exc
 
     return process_logits(
         logits=logits,

@@ -23,8 +23,16 @@ from src.exceptions import (
     EmptyImageError,
     ImageTooLargeError,
     ImageValidationError,
+    InvalidImageFormatException,
     UnsupportedImageFormatError,
 )
+
+# Contratos numéricos y de normalización ImageNet para DINOv2 (HU-02: AC2.2 y AC2.3)
+RESIZE_SHORTEST_EDGE: int = 256
+CROP_SIZE: int = 224
+EXPECTED_TENSOR_SHAPE: tuple[int, int, int, int] = (1, 3, 224, 224)
+IMAGENET_MEAN: tuple[float, float, float] = (0.485, 0.456, 0.406)
+IMAGENET_STD: tuple[float, float, float] = (0.229, 0.224, 0.225)
 
 
 def validate_file_metadata(
@@ -37,8 +45,7 @@ def validate_file_metadata(
         if ext and ext not in ALLOWED_EXTENSIONS:
             allowed_str = ", ".join(sorted(ALLOWED_EXTENSIONS))
             raise UnsupportedImageFormatError(
-                f"Extensión de archivo no permitida ('{ext}'). "
-                f"Formatos admitidos: {allowed_str}."
+                f"Extensión de archivo no permitida ('{ext}'). Formatos admitidos: {allowed_str}."
             )
 
     if content_type is not None and content_type.strip():
@@ -68,9 +75,7 @@ def validate_and_open_image(
     7. Conversión a espacio de color RGB.
     """
     if not isinstance(image_bytes, (bytes, bytearray)) or len(image_bytes) == 0:
-        raise EmptyImageError(
-            "El archivo enviado está vacío. Por favor, suba una imagen válida."
-        )
+        raise EmptyImageError("El archivo enviado está vacío. Por favor, suba una imagen válida.")
 
     if len(image_bytes) > max_size_bytes:
         size_mb = len(image_bytes) / (1024 * 1024)
@@ -106,7 +111,7 @@ def validate_and_open_image(
 
     width, height = image.size
     if width < MIN_IMAGE_DIMENSION or height < MIN_IMAGE_DIMENSION:
-        raise ImageValidationError(
+        raise InvalidImageFormatException(
             f"Las dimensiones de la imagen ({width}x{height} px) son demasiado pequeñas. "
             f"El mínimo requerido es {MIN_IMAGE_DIMENSION}x{MIN_IMAGE_DIMENSION} px."
         )
@@ -117,24 +122,101 @@ def validate_and_open_image(
     return image
 
 
+def normalize_pil_to_tensor(
+    image: Image.Image,
+    device: torch.device | str = DEVICE,
+) -> torch.Tensor:
+    """Transforma una imagen PIL al tensor normalizado ``[1, 3, 224, 224]`` (``torch.float32``).
+
+    Aplica determinísticamente el contrato numérico de DINOv2 (AC2.2 y AC2.3):
+    1. Conversión a espacio de color RGB.
+    2. Redimensionado bicúbico donde el lado más corto mide 256 px preservando relación de aspecto.
+    3. Recorte central (``center_crop``) a 224x224 px.
+    4. Reescalado al rango ``[0.0, 1.0]`` (factor ``1/255``).
+    5. Normalización por canal con media ImageNet ``[0.485, 0.456, 0.406]`` y
+       desviación estándar ``[0.229, 0.224, 0.225]``.
+    """
+    if not isinstance(image, Image.Image):
+        raise InvalidImageFormatException(
+            "Se requiere una instancia válida de PIL.Image.Image para el preprocesamiento."
+        )
+
+    if image.mode != "RGB":
+        image = image.convert("RGB")
+
+    width, height = image.size
+    if width <= 0 or height <= 0:
+        raise InvalidImageFormatException("La imagen tiene dimensiones inválidas.")
+
+    if width < height:
+        new_width = RESIZE_SHORTEST_EDGE
+        new_height = int(round(height * (RESIZE_SHORTEST_EDGE / width)))
+    else:
+        new_height = RESIZE_SHORTEST_EDGE
+        new_width = int(round(width * (RESIZE_SHORTEST_EDGE / height)))
+
+    resized = image.resize((new_width, new_height), resample=Image.Resampling.BICUBIC)
+
+    left = (new_width - CROP_SIZE) // 2
+    top = (new_height - CROP_SIZE) // 2
+    cropped = resized.crop((left, top, left + CROP_SIZE, top + CROP_SIZE))
+
+    raw_bytes = cropped.tobytes()
+    uint8_tensor = torch.frombuffer(bytearray(raw_bytes), dtype=torch.uint8)
+    chw_tensor = uint8_tensor.view(CROP_SIZE, CROP_SIZE, 3).permute(2, 0, 1).to(torch.float32)
+    rescaled = chw_tensor / 255.0
+
+    mean = torch.tensor(IMAGENET_MEAN, dtype=torch.float32).view(3, 1, 1)
+    std = torch.tensor(IMAGENET_STD, dtype=torch.float32).view(3, 1, 1)
+    normalized = (rescaled - mean) / std
+
+    target_device = torch.device(device)
+    return normalized.unsqueeze(0).to(target_device)
+
+
 def preprocess_image(
     image: Image.Image,
-    processor: Any,
+    processor: Any | None = None,
     device: torch.device | str = DEVICE,
 ) -> dict[str, torch.Tensor]:
     """Aplica las transformaciones oficiales definidas en ``preprocessor_config.json``.
 
-    Transformaciones aplicadas por ``BitImageProcessor`` del modelo:
+    Transformaciones aplicadas por ``BitImageProcessor`` del modelo (o el pipeline
+    determinista equivalente si ``processor`` es ``None``):
     - Conversión a RGB (garantizada previamente y en el procesador).
     - Redimensionado del lado más corto a 256 px (interpolación bicúbica, ``resample=3``).
     - Recorte central (``center_crop``) a 224x224 px.
     - Reescalado de píxeles con factor ``1/255`` (``0.00392156862745098``).
     - Normalización con media ``[0.485, 0.456, 0.406]`` y desviación ``[0.229, 0.224, 0.225]``.
-    - Conversión a tensor PyTorch ``pixel_values`` con forma ``(1, 3, 224, 224)``.
+    - Conversión a tensor PyTorch ``pixel_values`` con forma ``(1, 3, 224, 224)`` y ``torch.float32``.
     """
+    if not isinstance(image, Image.Image):
+        raise InvalidImageFormatException(
+            "El objeto de entrada para preprocesamiento no es una imagen PIL válida."
+        )
+
     if image.mode != "RGB":
         image = image.convert("RGB")
 
-    inputs = processor(images=image, return_tensors="pt")
     target_device = torch.device(device)
-    return {key: tensor.to(target_device) for key, tensor in inputs.items()}
+
+    if processor is None:
+        pixel_values = normalize_pil_to_tensor(image=image, device=target_device)
+        return {"pixel_values": pixel_values}
+
+    inputs = processor(images=image, return_tensors="pt")
+    output: dict[str, torch.Tensor] = {}
+    for key, tensor in inputs.items():
+        cast_tensor = tensor.to(device=target_device, dtype=torch.float32)
+        output[key] = cast_tensor
+
+    if "pixel_values" not in output:
+        raise ImageValidationError("El procesador de imágenes no generó la clave obligatoria 'pixel_values'.")
+
+    if tuple(output["pixel_values"].shape) != EXPECTED_TENSOR_SHAPE:
+        raise ImageValidationError(
+            f"Forma de tensor inválida: se esperaba {EXPECTED_TENSOR_SHAPE}, "
+            f"pero se obtuvo {tuple(output['pixel_values'].shape)}."
+        )
+
+    return output
