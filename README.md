@@ -1,171 +1,22 @@
----
-license: cc-by-sa-4.0
-library_name: transformers
-pipeline_tag: image-classification
-base_model: facebook/dinov2-small
-datasets:
-- mohanty/PlantVillage
-tags:
-- agriculture
-- plant-disease
-- computer-vision
-- dinov2
-- image-classification
-metrics:
-- accuracy
-- f1
-model-index:
-- name: plant-disease-dinov2-small
-  results:
-  - task:
-      type: image-classification
-      name: Plant disease classification (38 classes)
-    dataset:
-      name: PlantVillage (colour), leaf-level held-out split
-      type: mohanty/PlantVillage
-    metrics:
-    - type: accuracy
-      value: 0.9886
-      name: Accuracy (unseen leaves)
-    - type: f1
-      value: 0.9849
-      name: Macro F1 (unseen leaves)
----
+# 🌿 Sistema de Clasificación de Enfermedades en Plantas (DINOv2-small)
 
-# Plant Disease Classifier (DINOv2-small + linear head)
+**Universidad Autónoma de Occidente (UAO) — Maestría en Inteligencia Artificial y Ciencia de Datos**  
+*Asignatura: Gestión de Proyectos en IA y Ciencia de Datos · Grupo 2 · Periodo 2026-2*
 
-Identifies **38 crop–condition classes** (26 diseases and 12 healthy classes across 14 crops)
-from a photo of a single leaf. Built as the open disease-scanning model for
-[BloomTech](https://github.com/itsRou/bloomtech-smart-agriculture), my AI + IoT smart-agriculture
-graduation project.
+![Python 3.13](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)
+![uv](https://img.shields.io/badge/uv-package%20manager-DE5FE9?logo=uv&logoColor=white)
+![Ruff](https://img.shields.io/badge/code%20style-ruff-D7FF64?logo=ruff&logoColor=black)
+![pytest](https://img.shields.io/badge/pytest-158%20unit%20%7C%206%20integration-0A9EDC?logo=pytest&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend%20CPU-009688?logo=fastapi&logoColor=white)
+![License](https://img.shields.io/badge/Model%20License-CC%20BY--SA%204.0-lightgrey)
 
-**Try it:** [Plant Disease Scanner Space](https://huggingface.co/spaces/rodynaemad/plant-disease-scanner)
-
-| Metric (held-out test set, 10,862 photos) | Value |
-|---|---|
-| Accuracy on **leaves never seen in training** | **98.9%** |
-| Macro F1 on leaves never seen in training | **98.5%** |
-| Accuracy with a naive photo-level random split (for comparison) | 99.1% |
-
-## Why "leaves never seen in training" matters
-
-PlantVillage contains several photos of the **same physical leaf**. If photos are split
-randomly, near-duplicates of a test leaf end up in training, which inflates test accuracy.
-The dataset authors' `leaf-map.json` links 40,490 photos to 7,524 physical leaves. I split the
-data so that **every photo of a given leaf lands on only one side** (stratified, leaf-grouped
-80/20 split), and asserted that no leaf crosses the split. For this model the inflation from a
-naive split is small (99.1% vs 98.9%), but the leaf-level number is the one to trust. The
-remaining 13,815 photos have no leaf mapping and are split photo by photo.
-
-## Usage
-
-```python
-from transformers import pipeline
-
-classifier = pipeline("image-classification", model="rodynaemad/plant-disease-dinov2-small")
-print(classifier("leaf.jpg", top_k=3))
-# [{'label': 'Tomato___Late_blight', 'score': 0.999}, ...]
-```
-
-### In the browser (ONNX)
-
-`onnx/model_with_features.onnx` (88 MB, fp32) and `onnx/model_with_features_quantized.onnx`
-(24 MB, int8) take `pixel_values` (1×3×224×224, ImageNet-normalized) and return `logits` and
-the 768-d `features` used for the out-of-distribution check. The fp32 export matches PyTorch
-exactly. The int8 copy, which powers the [Space](https://huggingface.co/spaces/rodynaemad/plant-disease-scanner),
-scores **98.7% accuracy (98.1% macro F1)** on the full leaf-level test set. Example with
-[onnxruntime-web](https://onnxruntime.ai/docs/tutorials/web/) in the Space's `index.html`.
-
-## How it was trained
-
-- **Backbone:** [`facebook/dinov2-small`](https://huggingface.co/facebook/dinov2-small),
-  frozen. Features are the concatenation of the CLS token and the mean patch token (768
-  dimensions), exactly what `Dinov2ForImageClassification` feeds its classifier.
-- **Head:** multinomial logistic regression on standardized features, with the standardization
-  folded into the final linear layer. The regularization strength (C = 0.1) was chosen on a
-  leaf-grouped validation split carved out of the training set; validation accuracy was 98.4–98.6%
-  across C ∈ {0.1, 0.3, 1, 3}.
-- **Data:** all 54,305 colour images of [PlantVillage](https://huggingface.co/datasets/mohanty/PlantVillage)
-  (43,443 train / 10,862 test).
-- **Check:** the exported Transformers model reproduces the trained classifier's predictions on
-  100% of 200 sampled test images.
-
-## Per-class F1 on unseen leaves
-
-27 of 38 classes reach F1 ≥ 0.99. Weakest classes first:
-
-| Crop | Condition | F1 |
-|---|---|---|
-| Corn (maize) | Cercospora leaf spot Gray leaf spot | 0.900 |
-| Potato | healthy | 0.915 |
-| Tomato | Early blight | 0.924 |
-| Corn (maize) | Northern Leaf Blight | 0.949 |
-| Tomato | Target Spot | 0.958 |
-| Tomato | Late blight | 0.966 |
-| Tomato | Bacterial spot | 0.967 |
-| Tomato | Spider mites Two-spotted spider mite | 0.972 |
-| Potato | Late blight | 0.972 |
-| Tomato | Leaf Mold | 0.974 |
-| Tomato | Septoria leaf spot | 0.984 |
-| Tomato | healthy | 0.991 |
-| Tomato | Tomato Yellow Leaf Curl Virus | 0.991 |
-| Apple | Apple scab | 0.992 |
-| Grape | Black rot | 0.994 |
-| Grape | Esca (Black Measles) | 0.995 |
-| Corn (maize) | Common rust | 0.996 |
-| Pepper, bell | Bacterial spot | 0.997 |
-| Potato | Early blight | 0.998 |
-| Strawberry | Leaf scorch | 0.998 |
-| Corn (maize) | healthy | 0.998 |
-| Squash | Powdery mildew | 0.999 |
-| Peach | Bacterial spot | 0.999 |
-| Soybean | healthy | 1.000 |
-| Apple | Black rot | 1.000 |
-| Apple | Cedar apple rust | 1.000 |
-| Apple | healthy | 1.000 |
-| Blueberry | healthy | 1.000 |
-| Cherry (including sour) | Powdery mildew | 1.000 |
-| Cherry (including sour) | healthy | 1.000 |
-| Grape | Leaf blight (Isariopsis Leaf Spot) | 1.000 |
-| Grape | healthy | 1.000 |
-| Orange | Haunglongbing (Citrus greening) | 1.000 |
-| Peach | healthy | 1.000 |
-| Pepper, bell | healthy | 1.000 |
-| Raspberry | healthy | 1.000 |
-| Strawberry | healthy | 1.000 |
-| Tomato | Tomato mosaic virus | 1.000 |
-
-The main confusion is between the two corn leaf-blight diseases (gray leaf spot vs. northern
-leaf blight), which look alike. Potato healthy has only 152 photos in the whole dataset.
-
-## Limitations
-
-- **Lab photos only.** PlantVillage images show a single detached leaf on a plain background.
-  Accuracy on field photos with clutter, multiple leaves, shadows or different cameras will be
-  substantially lower. Do not read 98.9% as field performance.
-- **Closed set.** The classifier always picks one of its 38 classes, even for images that are
-  not leaves. The [Space](https://huggingface.co/spaces/rodynaemad/plant-disease-scanner) adds
-  an out-of-distribution check (cosine similarity to per-class training centroids, calibrated so
-  99% of real test leaves pass) that rejects solid colours, random noise and photos of people.
-- **Not a diagnosis.** Use it as a screening aid and confirm with an agronomist or extension
-  service before treating crops.
-
-## License and attribution
-
-Trained on PlantVillage (Hughes & Salathé, 2015; Mohanty, Hughes & Salathé, 2016), released
-under CC BY-SA. This model is shared under **CC BY-SA 4.0**; the DINOv2 backbone is Apache 2.0.
-
-## Author
-
-[Rodayna Emad Mohamed](https://huggingface.co/rodynaemad), Research and Teaching Assistant,
-College of Computer Science and AI, Pharos University in Alexandria ·
-[GitHub](https://github.com/itsRou)
+> **Estado de CI (T-04):** El workflow de GitHub Actions (`.github/workflows/ci.yml`) ya se encuentra integrado en `develop` (PR #19); aún no se publica badge de CI en verde porque `ruff format --check .` permanece pendiente de formateo coordinado sobre 5 archivos en `develop`.
 
 ---
 
-# 🌿 Aplicación de IA para Identificación de Enfermedades en Plantas (DINOv2-small)
+Aplicación modular de Inteligencia Artificial para la **clasificación asistida de posibles enfermedades foliares en cultivos agrícolas** a partir de fotografías de hojas. Desarrollada para la asignatura **Gestión de Proyectos en IA y Ciencia de Datos (UAO)** bajo arquitectura desacoplada **Model-as-a-Service (MaaS)** con **FastAPI**, gestión reproducible de dependencias con **`uv`** (Python 3.13) y ejecución íntegra en **CPU** mediante **PyTorch**, **SafeTensors** y **Hugging Face Transformers**.
 
-Aplicación modular de Inteligencia Artificial para la **clasificación automatizada de enfermedades foliares en cultivos agrícolas** a partir de fotografías de hojas. Desarrollada como trabajo académico para la asignatura **Gestión de Proyectos de Inteligencia Artificial (UAO)**, aplicando buenas prácticas de ingeniería de software, arquitectura desacoplada **Model-as-a-Service (MaaS)** con **FastAPI**, interfaz gráfica en **Streamlit**, gestión reproducible de dependencias con **`uv`** y ejecución íntegra en **CPU** mediante **PyTorch** y **Hugging Face Transformers**.
+> **Decisión arquitectónica M3 (D-01):** Por decisión confirmada del equipo, la interfaz gráfica para la entrega del Módulo 3 **NO utiliza Streamlit**; el frontend web independiente consume la API FastAPI exclusivamente vía HTTP sin cargar pesos del modelo.
 
 ---
 
@@ -204,28 +55,31 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 │   └── inference.py                 # Orquestador del flujo de inferencia y medición de latencia (ms)
 ├── api/                             # Capa de servicio REST (Model-as-a-Service con FastAPI)
 │   ├── schemas.py                   # Modelos de datos y validación con Pydantic v2
-│   └── main.py                      # Endpoints GET /health y POST /predict y manejadores de errores
-├── ui/                              # Capa de presentación (Web en Streamlit y Escritorio en Tkinter)
+│   └── main.py                      # Endpoints GET /health, GET /model-info y POST /predict
+├── ui/                              # Capa de presentación (Escritorio Tkinter operativo M3 y transición web)
 │   ├── api_client.py                # Cliente HTTP desacoplado que consume la API REST (sin duplicar el modelo)
-│   ├── app.py                       # Interfaz gráfica web en español (Streamlit)
-│   └── desktop_app.py               # Interfaz gráfica nativa de escritorio en español (Tkinter)
+│   └── desktop_app.py               # Interfaz gráfica nativa de escritorio en español (Tkinter — operativa M3)
+├── docs/                            # Documentación técnica, diagramas Archify y guías de reproducción
+│   ├── architecture/                # Diagramas C4/componentes (.html, .svg, .json)
+│   └── getting-started.md           # Guía de arranque reproducible en Windows con uv y Spec Kit
+├── specs/                           # Especificaciones SDD (Spec Kit) por unidad de trabajo
 ├── tests/                           # Suite de pruebas automatizadas con pytest
 │   ├── conftest.py                  # Generadores de imágenes sintéticas (JPG, PNG, RGBA, grises, corruptas, GIF)
-│   ├── unit/                        # Pruebas unitarias rápidas (etiquetas, preprocesamiento, mocks de API/UI)
+│   ├── unit/                        # Pruebas unitarias rápidas aisladas con mocks (sin pesos reales)
 │   └── integration/                 # Pruebas de integración contra el modelo DINOv2-small real en CPU
-├── Dockerfile                       # Imagen reproducible para CPU basada en Python 3.13 y uv
-├── docker-compose.yml               # Orquestación de contenedores (FastAPI + Streamlit)
+├── AGENTS.md                        # Gobernanza, matriz de responsabilidades y reglas para agentes IA
 ├── pyproject.toml                   # Definición del proyecto, dependencias y configuración de pytest/uv/ruff
 ├── uv.lock                          # Archivo de bloqueo exacto de dependencias
-├── .gitignore                       # Exclusión de entornos virtuales, cachés y artefactos temporales
-└── README.md                        # Documentación académica y ficha técnica del modelo
+└── README.md                        # Documentación principal del proyecto y ficha técnica
 ```
 
+> Consulta el diagrama visual de arquitectura en [`docs/architecture/system-architecture.svg`](docs/architecture/system-architecture.svg) (o la vista interactiva [`docs/architecture/system-architecture.html`](docs/architecture/system-architecture.html)).
+
 ### Flujo de comunicación
-1. El usuario carga una fotografía en la interfaz web **Streamlit** (`ui/app.py`).
-2. **Streamlit** envía la imagen mediante una petición `POST /predict` (`multipart/form-data`) al backend **FastAPI** (`api/main.py`) usando `ui/api_client.py`, **evitando cargar una segunda copia del modelo en memoria**.
+1. El usuario carga una fotografía foliar en la **interfaz de escritorio en Tkinter (`ui/desktop_app.py`)** (o en la nueva interfaz web independiente sin Streamlit en curso bajo HU-06), que se comunica vía HTTP con el backend.
+2. El cliente (`ui/api_client.py`) envía la imagen mediante `POST /predict` (`multipart/form-data`) al backend **FastAPI** (`api/main.py`), **sin cargar pesos ni importar PyTorch/Transformers en la capa de presentación**.
 3. **FastAPI** delega en `src/inference.py`, que valida la imagen (`src/preprocessing.py`), aplica las transformaciones exactas de `preprocessor_config.json`, ejecuta el pase hacia adelante (`forward`) sobre **CPU** con `torch.no_grad()` y formatea el Top-3 (`src/postprocessing.py`).
-4. La respuesta JSON estructurada regresa a **Streamlit**, donde se presentan indicadores visuales, barras de progreso y un gráfico comparativo de las tres categorías más probables.
+4. La respuesta JSON estructurada regresa al frontend, mostrando la predicción, probabilidades Top-3, advertencia por baja confianza ($\tau = 0.60$) y descargo agronómico.
 
 ---
 
@@ -299,13 +153,13 @@ El modelo clasifica fotografías foliares en **38 categorías** distribuidas en 
 
 - **Sistema Operativo:** Windows 10/11, Linux o macOS (64 bits).
 - **Hardware:** Procesador estándar **CPU** (no requiere GPU ni librerías CUDA). Mínimo recomendado: 4 GB de RAM.
-- **Python:** **Python 3.13** (verificado y probado con `CPython 3.13.7`; compatible también con Python 3.12).
-- **Gestor de paquetes y entornos:** [`uv`](https://docs.astral.sh/uv/).
-- **Librerías principales:** `torch` (compilación CPU), `transformers`, `safetensors`, `pillow`, `fastapi`, `uvicorn`, `streamlit`, `requests`, `pytest`, `ruff`.
+- **Python:** **Python 3.13** (verificado en `CPython 3.13.18`).
+- **Gestor de paquetes y entornos:** [`uv`](https://docs.astral.sh/uv/) (prohibido usar `pip` o `requirements.txt`).
+- **Librerías principales:** `torch` (CPU), `transformers`, `safetensors`, `pillow`, `fastapi`, `uvicorn`, `pydantic`, `pytest`, `ruff`.
 
 ---
 
-## 🚀 6. Instalación y Ejecución Local en Windows (con `uv`)
+## 🚀 6. Instalación y Ejecución Local (con `uv`)
 
 ### Paso 1: Ubicarse en el directorio del proyecto
 Abra una terminal **PowerShell** en la carpeta raíz del repositorio:
@@ -313,32 +167,28 @@ Abra una terminal **PowerShell** en la carpeta raíz del repositorio:
 cd uao-gestion-proyectos-ia-deteccion-enfermedades
 ```
 
-### Paso 2: Sincronizar el entorno virtual y dependencias con `uv`
+### Paso 2: Sincronizar el entorno virtual determinista con `uv`
 ```powershell
-uv sync --python 3.13
+uv sync --frozen
 ```
-Este comando creará automáticamente el entorno `.venv` e instalará todas las dependencias exactas definidas en `uv.lock` (incluyendo PyTorch para CPU).
+Este comando crea `.venv` e instala exactamente las dependencias fijadas en `uv.lock` (incluyendo PyTorch CPU).
 
-### Paso 3: Iniciar la API REST (FastAPI)
-En una primera ventana de PowerShell, ejecute:
+### Paso 3: Verificar pesos locales del modelo
+Asegúrese de contar localmente con `config.json`, `preprocessor_config.json` y `model.safetensors` (~88 MB, Git LFS) en la raíz del proyecto o en `modelo_plantas/` (o definiendo la variable de entorno `MODEL_DIR`). La aplicación carga el modelo con `local_files_only=True` sin conexión a internet.
+
+### Paso 4: Iniciar la API REST (FastAPI)
 ```powershell
 uv run uvicorn api.main:app --host 127.0.0.1 --port 8000
 ```
-La API quedará disponible en `http://127.0.0.1:8000`.
+La API quedará disponible en `http://127.0.0.1:8000` (Swagger UI en `http://127.0.0.1:8000/docs`).
 
-### Paso 4: Iniciar la Interfaz Gráfica (Tkinter o Streamlit)
-En una **segunda ventana de PowerShell** (manteniendo la API activa), elija cualquiera de las dos interfaces gráficas disponibles:
-
-**Opción A — Interfaz de Escritorio en Tkinter (`ui/desktop_app.py`):**
+### Paso 5: Iniciar la Interfaz Gráfica Operativa (Tkinter)
+En una **segunda ventana de PowerShell** (manteniendo la API FastAPI activa), inicie la interfaz gráfica de escritorio en Tkinter:
 ```powershell
 uv run python ui/desktop_app.py
 ```
 
-**Opción B — Interfaz Web en Streamlit (`ui/app.py`):**
-```powershell
-uv run streamlit run ui/app.py --server.port 8501
-```
-La aplicación web se abrirá en su navegador en `http://localhost:8501`.
+> **Nota M3 (D-01):** La interfaz Streamlit fue retirada de la entrega M3. Como interfaz operativa inmediata se dispone de la aplicación de escritorio **Tkinter (`ui/desktop_app.py`)**, mientras la interfaz web desacoplada en HTML/CSS/JS avanza bajo **HU-06 (Issue #9)**. Ambas consumen la API FastAPI exclusivamente vía HTTP.
 
 ---
 
@@ -362,6 +212,21 @@ Verifica el estado del servicio y si el modelo local se cargó correctamente en 
   "num_classes": 38,
   "model_path": "/app/modelo_plantas",
   "detail": "Servicio operativo y modelo cargado correctamente en CPU."
+}
+```
+
+### Endpoint `GET /model-info`
+Retorna los metadatos técnicos del modelo DINOv2-small cargado en CPU y su ruta local de pesos (`ModelInfoResponse`).
+
+**Ejemplo de respuesta (`200 OK`):**
+```json
+{
+  "model_name": "rodynaemad/plant-disease-dinov2-small",
+  "architecture": "Dinov2ForImageClassification",
+  "device": "cpu",
+  "num_classes": 38,
+  "model_available": true,
+  "model_path": "C:/.../modelo_plantas"
 }
 ```
 
@@ -435,53 +300,28 @@ Recibe un archivo de imagen (`file`, formatos `JPG`, `JPEG` o `PNG`, hasta `10 M
 
 ---
 
-## 🐳 8. Ejecución con Docker (CPU)
+## 🐳 8. Contenerización Docker y Empaquetado Wheel (Diferido a Módulo 4 — HU-08)
 
-El proyecto incluye un `Dockerfile` optimizado para CPU (usando `python:3.13-slim`, `uv` y `uv.lock`) y un archivo `docker-compose.yml` que levanta de forma coordinada el contenedor de **FastAPI** y el contenedor de **Streamlit**.
-
-### Gestión de los pesos del modelo (`model.safetensors`)
-Los pesos del modelo (`model.safetensors`, ~88 MB) están gestionados mediante **Git LFS** (`.gitattributes`) y excluidos de commits accidentales en `.gitignore`. Dentro de Docker se disponibilizan copiando los artefactos locales en `/app/modelo_plantas/` o montándolos como volumen de solo lectura.
-
-### Opción A: Iniciar todo el sistema con Docker Compose
-```powershell
-docker compose up --build
-```
-- **API REST (FastAPI):** `http://localhost:8000` (Swagger en `http://localhost:8000/docs`)
-- **Interfaz Web (Streamlit):** `http://localhost:8501`
-
-### Opción B: Construir y ejecutar contenedores manualmente
-```powershell
-# 1. Construir la imagen Docker
-docker build -t plant-disease-app:latest .
-
-# 2. Ejecutar la API FastAPI
-docker run -d --name plant-disease-api -p 8000:8000 plant-disease-app:latest
-
-# 3. Ejecutar la interfaz Streamlit conectada a la API
-docker run -d --name plant-disease-ui -p 8501:8501 `
-  -e API_BASE_URL="http://host.docker.internal:8000" `
-  plant-disease-app:latest `
-  uv run streamlit run ui/app.py --server.address=0.0.0.0 --server.port=8501 --server.headless=true
-```
+> **Nota de alcance (M3 vs. M4):** De acuerdo con la planificación académica y `AGENTS.md`, la historia **HU-08 (#11)** (*Wheel `uv build`, imagen Docker multi-etapa y `docker-compose.yml`*) queda **expresamente diferida para el Módulo 4**. Los archivos `Dockerfile` y `docker-compose.yml` presentes en el repositorio serán actualizados y validados en M4 una vez consolidado el nuevo frontend sin Streamlit.
 
 ---
 
 ## 🧪 9. Pruebas Automatizadas (`pytest`) y Calidad (`ruff`)
 
-La suite de pruebas está dividida en **pruebas unitarias** (`tests/unit/`, que validan lógica de negocio, etiquetas, preprocesamiento y manejadores de errores con mocks) y **pruebas de integración** (`tests/integration/`, que cargan el modelo DINOv2-small real en CPU y ejecutan inferencias extremo a extremo a través de FastAPI).
+La suite de pruebas está dividida en:
+- **Pruebas unitarias (`tests/unit/`):** Ejecución rápida y aislada mediante *mocks* (sin leer `model.safetensors`).
+- **Pruebas de integración (`tests/integration/`):** Cargan el modelo DINOv2-small real en CPU y validan el flujo extremo a extremo contra FastAPI.
 
 ```powershell
-# Ejecutar toda la suite de pruebas (unitarias + integración)
-uv run pytest -v
+# Ejecutar pruebas unitarias aisladas con reporte de cobertura
+uv run pytest tests/unit -v --cov=src --cov=api --cov-report=term-missing
 
-# Ejecutar únicamente las pruebas unitarias (rápidas, con mocks)
-uv run pytest -v -m unit
+# Ejecutar pruebas de integración contra el modelo real en CPU
+uv run pytest tests/integration -v
 
-# Ejecutar únicamente las pruebas de integración con el modelo real en CPU
-uv run pytest -v -m integration
-
-# Verificar estilo de código PEP 8 con Ruff
-uv run ruff check src/ api/ ui/ tests/
+# Verificar estilo de código PEP 8 (lint y formato) con Ruff
+uv run ruff check .
+uv run ruff format --check .
 ```
 
 ---
@@ -499,6 +339,22 @@ uv run ruff check src/ api/ ui/ tests/
 - **Modelo preentrenado (`rodynaemad/plant-disease-dinov2-small`):** Creado por **Rodayna Emad Mohamed** (*College of Computer Science and AI, Pharos University in Alexandria*), distribuido bajo licencia **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**.
 - **Backbone (`facebook/dinov2-small`):** Desarrollado por Meta AI Research, distribuido bajo licencia **Apache 2.0**.
 - **Dataset base (*PlantVillage*):** Publicado por Hughes & Salathé (2015) y Mohanty, Hughes & Salathé (2016) bajo licencia **CC BY-SA**.
-- **Código de esta aplicación:** Distribuido con fines académicos bajo licencia **CC BY-SA 4.0**, manteniendo la atribución correspondiente a los autores originales del modelo y del conjunto de datos.
+- **Código de esta aplicación:** Distribuido con fines académicos bajo licencia **CC BY-SA 4.0**, manteniendo la atribución correspondiente a los autores originales del modelo y del conjunto de datos *(en revisión de separación código/modelo bajo actividad T-02)*.
 
 ---
+
+## 🤝 12. Gobernanza, Equipo y Trazabilidad
+
+| Integrante | Rol Principal | Historias Asignadas |
+| :--- | :--- | :--- |
+| **Santiago Correa Campaña** (`@vivacius`) | DevOps, Calidad y Pruebas | HU-01 (#4), HU-07 (#10) |
+| **José Isaac Silva Calderón** (`@josesilvacalderon111`) | Ingestión, Preprocesamiento y Empaquetado | HU-02 (#5), HU-08 (#11 — M4) |
+| **Jhonatan Andrés Tapia Córdoba** (`@JhonatanTC99`) | ML/Backend, API FastAPI y Code Reviewer | HU-03 (#6), HU-05 (#8) |
+| **John Restrepo Aparicio** (`@JohnRestrepo-coder`) | Postprocesamiento, Taxonomía y Frontend | HU-04 (#7), HU-06 (#9) |
+
+- **Gobernanza y Reglas de Agentes:** [`AGENTS.md`](AGENTS.md)
+- **Guía de Reproducción (Windows + `uv` + Spec Kit):** [`docs/getting-started.md`](docs/getting-started.md)
+- **Especificaciones SDD (Spec Kit):** [`specs/001-m3-sdd-setup/`](specs/001-m3-sdd-setup/)
+- **Tablero Kanban (GitHub Projects):** [GitHub Projects #1](https://github.com/users/vivacius/projects/1)
+- **Tickets de Historias (Issues):** [Issues #4 a #11](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues)
+
