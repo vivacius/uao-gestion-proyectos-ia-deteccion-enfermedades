@@ -496,9 +496,10 @@ uv run ruff check src/ api/ ui/ tests/
 
 ## 📜 11. Licencia y Atribución
 
-- **Modelo preentrenado (`rodynaemad/plant-disease-dinov2-small`):** Creado por **Rodayna Emad Mohamed** (*College of Computer Science and AI, Pharos University in Alexandria*), distribuido bajo licencia **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**.
+- **Código fuente de la aplicación:** El código original del Grupo 2 (`src/`, `api/`, frontend y `tests/`) se distribuye bajo licencia **MIT**. Consulte [`LICENSE`](LICENSE).
+- **Pesos del modelo (`rodynaemad/plant-disease-dinov2-small`, `model.safetensors`):** Creado por **Rodayna Emad Mohamed** (*College of Computer Science and AI, Pharos University in Alexandria*), distribuido bajo **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**.
 - **Backbone (`facebook/dinov2-small`):** Desarrollado por Meta AI Research, distribuido bajo licencia **Apache 2.0**.
-- **Dataset base (*PlantVillage*):** Publicado por Hughes & Salathé (2015) y Mohanty, Hughes & Salathé (2016) bajo licencia **CC BY-SA**.
-- **Código de esta aplicación:** Distribuido con fines académicos bajo licencia **CC BY-SA 4.0**, manteniendo la atribución correspondiente a los autores originales del modelo y del conjunto de datos.
+- **Dataset de entrenamiento (*PlantVillage*):** Publicado por Hughes & Salathé (2015) y Mohanty, Hughes & Salathé (2016), distribuido bajo **CC BY-SA 4.0**.
+- Los artefactos de terceros conservan sus licencias y atribuciones obligatorias; la licencia MIT no se extiende a sus pesos, arquitectura ni datos.
 
 ---
