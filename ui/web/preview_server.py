@@ -14,7 +14,7 @@ import sys
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 
-WEB_DIR = Path(__file__).resolve().parent
+WEB_DIR = Path(__file__).resolve().parent / "static"
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 3000
 
 

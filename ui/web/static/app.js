@@ -9,13 +9,12 @@
   'use strict';
 
   // --- Configuración y Estado Global ---
+  // Prioriza el mismo origen (window.location.origin) para despliegues unificados y uso local,
+  // permitiendo sobrescribir dinámicamente el endpoint mediante el panel de configuración (localStorage).
   function getInitialApiUrl() {
     const saved = localStorage.getItem('agroscan_api_url');
     if (saved) return saved;
 
-    if (window.location.hostname.includes('agroscanai.online')) {
-      return 'https://api.agroscanai.online';
-    }
     return window.location.origin.startsWith('http')
       ? window.location.origin
       : 'http://127.0.0.1:8000';

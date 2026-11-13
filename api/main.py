@@ -209,7 +209,7 @@ async def predict_endpoint(
     return PredictionResponse(**asdict(result))
 
 
-# Montar la interfaz web desacoplada en la raíz
-WEB_DIR = Path(__file__).resolve().parent.parent / "ui" / "web"
-if WEB_DIR.is_dir():
-    app.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="web_ui")
+# Montar los activos estáticos de la interfaz web desacoplada en la raíz
+WEB_STATIC_DIR = Path(__file__).resolve().parent.parent / "ui" / "web" / "static"
+if WEB_STATIC_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=str(WEB_STATIC_DIR), html=True), name="web_ui")
