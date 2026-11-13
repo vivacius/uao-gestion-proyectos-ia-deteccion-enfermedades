@@ -22,7 +22,13 @@ class ImageValidationError(PlantDiseaseAppError):
             self.status_code = status_code
 
 
-class EmptyImageError(ImageValidationError):
+class InvalidImageFormatException(ImageValidationError):
+    """Excepción contractual de HU-02 (AC2.1) ante archivos no imagen, inválidos o corruptos."""
+
+    status_code = 400
+
+
+class EmptyImageError(InvalidImageFormatException):
     """El archivo de imagen está vacío (0 bytes)."""
 
     status_code = 400
@@ -34,13 +40,13 @@ class ImageTooLargeError(ImageValidationError):
     status_code = 413
 
 
-class UnsupportedImageFormatError(ImageValidationError):
+class UnsupportedImageFormatError(InvalidImageFormatException):
     """El formato del archivo no corresponde a JPG, JPEG o PNG."""
 
     status_code = 415
 
 
-class CorruptedImageError(ImageValidationError):
+class CorruptedImageError(InvalidImageFormatException):
     """El archivo de imagen está dañado, truncado o no puede decodificarse."""
 
     status_code = 400
