@@ -1,19 +1,34 @@
+name: plant-disease-classifier
+
 services:
   api:
     build:
       context: .
       dockerfile: Dockerfile
+    image: plant-disease-classifier:1.0.0
     container_name: plant-disease-api
-    command: ["uv", "run", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
     ports:
       - "8000:8000"
     environment:
-      - MODEL_DIR=/app/modelo_plantas
-      - MAX_IMAGE_SIZE_MB=10
+      MODEL_DIR: /app/modelo_plantas
+      MAX_IMAGE_SIZE_MB: "10"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
-      interval: 15s
+      interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 15s
+      start_period: 60s
+    restart: unless-stopped
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: plant-disease-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./ui/web/static:/usr/share/nginx/html:ro
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      api:
+        condition: service_healthy
     restart: unless-stopped

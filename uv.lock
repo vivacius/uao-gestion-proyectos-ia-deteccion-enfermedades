@@ -1394,7 +1394,7 @@ wheels = [
 [[package]]
 name = "plant-disease-classifier"
 version = "1.0.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
     { name = "httpx" },

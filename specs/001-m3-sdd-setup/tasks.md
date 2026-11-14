@@ -76,7 +76,9 @@
 - [ ] **TSK-07-02:** Construir suite de integración (`tests/integration/`) con TestClient de FastAPI validando el flujo E2E real (AC7.2).
 - [ ] **TSK-07-03:** Configurar medición de cobertura `pytest --cov` garantizando $\ge 85\%$ sobre `src/` y `api/` (AC7.3).
 
-### HU-08: Contenerización y Empaquetado Wheel (2 SP · José Silva — Diferido a M4)
-- [ ] **TSK-08-01:** Generar artefactos `.whl` y `.tar.gz` en `dist/` usando `uv build` (AC8.1).
-- [ ] **TSK-08-02:** Construir imagen Docker multi-etapa para CPU y validar respuesta HTTP 200 en `GET /health` (AC8.2).
-- [ ] **TSK-08-03:** Orquestar servicios de API y Streamlit mediante `docker-compose.yml` en red interna compartida (AC8.3).
+### HU-08: Contenerización y Empaquetado Wheel (2 SP · José Silva — Adelantado a M3 por instrucción del responsable)
+- [x] **TSK-08-01:** Generar artefactos `.whl` y `.tar.gz` en `dist/` usando `uv build` (AC8.1).
+- [x] **TSK-08-02:** Construir imagen Docker multi-etapa para CPU y validar respuesta HTTP 200 en `GET /health` (AC8.2).
+- [x] **TSK-08-03:** Orquestar servicios de API y frontend web (sin Streamlit, D-01) mediante `docker-compose.yml` en red interna compartida (AC8.3).
+
+> **Validación local (2026-11-13):** `uv build` generó wheel y sdist; la imagen `plant-disease-classifier:1.0.0` respondió HTTP 200 en `/health`, `/`, `/docs`, `/openapi.json` y `/predict`; `docker compose` levantó `api` y `web` en la red `plant-disease-classifier_default` con proxy same-origin en `8080`. Suite completa: 186 pruebas, cobertura 98%, Ruff limpio.
