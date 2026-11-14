@@ -9,7 +9,7 @@
 ![pytest](https://img.shields.io/badge/pytest-158%20unit%20%7C%206%20integration-0A9EDC?logo=pytest&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend%20CPU-009688?logo=fastapi&logoColor=white)
 [![Quality Gate CI (M3)](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/actions/workflows/ci.yml)
-![License](https://img.shields.io/badge/Model%20License-CC%20BY--SA%204.0-lightgrey)
+![License](https://img.shields.io/badge/Code%20MIT%20%7C%20Weights%20CC%20BY--SA%204.0-lightgrey)
 
 ---
 
@@ -335,10 +335,12 @@ uv run ruff format --check .
 
 ## 📜 11. Licencia y Atribución
 
-- **Modelo preentrenado (`rodynaemad/plant-disease-dinov2-small`):** Creado por **Rodayna Emad Mohamed** (*College of Computer Science and AI, Pharos University in Alexandria*), distribuido bajo licencia **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**.
+- **Código fuente de la aplicación:** El código original del Grupo 2 (`src/`, `api/`, frontend y `tests/`) se distribuye bajo licencia **MIT**. Consulte [`LICENSE`](LICENSE).
+- **Pesos del modelo (`rodynaemad/plant-disease-dinov2-small`, `model.safetensors`):** Creado por **Rodayna Emad Mohamed** (*College of Computer Science and AI, Pharos University in Alexandria*), distribuido bajo **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**.
 - **Backbone (`facebook/dinov2-small`):** Desarrollado por Meta AI Research, distribuido bajo licencia **Apache 2.0**.
-- **Dataset base (*PlantVillage*):** Publicado por Hughes & Salathé (2015) y Mohanty, Hughes & Salathé (2016) bajo licencia **CC BY-SA**.
-- **Código de esta aplicación:** Distribuido con fines académicos bajo licencia **CC BY-SA 4.0**, manteniendo la atribución correspondiente a los autores originales del modelo y del conjunto de datos *(en revisión de separación código/modelo bajo actividad T-02)*.
+- **Dataset de entrenamiento (*PlantVillage*):** Publicado por Hughes & Salathé (2015) y Mohanty, Hughes & Salathé (2016). La distribución `mohanty/PlantVillage` en Hugging Face declara licencia **CC BY-SA 3.0**; esa licencia aplica al conjunto de datos y no se sustituye por la licencia de los pesos ajustados.
+- **Pesos ajustados del modelo:** La Model Card de `rodynaemad/plant-disease-dinov2-small` declara **CC BY-SA 4.0**. Esta licencia aplica exclusivamente a los pesos distribuidos por la autora y no relicencia el dataset de origen.
+- **Alcance de la licencia MIT:** La licencia MIT se limita al código fuente original del Grupo 2 y no se extiende a los pesos, la arquitectura base ni los datos de terceros, que conservan sus licencias y atribuciones obligatorias.
 
 ---
 

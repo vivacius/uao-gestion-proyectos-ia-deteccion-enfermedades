@@ -4,11 +4,13 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from dataclasses import asdict
+from pathlib import Path
 from typing import AsyncIterator
 
 from fastapi import FastAPI, File, Request, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from api.schemas import ErrorResponse, HealthResponse, ModelInfoResponse, PredictionResponse
 from src.config import DEFAULT_TOP_K, DEVICE
@@ -205,3 +207,9 @@ async def predict_endpoint(
     )
 
     return PredictionResponse(**asdict(result))
+
+
+# Montar los activos estáticos de la interfaz web desacoplada en la raíz
+WEB_STATIC_DIR = Path(__file__).resolve().parent.parent / "ui" / "web" / "static"
+if WEB_STATIC_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=str(WEB_STATIC_DIR), html=True), name="web_ui")
