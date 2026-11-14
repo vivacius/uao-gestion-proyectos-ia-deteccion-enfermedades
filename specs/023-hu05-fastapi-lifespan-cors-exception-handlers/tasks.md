@@ -1,6 +1,6 @@
 # Tasks (Spec Kit): SPEC-023 HU-05 Ciclo de Vida Lifespan, Middleware CORS y Manejadores de Excepciones en FastAPI
 
-**Feature Branch:** `feature/modelo-enfermedades-plantas` | **Spec:** [spec.md](./spec.md) | **Fecha de Implementación:** 2026-11-11 (11/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
+**Feature Branch:** `feature/modelo-enfermedades-plantas` | **Spec:** [spec.md](./spec.md) | **Plan:** [plan.md](./plan.md) | **Fecha de Implementación:** 2026-11-11 (11/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 - [x] **TSK-023-01:** Implementar `lifespan` y configuración base de `FastAPI` en `api/main.py`.
 - [x] **TSK-023-02:** Implementar manejadores globales de excepciones para códigos 400, 413, 415, 500 y 503.

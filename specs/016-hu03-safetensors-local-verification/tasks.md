@@ -1,6 +1,6 @@
 # Tasks (Spec Kit): SPEC-016 HU-03 Verificación de Artefactos Locales del Modelo y Pesos SafeTensors
 
-**Feature Branch:** `feature/modelo-enfermedades-plantas` | **Spec:** [spec.md](./spec.md) | **Fecha de Implementación:** 2026-11-10 (10/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
+**Feature Branch:** `feature/modelo-enfermedades-plantas` | **Spec:** [spec.md](./spec.md) | **Plan:** [plan.md](./plan.md) | **Fecha de Implementación:** 2026-11-10 (10/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 - [x] **TSK-016-01:** Versionar `config.json`, `preprocessor_config.json` y `model.safetensors` con Git LFS.
 - [x] **TSK-016-02:** Implementar `verify_model_files()` en `src/model_loader.py`.
