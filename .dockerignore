@@ -1,0 +1,42 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.cache/
+.git/
+.gitignore
+*.log
+
+# Cachés y artefactos de desarrollo
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+*.egg-info/
+
+# Documentación, especificaciones y pruebas no necesarias en runtime
+docs/
+specs/
+documento/
+tests/
+*.md
+
+# Configuración local de herramientas y agentes
+.specify/
+.gemini/
+.opencode/
+.agents/
+.github/
+deploy/
+
+# Datos locales y secretos
+.env
+.env.*
+*.db
+*.sqlite
+*.sqlite3
+mlruns/
+mlartifacts/

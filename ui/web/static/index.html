@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroScan AI — Diagnóstico Fitosanitario con DINOv2</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">🌱</div>
+        <div>
+          <h1>AgroScan AI</h1>
+          <p class="subtitle">Diagnóstico Fitosanitario de Cultivos · DINOv2 Vision Transformer</p>
+        </div>
+      </div>
+      <div class="header-status">
+        <span id="api-status-badge" class="badge badge-checking">
+          <span class="status-dot"></span>
+          <span id="api-status-text">Verificando API...</span>
+        </span>
+        <button id="toggle-settings-btn" class="btn-icon" title="Configurar Endpoint de API" aria-label="Ajustes">⚙️</button>
+      </div>
+    </header>
+
+    <!-- Panel de Configuración de API (Colapsable) -->
+    <div id="settings-panel" class="settings-panel hidden">
+      <div class="settings-content">
+        <label for="api-url-input"><strong>URL de la API (Backend FastAPI):</strong></label>
+        <div class="input-group">
+          <input type="text" id="api-url-input" placeholder="http://127.0.0.1:8000" value="">
+          <button id="save-api-url-btn" class="btn btn-secondary">Probar Conexión</button>
+        </div>
+        <small class="help-text">Por defecto se conecta al backend local en el puerto 8000 o a la URL configurada en producción.</small>
+      </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+      <!-- Columna Izquierda: Captura y Carga de Imagen -->
+      <section class="card upload-card">
+        <h2 class="section-title">Captura de Muestra Vegetal</h2>
+        <p class="section-desc">Toma una foto con la cámara de tu dispositivo o arrastra un archivo de hoja para su análisis.</p>
+
+        <!-- Dropzone de carga -->
+        <div id="dropzone" class="dropzone">
+          <input type="file" id="image-input" accept="image/jpeg,image/png,image/jpg" capture="environment" class="file-input">
+          <div id="dropzone-prompt" class="dropzone-prompt">
+            <div class="upload-icon">📷</div>
+            <p class="dropzone-text"><strong>Toca para abrir cámara</strong> o arrastra una imagen aquí</p>
+            <span class="file-types">Formatos aceptados: JPG, JPEG, PNG (Máx. 10 MB)</span>
+          </div>
+          <div id="preview-container" class="preview-container hidden">
+            <img id="image-preview" src="" alt="Previsualización de hoja seleccionada">
+            <button id="remove-image-btn" class="btn-remove" title="Cambiar fotografía" type="button">✕</button>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button id="predict-btn" class="btn btn-primary" disabled>
+            <span class="btn-icon">🔬</span>
+            <span id="btn-text">Diagnosticar Hoja</span>
+          </button>
+        </div>
+
+        <!-- Barra de progreso/carga durante inferencia -->
+        <div id="loading-indicator" class="loading-container hidden">
+          <div class="spinner"></div>
+          <p id="loading-msg">Procesando imagen con DINOv2 en CPU...</p>
+        </div>
+      </section>
+
+      <!-- Columna Derecha: Resultados y Diagnóstico -->
+      <section class="card results-card">
+        <h2 class="section-title">Resultados del Análisis</h2>
+        <p class="section-desc">Informe agronómico probabilístico y clasificación patológica.</p>
+
+        <!-- Estado vacío (sin análisis aún) -->
+        <div id="empty-state" class="empty-state">
+          <div class="empty-icon">🍃</div>
+          <p>Sube o captura una foto de la hoja para ver el dictamen fitosanitario.</p>
+        </div>
+
+        <!-- Contenedor dinámico de resultados -->
+        <div id="results-content" class="results-content hidden">
+          <!-- Alerta de Incertidumbre Alta (Umbral tau = 0.60) -->
+          <div id="uncertainty-banner" class="alert alert-warning hidden">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-body">
+              <strong>Muestra con incertidumbre alta (&lt; 60% de certeza)</strong>
+              <p id="uncertainty-text">Los síntomas visuales no son concluyentes. Se recomienda tomar una muestra más enfocada o consultar directamente a un agrónomo.</p>
+            </div>
+          </div>
+
+          <!-- Tarjeta de Diagnóstico Principal -->
+          <div class="primary-diagnosis">
+            <div class="diagnosis-header">
+              <span class="badge" id="health-status-badge">Estado</span>
+              <span class="inference-time" id="inference-time-label">0 ms</span>
+            </div>
+
+            <div class="diagnosis-body">
+              <h3 id="plant-name" class="plant-name">—</h3>
+              <p id="disease-name" class="disease-name">—</p>
+            </div>
+
+            <div class="confidence-box">
+              <div class="confidence-labels">
+                <span>Nivel de Confianza Principal</span>
+                <strong id="confidence-percentage">0%</strong>
+              </div>
+              <div class="progress-bar-bg">
+                <div id="confidence-bar" class="progress-bar-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top-3 de Probabilidades -->
+          <div class="top3-container">
+            <h4 class="subsection-title">Top-3 Diagnósticos Más Probables</h4>
+            <div id="top3-list" class="top3-list">
+              <!-- Se puebla dinámicamente con JavaScript -->
+            </div>
+          </div>
+
+          <!-- Descargo Agronómico Ético -->
+          <div class="disclaimer-card">
+            <span class="disclaimer-icon">ℹ️</span>
+            <p id="disclaimer-text">
+              <strong>Aviso Agronómico:</strong> Herramienta orientativa de apoyo al cribado en campo. No constituye prescripción fitosanitaria ni sustituye la inspección de un profesional agronómico.
+            </p>
+          </div>
+        </div>
+
+        <!-- Banner de Error -->
+        <div id="error-banner" class="alert alert-error hidden">
+          <span class="alert-icon">❌</span>
+          <div class="alert-body">
+            <strong id="error-title">Error en la Solicitud</strong>
+            <p id="error-desc">—</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>UAO · Maestría en IA y Ciencia de Datos · Grupo 2 (Santiago Correa, José Silva, Jhonatan Tapia, John Restrepo)</p>
+      <p class="footer-tech">Modelo DINOv2-small · Inferencia CPU local · FastAPI</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
