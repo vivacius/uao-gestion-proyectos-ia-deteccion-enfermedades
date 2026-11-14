@@ -8,9 +8,8 @@
 ![Ruff](https://img.shields.io/badge/code%20style-ruff-D7FF64?logo=ruff&logoColor=black)
 ![pytest](https://img.shields.io/badge/pytest-158%20unit%20%7C%206%20integration-0A9EDC?logo=pytest&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend%20CPU-009688?logo=fastapi&logoColor=white)
+[![Quality Gate CI (M3)](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/actions/workflows/ci.yml)
 ![License](https://img.shields.io/badge/Code%20MIT%20%7C%20Weights%20CC%20BY--SA%204.0-lightgrey)
-
-> **Estado de CI (T-04):** El workflow de GitHub Actions (`.github/workflows/ci.yml`) ya se encuentra integrado en `develop` (PR #19); aún no se publica badge de CI en verde porque `ruff format --check .` permanece pendiente de formateo coordinado sobre 5 archivos en `develop`.
 
 ---
 
