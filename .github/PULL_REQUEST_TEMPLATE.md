@@ -134,7 +134,7 @@ docker build -t <proyecto>:pr .
 
 **Contenedor y UI**
 - [ ] `docker build` construye y `docker run` ejecuta la inferencia **en CPU**.
-- [ ] La interfaz (Streamlit o Tkinter) sigue funcionando con este cambio.
+- [ ] La interfaz (Tkinter o web) sigue funcionando con este cambio.
 
 **Git y proceso**
 - [ ] La PR es **pequeña y de un solo propósito**; la rama está actualizada desde `develop`.

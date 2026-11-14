@@ -15,7 +15,6 @@ dependencies = [
     "python-multipart>=0.0.12",
     "requests>=2.32.0",
     "safetensors>=0.4.5",
-    "streamlit>=1.40.0",
     "torch>=2.5.0",
     "transformers>=4.46.0",
     "uvicorn[standard]>=0.32.0",

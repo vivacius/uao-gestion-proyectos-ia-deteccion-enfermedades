@@ -15,7 +15,7 @@ Esta Constitución define los principios de gobernanza técnica, arquitectura, a
   - `src/model_loader.py` e `src/inference.py`: Carga determinista y segura de pesos locales mediante `safetensors` en CPU sin descargas en runtime, ejecutando inferencia bajo `torch.no_grad()`.
   - `src/postprocessing.py` e `src/labels.py`: Mapeo taxonómico a 38 clases en español, Softmax probabilístico ($1.000 \pm 0.001$), filtro de incertidumbre ($\tau = 0.60$) y descargo de responsabilidad agronómica obligatoria (soporte orientativo, prohibición explícita de prescribir agroquímicos).
   - `api/main.py` y `api/schemas.py`: Capa de servicio FastAPI con contratos Pydantic estrictos, endpoints `GET /health`, `POST /predict` y `GET /docs`.
-  - `ui/app.py` y `ui/api_client.py`: Interfaz de usuario desacoplada en Streamlit para técnicos de campo, consumiendo la API vía cliente HTTP.
+  - `ui/desktop_app.py` y `ui/api_client.py`: Interfaz de usuario de escritorio desacoplada para técnicos de campo, consumiendo la API vía cliente HTTP.
 - **Prohibición de acoplamientos circulares y notebooks:** Queda estrictamente prohibida la presencia o ejecución de `.ipynb`, scripts monolíticos o dependencias directas de la API hacia la UI.
 
 ### II. Gestión Determinista del Entorno con uv (Python 3.13)
@@ -57,7 +57,7 @@ Esta Constitución define los principios de gobernanza técnica, arquitectura, a
 | **Santiago Correa** | DevOps / Testing | **HU-01** (Tooling Base, 2 SP)<br>**HU-07** (Suite Pruebas pytest, 3 SP) | Gestión del entorno `uv`, linters `ruff`, arquitectura de pruebas automatizadas y cobertura $\ge 85\%$. |
 | **José Silva** | ML / MLOps | **HU-02** (Preprocesamiento Tensores, 3 SP)<br>**HU-08** (Docker & Wheel, 2 SP) | Pipeline de ingestión y normalización de tensores, empaquetado Wheel y contenerización en CPU. |
 | **Jhonatan Tapia** | ML / Backend & Code Reviewer | **HU-03** (Carga SafeTensors e Inferencia, 3 SP)<br>**HU-05** (API REST FastAPI, 3 SP) | Inferencia determinista CPU, servicio asíncrono FastAPI y revisión cruzada de código. |
-| **John Restrepo** | Backend / Frontend | **HU-04** (Postproceso e Incertidumbre, 2 SP)<br>**HU-06** (UI Streamlit, 3 SP) | Mapeo fitosanitario en español, filtro $\tau=0.60$, descargo legal e interfaz gráfica para campo. |
+| **John Restrepo** | Backend / Frontend | **HU-04** (Postproceso e Incertidumbre, 2 SP)<br>**HU-06** (UI de escritorio, 3 SP) | Mapeo fitosanitario en español, filtro $\tau=0.60$, descargo legal e interfaz gráfica para campo. |
 
 Total: **8 Historias de Usuario**, **25 Criterios de Aceptación**, **21 Story Points**.
 

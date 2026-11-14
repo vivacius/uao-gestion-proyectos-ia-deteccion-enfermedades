@@ -17,28 +17,3 @@ services:
       retries: 3
       start_period: 15s
     restart: unless-stopped
-
-  ui:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: plant-disease-ui
-    command:
-      [
-        "uv",
-        "run",
-        "streamlit",
-        "run",
-        "ui/app.py",
-        "--server.address=0.0.0.0",
-        "--server.port=8501",
-        "--server.headless=true"
-      ]
-    ports:
-      - "8501:8501"
-    environment:
-      - API_BASE_URL=http://api:8000
-    depends_on:
-      api:
-        condition: service_healthy
-    restart: unless-stopped

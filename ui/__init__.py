@@ -1,1 +1,1 @@
-"""Paquete de interfaz gráfica de usuario construida con Streamlit."""
+"""Paquete de interfaces de usuario del sistema (escritorio Tkinter y web)."""

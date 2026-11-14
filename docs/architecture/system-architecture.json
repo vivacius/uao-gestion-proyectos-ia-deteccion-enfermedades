@@ -18,8 +18,8 @@
     {
       "id": "ui_app",
       "type": "frontend",
-      "label": "Streamlit App",
-      "sublabel": "ui/app.py :8501",
+      "label": "Desktop App",
+      "sublabel": "ui/desktop_app.py",
       "pos": [230, 220],
       "size": [130, 60],
       "tag": "Implementado (M3)"
@@ -269,7 +269,7 @@
       "title": "Servicio Web y UI (Implementado M3)",
       "items": [
         "FastAPI: Endpoints asíncronos /health, /predict y /docs OpenAPI",
-        "Streamlit: Interfaz gráfica interactiva con visualización Top-3",
+        "Tkinter: Interfaz de escritorio interactiva con visualización Top-3",
         "Alerta de baja certeza para técnicos agrícolas ante incertidumbre alta"
       ]
     },
