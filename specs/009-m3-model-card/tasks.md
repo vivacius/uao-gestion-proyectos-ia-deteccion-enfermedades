@@ -9,4 +9,4 @@
 - [x] **TSK-MC-02:** Elaborar `docs/model-card.md` siguiendo el estándar de Mitchell et al. (2019) y cubriendo exhaustivamente los criterios `AC-MC-01` a `AC-MC-04`.
 - [x] **TSK-MC-03:** Enlazar `docs/model-card.md` en el árbol documental de `README.md` sin alterar contratos de código.
 - [x] **TSK-MC-04:** Ejecutar Quality Gate completo (`ruff check .`, `ruff format --check .`, `pytest tests/unit`) asegurando código 0.
-- [ ] **TSK-MC-05:** Realizar commit con Conventional Commits, publicar rama remota y abrir Pull Request formal hacia `develop` solicitando revisión a `@JhonatanTC99` y `@vivacius`.
+- [x] **TSK-MC-05:** Realizar commit con Conventional Commits, publicar rama remota y abrir Pull Request formal hacia `develop` solicitando revisión a `@JhonatanTC99` y `@vivacius`.
