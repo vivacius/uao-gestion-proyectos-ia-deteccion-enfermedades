@@ -63,7 +63,9 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 │   └── nginx.conf                   # Proxy same-origin del frontend web para Docker Compose
 ├── docs/                            # Documentación técnica, diagramas Archify y guías de reproducción
 │   ├── architecture/                # Diagramas C4/componentes (.html, .svg, .json)
-│   └── getting-started.md           # Guía de arranque reproducible en Windows con uv y Spec Kit
+│   ├── getting-started.md           # Guía de arranque reproducible en Windows con uv y Spec Kit
+│   ├── model-card.md                # Ficha técnica oficial del modelo (Mitchell et al., 2019)
+│   └── qa-e2e-benchmarks.md         # Reporte empírico de validación E2E y benchmarks en CPU
 ├── specs/                           # Especificaciones SDD (Spec Kit) por unidad de trabajo
 ├── tests/                           # Suite de pruebas automatizadas con pytest
 │   ├── conftest.py                  # Generadores de imágenes sintéticas (JPG, PNG, RGBA, grises, corruptas, GIF)
@@ -92,6 +94,7 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 - **Autora del modelo preentrenado:** Rodayna Emad Mohamed (*Pharos University in Alexandria*).
 - **Arquitectura:** `Dinov2ForImageClassification` basada en el backbone [`facebook/dinov2-small`](https://huggingface.co/facebook/dinov2-small) (congelado, extracción de características de 768 dimensiones combinando el token `CLS` y el promedio de parches) junto con un cabezal de clasificación lineal entrenado sobre las 54,305 imágenes en color del conjunto de datos **PlantVillage**.
 - **Nota sobre las métricas reportadas por la autora:** En la documentación oficial del modelo (*Model Card*), la autora reporta una exactitud (*accuracy*) de **98.86%** y un **Macro F1 de 98.49%** sobre una partición de prueba de hojas no vistas durante el entrenamiento (*leaf-level held-out split* de 10,862 imágenes de PlantVillage). **Estas cifras corresponden exclusivamente al entrenamiento y evaluación publicados por la autora original del modelo y no se presentan como métricas de entrenamiento propio de este proyecto**, dado que en este trabajo utilizamos el modelo preentrenado tal como fue distribuido, sin modificar sus pesos (`model.safetensors`).
+- **Model Card oficial del proyecto:** Consulta la ficha técnica completa, análisis de sesgos, consideraciones éticas y métricas computacionales reales en CPU en [`docs/model-card.md`](docs/model-card.md) (elaborada bajo el estándar de Mitchell et al., 2019).
 
 ### Preprocesamiento oficial aplicado (`preprocessor_config.json`)
 El módulo `src/preprocessing.py` utiliza `AutoImageProcessor.from_pretrained(..., local_files_only=True)` (`BitImageProcessor`) respetando fielmente los parámetros originales del modelo:
