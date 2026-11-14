@@ -8,7 +8,8 @@
 **Fecha de Implementación de la Unidad:** 2026-11-11 (11/11/2026)  
 **Fecha de Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)  
 **Trazabilidad Temporal:** Especificación documentada retrospectivamente el 14/11/2026 (no elaborada antes de implementar; la fecha histórica 2026-11-11 corresponde a la implementación de la unidad)  
-**Estado:** Completado y verificado en `develop`
+**Estado:** Completado y verificado en `develop` y `main` (M3)  
+**Artefactos Relacionados:** [plan.md](./plan.md) · [tasks.md](./tasks.md)
 
 ---
 
