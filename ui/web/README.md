@@ -54,16 +54,17 @@ python ui/web/preview_server.py 8080
 
 ---
 
-## 3. Coordinación con Docker (PR #26 / HU-08)
+## 3. Integración con Docker (HU-08)
 
-Para asegurar que la imagen de contenedor Docker incluya y sirva la interfaz web directamente al levantar el contenedor de producción, en la etapa final de ejecución (`runtime`) del `Dockerfile` se debe incorporar la copia del directorio estático:
+La imagen de la API copia `ui/web/static` en la etapa `runtime` del `Dockerfile`, de modo que FastAPI monta la interfaz en `/` y expone simultáneamente la API REST/OpenAPI en el puerto `8000`.
 
-```dockerfile
-# Copiar activos estáticos del frontend para el montaje en FastAPI
-COPY ui/web/static ./ui/web/static
-```
+Para la orquestación con Docker Compose se agrega un servicio `web` basado en `nginx:1.27-alpine` que:
 
-De esta manera, el contenedor expone en el puerto estándar (ej. 8000 u 80) tanto la API REST/OpenAPI (`/docs`, `/health`, `/predict`) como la interfaz web de usuario (`/`), sin publicar archivos de soporte de desarrollo.
+- Sirve los archivos de `ui/web/static` en `http://localhost:8080`.
+- Aplica un proxy *same-origin* hacia `api:8000` para `/health`, `/model-info`, `/predict`, `/docs`, `/redoc` y `/openapi.json`.
+- Espera a que el servicio `api` supere su *healthcheck* antes de arrancar.
+
+De esta manera, el frontend y el backend quedan desacoplados en contenedores separados, pero el navegador sigue consumiendo un único origen sin problemas de CORS.
 
 ---
 

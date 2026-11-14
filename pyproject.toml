@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=77.0.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "plant-disease-classifier"
 version = "1.0.0"
@@ -26,6 +30,20 @@ dev = [
     "pytest>=8.3.0",
     "pytest-cov>=5.0.0",
     "ruff>=0.8.0",
+]
+
+[tool.setuptools]
+packages = [
+    "src",
+    "api",
+    "ui",
+    "ui.web",
+    "ui.web.static",
+]
+
+[tool.setuptools.package-data]
+"ui.web" = [
+    "static/*",
 ]
 
 [tool.pytest.ini_options]
