@@ -2,7 +2,7 @@
 
 **Identificador:** `SPEC-014`  
 **Feature Branch:** `feature/hu02-preprocesamiento-contratos`  
-**Spec Asociada:** [spec.md](./spec.md)  
+**Spec Asociada:** [spec.md](./spec.md) | **Tasks:** [tasks.md](./tasks.md)  
 **Fecha de Implementación de la Unidad:** 2026-11-11 (11/11/2026)  
 **Fecha de Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
