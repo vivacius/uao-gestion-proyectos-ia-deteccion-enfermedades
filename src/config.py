@@ -58,7 +58,7 @@ MIN_IMAGE_DIMENSION: int = 16
 DEFAULT_TOP_K: int = 3
 NUM_EXPECTED_CLASSES: int = 38
 
-# Configuración de red para API REST y cliente Streamlit
+# Configuración de red para API REST y clientes HTTP
 API_HOST: str = os.getenv("API_HOST", "0.0.0.0")
 API_PORT: int = int(os.getenv("API_PORT", "8000"))
 API_BASE_URL: str = os.getenv("API_BASE_URL", f"http://127.0.0.1:{API_PORT}")

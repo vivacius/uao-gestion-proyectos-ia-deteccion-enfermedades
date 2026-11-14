@@ -1,4 +1,4 @@
-"""Cliente HTTP para que la interfaz Streamlit consuma el servicio FastAPI."""
+"""Cliente HTTP para que las interfaces de usuario consuman el servicio FastAPI."""
 
 from __future__ import annotations
 

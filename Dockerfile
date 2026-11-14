@@ -30,8 +30,8 @@ COPY README.md ./
 # 3. Copiar los artefactos locales del modelo a /app/modelo_plantas
 COPY config.json preprocessor_config.json model.safetensors ./modelo_plantas/
 
-# Exponer puertos de FastAPI (8000) y Streamlit (8501)
-EXPOSE 8000 8501
+# Exponer el puerto de FastAPI (8000)
+EXPOSE 8000
 
 # Comando por defecto: inicia la API FastAPI en el puerto 8000
 CMD ["uv", "run", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
