@@ -2,7 +2,9 @@
 
 **Identificador:** `SPEC-010`  
 **Feature Branch:** `feature/hu01-uv-bootstrap`  
-**Spec Asociada:** [spec.md](./spec.md)
+**Spec Asociada:** [spec.md](./spec.md)  
+**Fecha de Implementación de la Unidad:** 2026-11-10 (10/11/2026)  
+**Fecha de Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 ---
 

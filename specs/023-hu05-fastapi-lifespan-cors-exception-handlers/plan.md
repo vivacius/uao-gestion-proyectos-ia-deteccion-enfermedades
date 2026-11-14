@@ -2,7 +2,9 @@
 
 **Identificador:** `SPEC-023`  
 **Feature Branch:** `feature/modelo-enfermedades-plantas`  
-**Spec Asociada:** [spec.md](./spec.md)
+**Spec Asociada:** [spec.md](./spec.md)  
+**Fecha de Implementación de la Unidad:** 2026-11-11 (11/11/2026)  
+**Fecha de Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 ---
 

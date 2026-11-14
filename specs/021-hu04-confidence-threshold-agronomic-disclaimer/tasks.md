@@ -1,6 +1,6 @@
 # Tasks (Spec Kit): SPEC-021 HU-04 Umbral de Confianza (tau=0.60) y Descargo de Responsabilidad Agronómica
 
-**Feature Branch:** `feature/modelo-enfermedades-plantas` | **Spec:** [spec.md](./spec.md)
+**Feature Branch:** `feature/modelo-enfermedades-plantas` | **Spec:** [spec.md](./spec.md) | **Fecha de Implementación:** 2026-11-11 (11/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 - [x] **TSK-021-01:** Integrar `AGRONOMIC_DISCLAIMER` en `src/postprocessing.py` y `api/schemas.py`.
 - [x] **TSK-021-02:** Implementar alerta visual cuando `confidence < 0.60` en la UI de escritorio y web.

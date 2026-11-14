@@ -5,13 +5,15 @@
 **Historia / Issue Asociado:** HU-07 (Issue [#10](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues/10) · 3 SP)  
 **Responsable:** Santiago Correa Campaña (`@vivacius`)  
 **Revisor Asignado:** Jhonatan Andrés Tapia Córdoba (`@JhonatanTC99`)  
-**Fecha:** 2026-11-11  
+**Fecha de Implementación de la Unidad:** 2026-11-11 (11/11/2026)  
+**Fecha de Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)  
+**Trazabilidad Temporal:** Especificación documentada retrospectivamente el 14/11/2026 (no elaborada antes de implementar; la fecha histórica 2026-11-11 corresponde a la implementación de la unidad)  
 **Estado:** Completado y verificado en `develop`
 
 ---
 
 ## 1. Propósito y Alcance
-Implementar en `tests/integration/test_api_and_model.py` las pruebas de integración reales que cargan el modelo `rodynaemad/plant-disease-dinov2-small` (`model.safetensors`) en CPU y verifican de extremo a extremo la carga local del `ModelBundle`, la inferencia directa con `predict_from_bytes` y las peticiones HTTP contra FastAPI (`GET /health`, `POST /predict` con JPG, PNG, RGBA e imágenes inválidas).
+Implementar en `tests/integration/test_real_model_and_api.py` las pruebas de integración reales que cargan el modelo `rodynaemad/plant-disease-dinov2-small` (`model.safetensors`) en CPU y verifican de extremo a extremo la carga local del `ModelBundle`, la inferencia directa con `predict_from_bytes` y las peticiones HTTP contra FastAPI (`GET /health`, `POST /predict` con JPG, PNG, RGBA e imágenes inválidas).
 
 ## 2. Escenarios de Aceptación (Gherkin)
 

@@ -1,6 +1,6 @@
 # Tasks (Spec Kit): SPEC-038 HU-08 Orquestación Docker Compose (API + Web Nginx) y Proxy Same-Origin
 
-**Feature Branch:** `feature/hu08-wheel-docker-compose` | **Spec:** [spec.md](./spec.md)
+**Feature Branch:** `feature/hu08-wheel-docker-compose` | **Spec:** [spec.md](./spec.md) | **Fecha de Implementación:** 2026-11-13 (13/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 - [x] **TSK-038-01:** Crear `deploy/nginx.conf` con configuración de proxy inverso same-origin.
 - [x] **TSK-038-02:** Crear `docker-compose.yml` orquestando `plant-disease-api` y `plant-disease-web`.

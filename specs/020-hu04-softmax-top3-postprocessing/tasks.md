@@ -1,6 +1,6 @@
 # Tasks (Spec Kit): SPEC-020 HU-04 Cálculo de Softmax, Ranking Top-3 y Estructuración de Salidas
 
-**Feature Branch:** `feature/modelo-enfermedades-plantas` | **Spec:** [spec.md](./spec.md)
+**Feature Branch:** `feature/modelo-enfermedades-plantas` | **Spec:** [spec.md](./spec.md) | **Fecha de Implementación:** 2026-11-11 (11/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 - [x] **TSK-020-01:** Implementar `PredictionItem`, `ClassificationResult` y `process_logits` en `src/postprocessing.py`.
 - [x] **TSK-020-02:** Asegurar soporte para tensores 1D `(38,)` y 2D `(1, 38)`.

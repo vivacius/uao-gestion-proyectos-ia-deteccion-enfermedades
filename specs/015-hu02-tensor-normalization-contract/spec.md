@@ -5,7 +5,9 @@
 **Historia / Issue Asociado:** HU-02 (Issue [#5](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues/5) · 3 SP · PR [#18](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/pull/18))  
 **Responsable:** José Isaac Silva Calderón (`@josesilvacalderon111`)  
 **Revisor Asignado:** Jhonatan Andrés Tapia Córdoba (`@JhonatanTC99`)  
-**Fecha:** 2026-11-11  
+**Fecha de Implementación de la Unidad:** 2026-11-11 (11/11/2026)  
+**Fecha de Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)  
+**Trazabilidad Temporal:** Especificación documentada retrospectivamente el 14/11/2026 (no elaborada antes de implementar; la fecha histórica 2026-11-11 corresponde a la implementación de la unidad)  
 **Estado:** Completado y verificado en `develop`
 
 ---

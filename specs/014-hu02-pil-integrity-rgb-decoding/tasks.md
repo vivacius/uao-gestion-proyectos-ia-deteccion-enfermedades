@@ -1,6 +1,6 @@
 # Tasks (Spec Kit): SPEC-014 HU-02 Decodificación Segura con Pillow, Integridad Binaria y Conversión RGB
 
-**Feature Branch:** `feature/hu02-preprocesamiento-contratos` | **Spec:** [spec.md](./spec.md)
+**Feature Branch:** `feature/hu02-preprocesamiento-contratos` | **Spec:** [spec.md](./spec.md) | **Fecha de Implementación:** 2026-11-11 (11/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 - [x] **TSK-014-01:** Implementar verificación estructural y decodificación completa de píxeles con Pillow.
 - [x] **TSK-014-02:** Agregar control de dimensiones mínimas (`MIN_IMAGE_DIMENSION = 32`) y conversión a `RGB`.

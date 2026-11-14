@@ -1,6 +1,6 @@
 # Tasks (Spec Kit): SPEC-036 HU-08 Empaquetado Distribuible Python Wheel y sdist con Hatchling (uv build)
 
-**Feature Branch:** `feature/hu08-wheel-docker-compose` | **Spec:** [spec.md](./spec.md)
+**Feature Branch:** `feature/hu08-wheel-docker-compose` | **Spec:** [spec.md](./spec.md) | **Fecha de Implementación:** 2026-11-13 (13/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 - [x] **TSK-036-01:** Configurar `[tool.hatch.build]` en `pyproject.toml` para incluir `src`, `api`, `ui` y `ui/web/static/*`.
 - [x] **TSK-036-02:** Verificar generación de `.whl` y `.tar.gz` con `uv build`.

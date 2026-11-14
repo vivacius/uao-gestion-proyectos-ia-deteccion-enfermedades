@@ -5,7 +5,9 @@
 **Historia / Issue Asociado:** M2 / T-02 (PR [#13](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/pull/13), PR [#14](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/pull/14), PR [#23](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/pull/23))  
 **Responsable:** Santiago Correa Campaña (`@vivacius`)  
 **Revisor Asignado:** Jhonatan Andrés Tapia Córdoba (`@JhonatanTC99`)  
-**Fecha:** 2026-11-12  
+**Fecha de Implementación de la Unidad:** 2026-11-12 (12/11/2026)  
+**Fecha de Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)  
+**Trazabilidad Temporal:** Especificación documentada retrospectivamente el 14/11/2026 (no elaborada antes de implementar; la fecha histórica 2026-11-12 corresponde a la implementación de la unidad)  
 **Estado:** Completado y verificado en `develop`
 
 ---

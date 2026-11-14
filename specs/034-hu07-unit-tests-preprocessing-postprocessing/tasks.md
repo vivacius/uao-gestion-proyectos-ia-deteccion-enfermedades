@@ -1,6 +1,6 @@
 # Tasks (Spec Kit): SPEC-034 HU-07 Suite de Pruebas Unitarias AAA para Preprocesamiento, Taxonomía y Postprocesamiento
 
-**Feature Branch:** `feature/hu07-tests-coverage` | **Spec:** [spec.md](./spec.md)
+**Feature Branch:** `feature/hu07-tests-coverage` | **Spec:** [spec.md](./spec.md) | **Fecha de Implementación:** 2026-11-11 (11/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 - [x] **TSK-034-01:** Crear `tests/unit/test_preprocessing_unit.py` cubriendo contratos de HU-02.
 - [x] **TSK-034-02:** Crear `tests/unit/test_labels_and_postprocessing.py` cubriendo contratos de HU-04.
