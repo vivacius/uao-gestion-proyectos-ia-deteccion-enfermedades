@@ -1,94 +1,106 @@
-# Reglas Operativas para Agentes de IA (AGENTS.md)
+# Reglas Operativas para Agentes de IA (`AGENTS.md`)
 <!-- Grupo 2 — Maestría en IA y Ciencia de Datos | UAO -->
 
-Este documento establece las políticas de gobernanza, jerarquía de toma de decisiones, permisos y directrices técnicas para cualquier agente de inteligencia artificial (Gemini, Claude, GPT, Antigravity u otros) que interactúe con el repositorio.
+Este documento es el **punto de entrada normativo y operativo** para cualquier agente de inteligencia artificial que opere sobre el repositorio. Define jerarquía de autoridad, reglas inamovibles, flujo de trabajo, protección contra regresiones y uso autorizado de herramientas, sin duplicar el inventario detallado de [docs/academic-compliance-matrix.md](docs/academic-compliance-matrix.md).
 
 ---
 
-## 1. Jerarquía y Gobernanza
+## 1. Autoridad, Precedencia y Gobernanza
 
-Este repositorio capitaliza los **aprendizajes acumulativos del Módulo 1 (M1)**: modularidad en `src/` layout, alta cohesión, bajo acoplamiento, desarrollo guiado por pruebas (pytest AAA), entorno determinista con `uv`, linteo riguroso con Ruff y Gitflow estricto.
+En caso de conflicto, rige estrictamente el siguiente orden de precedencia (de mayor a menor autoridad):
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                 HUMANOS (EQUIPO GRUPO 2)                    │
-│   Santiago Correa · José Silva · Jhonatan Tapia · John R.   │
-│   - Máxima autoridad técnica, de diseño y arquitectónica.   │
-│   - Únicos facultados para autorizar y fusionar Pull Regs.  │
-└──────────────────────────────┬──────────────────────────────┘
-                               │ Supervisión y directrices
-┌──────────────────────────────┴──────────────────────────────┐
-│                    AGENTES DE ASISTENCIA                    │
-│                                                             │
-│   ● Gemini / Antigravity CLI:                               │
-│     - Orquestación SDD con Spec Kit (Specify, Plan, Tasks). │
-│     - Ejecución de pruebas (pytest), análisis estático.     │
-│     - Generación y actualización de diagramas (Archify).    │
-│     - Creación de commits y PRs delegados por el equipo.    │
-│                                                             │
-│   ● GPT / Otros Modelos de Lenguaje:                        │
-│     - Asistencia en redacción conceptual y documentación.   │
-│     - Co-diseño de pruebas y consultas técnicas.            │
-└─────────────────────────────────────────────────────────────┘
-```
+1. **Instrucciones del usuario y restricciones oficiales aplicables.**
+2. **Reglas académicas vigentes del curso:** los requisitos `M1`–`M4` son **acumulativos**. Únicamente ante incompatibilidad explícita prevalece la regla oficial posterior (`M4 > M3 > M2 > M1`); toda regla anterior no sustituida continúa vigente.
+3. **Constitución aprobada:** [.specify/memory/constitution.md](.specify/memory/constitution.md) (su reforma exige consenso unánime de los 4 integrantes).
+4. **`AGENTS.md`** (este documento).
+5. **Matriz académica y especificaciones SDD:** [docs/academic-compliance-matrix.md](docs/academic-compliance-matrix.md) y `specs/`.
+6. **Skills y procedimientos operativos.**
 
-- **Primacía Humana:** Ningún agente de IA puede tomar decisiones unilaterales que contradigan la Constitución del proyecto (`.specify/memory/constitution.md`) ni los requisitos aprobados en la propuesta formal (`Plantilla.pdf`).
-- **Aprobación de Cambios:** Toda modificación sustancial debe ser revisada y aprobada por un humano mediante un Pull Request formal.
+- **Primacía humana:** Ningún agente puede tomar decisiones unilaterales ni técnicas que contradigan requisitos oficiales o decisiones humanas aprobadas.
+- **Estado vigente de capacidades (`HU-01`–`HU-08`):** `HU-01`–`HU-07` y la base de `HU-08` (empaquetado Wheel, `Dockerfile` CPU multi-etapa y `docker-compose.yml` + Nginx) ya están implementadas en M3. Quedan para M4 el pipeline CI/CD completo en GitLab, Container Registry, VPS, TLS/HTTPS, observabilidad de despliegue y enmienda constitucional (`M4-09`).
+
+| Historia | Responsable Humano | Rol | Alcance Técnico Vigente |
+| :--- | :--- | :--- | :--- |
+| **HU-01** | Santiago Correa | DevOps | Tooling base, `uv`, Ruff, Python 3.13. |
+| **HU-02** | José Silva | ML | Preprocesamiento `[1, 3, 224, 224]` `float32`. |
+| **HU-03** | Jhonatan Tapia | ML | Carga SafeTensors local e inferencia CPU $< 300\text{ ms}$. |
+| **HU-04** | John Restrepo | Backend | Postproceso, 38 clases en español, $\tau=0.60$ y descargo agronómico. |
+| **HU-05** | Jhonatan Tapia | Backend | API REST FastAPI, OpenAPI y contratos Pydantic v2. |
+| **HU-06** | John Restrepo | Frontend | Interfaz de escritorio Tkinter y web estática desacoplada vía HTTP. |
+| **HU-07** | Santiago Correa | Testing | Suite `pytest` AAA (mín. 120 pruebas; cobertura $\ge 85\%$). |
+| **HU-08** | José Silva | DevOps | Base Wheel/Docker CPU lista en M3; hardening CI/CD, Registry, VPS y TLS en M4. |
+
+- **Code Reviewer general:** Jhonatan Tapia (toda PR requiere revisión aprobada de un par distinto del autor).
 
 ---
 
-## 2. Matriz de Responsabilidades por Historia de Usuario
+## 2. Reglas Inamovibles (Académicas y de Conservación)
 
-| Historia de Usuario | Responsable Humano | Rol | Agente Principal | Alcance Técnico |
-| :--- | :--- | :--- | :--- | :--- |
-| **HU-01** (2 SP) | Santiago Correa | DevOps | Gemini / Antigravity | Tooling base, entorno `uv`, linters `ruff`. |
-| **HU-02** (3 SP) | José Silva | ML | Gemini / Antigravity | Preprocesamiento, contratos de tensores $[1, 3, 224, 224]$. |
-| **HU-03** (3 SP) | Jhonatan Tapia | ML | Gemini / Antigravity | Carga segura SafeTensors e inferencia CPU $< 300$\,ms. |
-| **HU-04** (2 SP) | John Restrepo | Backend | Gemini / Antigravity | Postproceso, mapeo a español, filtro $\tau=0.60$ y descargo agronómico. |
-| **HU-05** (3 SP) | Jhonatan Tapia | Backend | Gemini / Antigravity | API REST asíncrona FastAPI, OpenAPI y contratos Pydantic. |
-| **HU-06** (3 SP) | John Restrepo | Frontend | Gemini / Antigravity | Interfaz de escritorio Tkinter para técnicos de campo (Top-3 y alertas). |
-| **HU-07** (3 SP) | Santiago Correa | Testing | Gemini / Antigravity | Suite `pytest` AAA (unitarias + integración), cobertura $\ge 85\%$. |
-| **HU-08** (2 SP) | José Silva | DevOps | Gemini / Antigravity | Empaquetado Wheel (`uv build`) y contenerización Docker CPU (M4). |
+### A. Obligaciones Académicas Acumuladas (`M1`–`M4`)
+- **Arquitectura y calidad:** `src/` layout modular (`src/`, `api/`, `ui/`, `tests/`), tipado (`type hints`), docstrings en API pública y separación estricta inferencia/servicio/API/UI. Cero notebooks (`.ipynb`) o código muerto.
+- **Entorno y verificación:** Python 3.13, gestor único `uv` (`pyproject.toml` + `uv.lock`), Ruff (`ruff check .`, `ruff format --check .`) y `pytest` bajo patrón Arrange-Act-Assert (AAA), con mínimo académico de 120 pruebas y cobertura $\ge 85\%$ en `src/` y `api/`, sin reducir capacidades actuales.
+- **Planeación y trazabilidad:** Propuesta M2 (`documento/Plantilla.*`), alcance, criterios Given-When-Then, tablero Kanban, MLflow (3 runs comparables, tracking y Model Registry), Model Card (`docs/model-card.md`), Spec Kit (`specs/`) y PRs verificables.
+- **Frontend desacoplado:** Consumo exclusivo de la API vía HTTP (Tkinter y Web HTML/CSS/JS). **Streamlit está expresamente prohibido** como interfaz evaluable en M3/M4.
+- **Alcance M4:** CI/CD (`lint → test → build → deploy`), Container Registry, VPS, Docker CPU, HTTPS/TLS, gestión segura de secretos y despliegue demostrable.
+- **Honestidad SDD:** No atribuir validez prospectiva a las **31 especificaciones retrospectivas** (`specs/010..040/`). Toda nueva implementación requiere especificación prospectiva previa.
 
-- **Revisor de Código General (Code Reviewer):** Jhonatan Tapia.
-- **Revisión Cruzada Obligatoria:** Todo PR requiere revisión aprobada de un compañero distinto del autor del cambio.
-- **Separación de Alcance M3 vs M4:** HU-01 a HU-07 corresponden al Módulo 3 (inferencia CPU DINOv2, FastAPI, UI de escritorio, Pytest). HU-08 queda expresamente diferida para el Módulo 4 (Docker multi-etapa y empaquetado Wheel).
-
----
-
-## 3. Permisos y Restricciones de los Agentes
-
-### Acciones Permitidas para los Agentes:
-1. Leer y analizar cualquier archivo dentro del repositorio.
-2. Ejecutar comandos de verificación en entorno aislado (`uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`).
-3. Generar y refinar artefactos de especificación en `specs/` y `.specify/` usando las fases de Spec Kit.
-4. Generar diagramas de arquitectura con Archify en `docs/architecture/` tras validación estática local.
-5. Gestionar memoria técnica en Engram MCP sin exponer bases de datos locales ni claves privadas.
-6. Crear commits y abrir Pull Requests hacia `develop` bajo Conventional Commits y plantilla institucional `.github/PULL_REQUEST_TEMPLATE.md` cuando sea expresamente delegado y autorizado por el equipo humano en una unidad de trabajo.
-
-### Restricciones Estrictas (Acciones Prohibidas):
-1. **NO modificar Git history sin autorización:** No ejecutar `git merge`, `git rebase` ni alterar ramas protegidas (`main`, `develop`).
-2. **NO auto-aprobar PRs ni ejecutar merge:** La fusión a `develop` o `main` es potestad exclusiva del desarrollador humano tras la revisión aprobada de un par. Queda prohibido cualquier merge automático por parte de agentes.
-3. **NO conmutar ramas automáticamente:** Los scripts de Spec Kit no deben cambiar ni crear ramas Git sin autorización explícita.
-4. **NO instalar paquetes con pip directo ni generar requirements.txt:** Usar exclusivamente `uv add` / `uv sync` en Python 3.13 sin alterar el Python global del sistema.
-5. **NO introducir notebooks (`.ipynb`), Colab ni código muerto:** Solo código modular en `src/`, `api/`, `ui/` y `tests/`.
-6. **NO comitear artefactos pesados ni secretos:** Prohibido comitear `model.safetensors`, `.venv/`, `.env`, tokens, bases SQLite o dependencias externas en cuarentena (`.agents/skills/archify/`).
+### B. Protección contra Regresiones
+Queda prohibido alterar sin autorización expresa y verificación previa las 10 capacidades protegidas en [docs/academic-compliance-matrix.md § 2](docs/academic-compliance-matrix.md):
+- Modelo `rodynaemad/plant-disease-dinov2-small`, pesos `model.safetensors` (`local_files_only=True`), `config.json`, 38 clases en español y contratos de inferencia (`[1, 3, 224, 224]`, `torch.no_grad()`, Softmax, $\tau=0.60$, descargo agronómico no prescriptivo).
+- Endpoints FastAPI (`GET /health`, `GET /model-info`, `POST /predict`, `GET /docs`) y frontends desacoplados (`ui/desktop_app.py`, `ui/web/static/`, `ui/api_client.py`).
+- Artefactos MLflow (`mlflow_tracking.db`, `mlruns/`, `mlflow_data/`), suite `tests/`, `Dockerfile`, `docker-compose.yml`, `deploy/nginx.conf`, `.github/workflows/ci.yml` y documentación vigente.
+- No modificar recursos locales ignorados (`.venv/`, `.env`, etc.). Todo cambio arquitectónico requiere autorización humana expresa.
+- **Protección de artefactos institucionales y contratos nativos:** Prohibido sustituir o modificar plantillas oficiales del curso (incluyendo `.github/PULL_REQUEST_TEMPLATE.md`), rúbricas, fuentes oficiales o contratos nativos de herramientas (ej. estructura esperada por Spec Kit 1.2.2) sin autorización expresa. Ante desactualizaciones aparentes, documentar la discrepancia y solicitar decisión humana; los agentes deben adaptar sus flujos a los artefactos oficiales (ej. agregando trazabilidad M3/M4 adicional en la descripción de la PR sin editar la plantilla oficial).
 
 ---
 
-## 4. Estándares de Calidad y Verificación
+## 3. Flujo de Trabajo, Kanban y Restricciones Git
 
-- **Estilo y Linteo:** PEP 8 estricto validado con Ruff (`ruff check .` y `ruff format --check .` deben retornar código 0).
-- **Tipado y Docstrings:** Contratos de entrada/salida tipados (`type hints`) y docstrings explicativos del *porqué* en toda API pública.
-- **Patrón de Pruebas:** Pruebas unitarias e integradas con `pytest` bajo estructura Arrange-Act-Assert (AAA).
-- **Cobertura:** Meta obligatoria $\ge 85\%$ en `src/` y `api/`.
-- **Plantilla de PR:** Uso riguroso de `.github/PULL_REQUEST_TEMPLATE.md` en cada entrega.
+### Flujo Obligatorio (SDD + GitHub Projects)
+`Historia → Issue/Project → SPEC prospectiva → tareas → implementación → pruebas → PR revisada → merge → Done`
+- **Tablero Kanban (GitHub Projects):** Columnas `Backlog`, `In Progress` (máximo integrantes del equipo = 4; 1 por desarrollador), `In Review` (máximo 2) y `Done`. Mantener seguimiento de métricas **WIP**, **throughput**, **work item age** y **cycle time**.
+- **SDD primero:** Redactar especificación prospectiva (`specs/NNN-.../`) antes de codificar o modificar normativa.
+- **Alcance acotado:** Ejecutar una unidad controlable por vez, identificando requisitos (`M1`–`M4`, `TOOL-XX`), criterios de aceptación, impactos y riesgos de regresión.
+- **Veracidad de estado:** Distinguir explícitamente entre *implementado*, *verificado*, *listo para PR* e *integrado*. Nunca inventar resultados ni ocultar limitaciones.
+
+### Restricciones Git Estrictas
+- **Prohibido** hacer commit o push directo a `main` o `develop`.
+- **Prohibido** ejecutar `git merge`, `git rebase`, `git push --force`, `git reset --hard`, `git clean` o borrar ramas/worktrees sin autorización explícita.
+- **Prohibido** crear commits, hacer `push`, abrir PRs, conmutar ramas, aprobar/fusionar PRs o permitir que scripts de Spec Kit creen o conmuten ramas salvo autorización explícita en la unidad de trabajo.
+- Todo cambio hacia `develop` requiere PR con [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md), Conventional Commits, revisión aprobada de un par humano y CI en verde.
+- *Nota sobre hooks locales:* `.git/hooks/` contiene únicamente hooks de Git LFS; no existe un hook pre-commit GGA instalado localmente.
 
 ---
 
-## 5. Uso de Herramientas del Proyecto
+## 4. Herramientas y Seguridad Operativa
 
-1. **Spec Kit (Specify 1.2.2):** Herramienta formal para Spec-Driven Development (SDD). Fases: `specify`, `clarify`, `plan`, `checklist`, `tasks`, `analyze`, `implement`, `converge`.
-2. **Archify:** Diagramación arquitectónica declarativa (C4 / vistas de componentes) guardada en `docs/architecture/`. Debe ser auditada con SkillSpector antes de su adopción.
-3. **Engram MCP:** Registro y consulta de decisiones arquitectónicas y memoria técnica por HU, manteniendo Git como única fuente oficial de verdad.
-4. **GGA (Git Governance Agent / Hooks):** Control preventivo de pre-commit para evitar commits que violen convenciones o incluyan binarios pesados.
+- **`Makefile` ([Makefile](Makefile)):** Interfaz operativa estándar de 17 targets con comandos reales y seguros (`uv`, `ruff`, `pytest`, `uvicorn`, `mlflow`, `docker`). Diferenciar siempre la disponibilidad local de GNU Make frente a la ejecución en CI.
+- **GitHub y GitLab:** **GitHub** es el repositorio principal (código, Issues, PRs, Kanban, revisión humana) operado mediante **`gh` CLI** y **GitHub MCP** autorizados. **GitLab** actuará en M4 para CI/CD, Container Registry y despliegue VPS sujeto a arquitectura aprobada, mediante **`glab` CLI** y **GitLab MCP** cuando estén configurados.
+- **Reglas de entorno y seguridad:**
+  - Prohibido usar `pip` o crear `requirements.txt` (gestor único `uv`, § 2A).
+  - No afirmar instalación o conexión de herramientas/servicios (`make`, `docker`, `glab`, MCPs) sin evidencia directa. MCP y CLI no sustituyen controles de autorización humana.
+  - No instalar herramientas, modificar `PATH` global ni aprovisionar servicios sin autorización expresa.
+  - **Secretos nunca en código, Git, prompts, logs ni documentación pública.**
+
+---
+
+## 5. Skills Operativas Locales (`.agents/skills/`)
+
+Antigravity descubre automáticamente las skills del proyecto en `.agents/skills/<nombre>/SKILL.md` (carga progresiva por nombre y descripción):
+
+- [`academic-compliance`](.agents/skills/academic-compliance/SKILL.md): Activar al iniciar cualquier unidad para validar requisitos `M1`–`M4`, precedencia, prohibiciones (Streamlit, `pip`, `.ipynb`) y capacidades protegidas.
+- [`sdd-workflow`](.agents/skills/sdd-workflow/SKILL.md): Activar antes de diseñar o codificar para crear specs prospectivas (`spec.md`, `plan.md`, `tasks.md`) preservando `specs/001..040/`.
+- [`quality-and-make`](.agents/skills/quality-and-make/SKILL.md): Activar al ejecutar o validar `Makefile`, `uv`, Ruff y `pytest` AAA según alcance real del cambio.
+- [`github-gitlab-operations`](.agents/skills/github-gitlab-operations/SKILL.md): Activar para consultas o acciones autorizadas en GitHub (`gh`/MCP) y GitLab (`glab`/MCP), Gitflow y limpieza de ramas.
+- [`secure-cicd-deployment`](.agents/skills/secure-cicd-deployment/SKILL.md): Activar en unidades M4 de CI/CD, Docker CPU, Registry, VPS, HTTPS y secretos protegidos.
+- *Nota de seguridad:* `.agents/skills/archify/` permanece en cuarentena (`.gitignore`) y no debe ejecutarse ni reutilizarse.
+
+---
+
+## 6. Referencias Oficiales del Repositorio
+
+- **Constitución vigente:** [.specify/memory/constitution.md](.specify/memory/constitution.md)
+- **Matriz académica M1–M4 (SSOT):** [docs/academic-compliance-matrix.md](docs/academic-compliance-matrix.md)
+- **Interfaz operativa:** [Makefile](Makefile)
+- **Especificaciones SDD:** `specs/` y `.specify/`
+- **Plantilla de PR:** [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)
