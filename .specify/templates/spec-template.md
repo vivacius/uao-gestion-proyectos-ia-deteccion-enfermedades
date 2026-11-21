@@ -129,3 +129,16 @@
 - [Assumption about scope boundaries, e.g., "Mobile support is out of scope for v1"]
 - [Assumption about data/environment, e.g., "Existing authentication system will be reused"]
 - [Dependency on existing system/service, e.g., "Requires access to the existing user profile API"]
+
+---
+
+<!-- [M1-M4 GOVERNANCE EXTENSION] -->
+## M1–M4 Academic Alignment & Protected Capabilities
+
+> **Referencias normativas:** [AGENTS.md](../../AGENTS.md) · [Constitución](../../.specify/memory/constitution.md) · [Matriz Académica M1–M4](../../docs/academic-compliance-matrix.md) · Skills: [`academic-compliance`](../../.agents/skills/academic-compliance/SKILL.md), [`sdd-workflow`](../../.agents/skills/sdd-workflow/SKILL.md)
+
+- **ID Estable y Trazabilidad:** `SPEC-NNN` | **Historia / Issue (GitHub Projects):** `HU-XX / #__` | **Condición temporal:** **Prospectiva** (elaborada ANTES de implementar; prohibida reconstrucción retroactiva).
+- **Requisitos académicos aplicables (Matriz § 1):** `[M1-XX..M4-XX, TOOL-XX]` — Cumplimiento acumulativo `M1`–`M4`; ante incompatibilidad oficial explícita prevalece `M4 > M3 > M2 > M1`.
+- **Tecnologías prohibidas:** Streamlit (frontend evaluable M3/M4), `pip`, `requirements.txt`, notebooks `.ipynb`.
+- **Capacidades protegidas a conservar (Matriz § 2):** Modelo DINOv2-small / `model.safetensors` (`local_files_only=True`), 38 clases, $\tau=0.60$, descargo agronómico, FastAPI (`/health`, `/model-info`, `/predict`, `/docs`), UI desacoplada HTTP, MLflow (`mlflow_tracking.db`, `mlruns/`), `pytest` AAA ($\ge 120$ pruebas, $\ge 85\%$ cov.), Docker CPU/Nginx, CI, Constitución y `specs/001..040/`.
+<!-- [/M1-M4 GOVERNANCE EXTENSION] -->

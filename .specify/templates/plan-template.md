@@ -111,3 +111,15 @@ directories captured above]
 |-----------|------------|-------------------------------------|
 | [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
 | [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+
+---
+
+<!-- [M1-M4 GOVERNANCE EXTENSION] -->
+## M1–M4 Governance, Makefile & Security Gate
+
+> **Referencias normativas:** [AGENTS.md](../../AGENTS.md) · [Constitución](../../.specify/memory/constitution.md) · [Matriz Académica M1–M4](../../docs/academic-compliance-matrix.md) · [Makefile](../../Makefile) · Skills: [`quality-and-make`](../../.agents/skills/quality-and-make/SKILL.md), [`github-gitlab-operations`](../../.agents/skills/github-gitlab-operations/SKILL.md), [`secure-cicd-deployment`](../../.agents/skills/secure-cicd-deployment/SKILL.md)
+
+- **Stack permitido vs prohibido:** Python 3.13 + `uv` (`uv.lock`), Ruff, `pytest` AAA, FastAPI, DINOv2 CPU, Tkinter/Web HTML-CSS-JS vía HTTP, MLflow, Docker CPU. **Prohibido:** Streamlit, `pip`, `requirements.txt`, `.ipynb`.
+- **Validación proporcional y compatibilidad:** Usar `Makefile` (verificando disponibilidad real de GNU Make en Windows/Linux) o `uv` directo; no repetir suites largas ni Docker en cambios puramente documentales.
+- **Seguridad y operaciones remotas:** Cero secretos/rutas locales en repo/logs; secretos M4 en variables CI protegidas. GitHub (`gh`/MCP) es el repo principal; GitLab (`glab`/MCP) para CI/CD/Registry/VPS M4 sujeto a arquitectura aprobada (`TOOL-05`). Cualquier `commit`, `push`, PR, `merge` o despliegue requiere autorización humana expresa.
+<!-- [/M1-M4 GOVERNANCE EXTENSION] -->
