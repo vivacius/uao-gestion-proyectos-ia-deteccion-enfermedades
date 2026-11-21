@@ -1,6 +1,6 @@
 # Tasks (Spec Kit): SPEC-012 Jerarquía de Excepciones de Dominio y Contratos de Error HTTP
 
-**Feature Branch:** `feature/m1-domain-exceptions` | **Spec:** [spec.md](./spec.md) | **Fecha de Implementación:** 2026-11-10 (10/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
+**Feature Branch:** `feature/m1-domain-exceptions` | **Spec:** [spec.md](./spec.md) | **Plan:** [plan.md](./plan.md) | **Fecha de Implementación:** 2026-11-10 (10/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 - [x] **TSK-012-01:** Implementar jerarquía de excepciones en `src/exceptions.py`.
 - [x] **TSK-012-02:** Alinear herencia de `InvalidImageFormatException` con el contrato AC2.1 de HU-02.

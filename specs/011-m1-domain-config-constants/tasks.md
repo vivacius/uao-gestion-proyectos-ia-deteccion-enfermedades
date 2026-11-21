@@ -1,6 +1,6 @@
 # Tasks (Spec Kit): SPEC-011 Configuración Centralizada de Dominio, Rutas y Límites Operativos
 
-**Feature Branch:** `feature/m1-domain-config` | **Spec:** [spec.md](./spec.md) | **Fecha de Implementación:** 2026-11-10 (10/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
+**Feature Branch:** `feature/m1-domain-config` | **Spec:** [spec.md](./spec.md) | **Plan:** [plan.md](./plan.md) | **Fecha de Implementación:** 2026-11-10 (10/11/2026) | **Documentación SDD (Retrospectiva):** 2026-11-14 (14/11/2026)
 
 - [x] **TSK-011-01:** Crear `src/config.py` con resolución automática de rutas del modelo.
 - [x] **TSK-011-02:** Definir límites de tamaño (`MAX_IMAGE_SIZE_BYTES`), dimensiones mínimas (`32px`) y listas blancas de formatos.
