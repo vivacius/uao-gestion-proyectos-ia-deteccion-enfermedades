@@ -377,6 +377,23 @@ uv run ruff check .
 uv run ruff format --check .
 ```
 
+### 9.1 Comandos consolidados con `Makefile` (M1–M4)
+
+El repositorio incluye un [`Makefile`](Makefile) en la raíz para ejecutar los flujos cotidianos de forma uniforme en **Linux** y **Windows 11** (requiere **GNU Make** instalado, `uv` y, para los targets `docker-*`, Docker Desktop/Engine activo):
+
+| Target | Propósito | Requisitos |
+| :--- | :--- | :--- |
+| `make help` | Lista los targets disponibles y sus requisitos | GNU Make |
+| `make sync` | Sincroniza `.venv` con `uv sync --frozen` | `uv` |
+| `make lint` / `make format-check` | Ejecuta `ruff check .` y `ruff format --check .` | `uv` |
+| `make test-unit` / `make coverage` | Ejecuta pruebas unitarias (y cobertura en `src/`, `api/`) | `uv` |
+| `make test-integration` / `make test` | Ejecuta pruebas de integración CPU / suite completa | `uv`, `model.safetensors` |
+| `make build` | Genera paquetes Wheel y sdist en `dist/` | `uv` |
+| `make api` / `make health` | Inicia FastAPI (`:8000`) o consulta `GET /health` | `uv`, `model.safetensors` |
+| `make mlflow` | Inicia MLflow UI local (`:5050`) sobre `mlflow_tracking.db` | `uv` |
+| `make docker-build` / `docker-up` / `docker-down` / `docker-ps` | Construye, levanta, detiene o lista contenedores CPU | Docker activo, pesos locales |
+| `make ci` | Ejecuta `lint` + `format-check` + `coverage` | `uv` |
+
 ---
 
 ## ⚠️ 10. Limitaciones del Modelo
