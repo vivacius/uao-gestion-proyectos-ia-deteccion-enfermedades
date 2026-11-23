@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
-import tkinter as tk
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+
+# Omitir limpiamente si el entorno carece de soporte Tkinter (ej. runners CI slim)
+pytest.importorskip("tkinter", reason="Entorno sin bibliotecas de Tkinter")
+import tkinter as tk  # noqa: E402
 
 from ui.api_client import ApiClientResponse
 from ui.desktop_app import (
