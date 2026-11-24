@@ -38,8 +38,8 @@ variables:
   # --- Ejecucion y telemetria -------------------------------------------------
   # Salida sin buffer: logs en tiempo real para diagnostico inmediato.
   PYTHONUNBUFFERED: "1"
-  # Inyecta opciones a pytest: reporte JUnit para GitLab y cobertura Cobertura XML.
-  PYTEST_ADDOPTS: "--junitxml=report.xml --cov=src --cov=api --cov-report=term-missing --cov-report=xml:coverage.xml"
+  # Inyecta opciones a pytest: reporte JUnit para GitLab, cobertura XML y umbral mínimo 85% (M1-03).
+  PYTEST_ADDOPTS: "--junitxml=report.xml --cov=src --cov=api --cov-report=term-missing --cov-report=xml:coverage.xml --cov-fail-under=85"
   # Clonacion superficial: optimiza tiempos de transferencia del runner.
   GIT_DEPTH: "1"
   # Omitir descarga de pesos SafeTensors en quality (las pruebas unitarias usan mocks).
@@ -157,19 +157,17 @@ build_docker:
         echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
       fi
   script:
-    # Construye la imagen multi-etapa en CPU
+    # Construye la imagen multi-etapa en CPU para verificar reproducibilidad
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" .
-    # Publica la imagen con tag inmutable del commit
+    # Politica de publicacion: Solo ramas protegidas (main y develop) suben al Container Registry
     - |
-      if [ -n "$CI_REGISTRY_PASSWORD" ]; then
+      if [ -n "$CI_REGISTRY_PASSWORD" ] && { [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" = "develop" ]; }; then
+        echo "Publicando imagen oficial en GitLab Container Registry..."
         docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
-        # Si estamos en develop o la rama principal, tambien publica tag latest
-        if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" = "develop" ]; then
-          docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" "$CI_REGISTRY_IMAGE:latest"
-          docker push "$CI_REGISTRY_IMAGE:latest"
-        fi
+        docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" "$CI_REGISTRY_IMAGE:latest"
+        docker push "$CI_REGISTRY_IMAGE:latest"
       else
-        echo "Aviso: CI_REGISTRY_PASSWORD no configurado. Se valida el build localmente sin push."
+        echo "Validacion de build exitosa. Las ramas feature/* no publican al registry para evitar saturacion de imagenes efimeras."
       fi
   rules:
     - if: $CI_COMMIT_BRANCH

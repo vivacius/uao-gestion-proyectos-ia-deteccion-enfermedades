@@ -8,3 +8,6 @@
 - [x] **TSK-045-04:** Validar calidad estática localmente con Ruff (`ruff check .` y `ruff format --check .`) y pruebas unitarias con `pytest`.
 - [x] **TSK-045-05:** Actualizar la [Matriz de Cumplimiento Académico](../../docs/academic-compliance-matrix.md) reflejando el progreso de `M4-03`, `M4-04`, `M4-05` y `TOOL-03`.
 - [x] **TSK-045-06:** Verificar integridad de capacidades protegidas, ausencia de credenciales/secretos y preparar commit bajo Conventional Commits.
+- [x] **TSK-045-07:** Atender revisión de PR #44: incorporar `--cov-fail-under=85` y restringir el push de Docker a ramas protegidas en `.gitlab-ci.yml`.
+- [x] **TSK-045-08:** Distinguir en `docs/academic-compliance-matrix.md` la validación en repo GitLab auxiliar frente a la integración oficial pendiente.
+- [x] **TSK-045-09:** Corregir trazabilidad en GitHub PR #44 (desvincular `Makefile`, asociar a Issue #11 / HU-08 y clarificar políticas de tags y workflow).

@@ -16,12 +16,12 @@
 Implementar el archivo de configuración `.gitlab-ci.yml` en la raíz del repositorio oficial, adaptando las directivas oficiales del curso y las prácticas pedagógicas transmitidas por el docente (imagen oficial Astral `uv:0.13.9-python3.13-trixie-slim`, variables deterministas, gestión de caché por job, `auto_cancel`, reportes JUnit y de cobertura, y separación de responsabilidades entre análisis estático y pruebas), integrando:
 1. **Etapa `quality`:**
    - **`lint`:** Análisis estático con Ruff (`check` y `format --check`) sobre Python 3.13 instalando únicamente el grupo de desarrollo en modo `--no-install-project` para feedback ultrarrápido sin dependencias pesadas.
-   - **`run_test`:** Ejecución de pruebas unitarias mediante la interfaz operativa del proyecto (`Makefile` y `uv run pytest`), con variables de entorno para emisión automática de reporte JUnit (`PYTEST_ADDOPTS="--junitxml=report.xml"`) y reporte Cobertura XML para GitLab CI UI. Inclusión de dependencias de sistema Debian 13 (`trixie-slim`: `make`, `libgl1`, `libglib2.0-0t64`, `libxcb1`, etc.) y protección condicional ante ausencia de servidor gráfico para Tkinter (`pytest.importorskip("tkinter")`).
+   - **`run_test`:** Ejecución de pruebas unitarias mediante la interfaz operativa del proyecto (`Makefile` y `uv run pytest`), con variables de entorno para emisión automática de reporte JUnit (`PYTEST_ADDOPTS="--junitxml=report.xml --cov-fail-under=85"`), reporte Cobertura XML para GitLab CI UI y fallo automático si la cobertura es inferior al 85% (`M1-03`). Inclusión de dependencias de sistema Debian 13 (`trixie-slim`: `make`, `libgl1`, `libglib2.0-0t64`, `libxcb1`, etc.) y protección condicional ante ausencia de servidor gráfico para Tkinter (`pytest.importorskip("tkinter")`).
 2. **Etapa `build`:**
    - **`package_wheel`:** Construcción de paquetes distribuibles Wheel y sdist en `dist/` usando `uv build` y guardados como artefactos de CI (`HU-08`, `SPEC-036`).
-   - **`build_docker`:** Construcción de la imagen Docker en CPU (`Dockerfile` multi-etapa) y publicación en el **GitLab Container Registry** (`$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA` y `$CI_REGISTRY_IMAGE:latest`) autenticándose con las variables predefinidas de GitLab (`$CI_REGISTRY_USER`, `$CI_REGISTRY_PASSWORD`).
+   - **`build_docker`:** Construcción de la imagen Docker en CPU (`Dockerfile` multi-etapa) y verificación local; publicación en el **GitLab Container Registry** (`$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA` y `$CI_REGISTRY_IMAGE:latest`) reservada exclusivamente para ramas protegidas (`main` y `develop`), previniendo la proliferación de imágenes efímeras desde ramas `feature/*`.
 3. **Coordinación y arquitectura de repositorios:**
-   - Documentación clara de la sincronización entre GitHub (`origin`, repositorio principal de código y gobernanza) y GitLab (`gitlab`, plataforma de ejecución CI/CD y Container Registry).
+   - Documentación clara distinguiendo la validación funcional anticipada en el repositorio GitLab auxiliar (`juanalvear01/copiamodulo2`) frente a la integración oficial automatizada GitHub–GitLab (`TOOL-05`), que permanece pendiente para M4.
 
 ---
 
@@ -37,15 +37,15 @@ Implementar el archivo de configuración `.gitlab-ci.yml` en la raíz del reposi
 - **Cuando** se ejecuta en el runner de GitLab,
 - **Entonces** instala exclusivamente el grupo `dev` sin empaquetar el proyecto (`uv sync --only-group dev --no-install-project`), ejecuta `ruff check .` y `ruff format --check .`, y falla de inmediato ante cualquier discrepancia de estilo o PEP 8.
 
-### AC45.3 — Pruebas unitarias reproducibles y reportes para GitLab (`run_test`)
+### AC45.3 — Pruebas unitarias reproducibles, reporte y umbral 85% (`run_test`)
 - **Dado** el job `run_test` en la etapa `quality`,
 - **Cuando** se ejecuta en el runner de GitLab,
-- **Entonces** instala las dependencias necesarias de Debian 13 (`make`, bibliotecas X11/GL con transición `libglib2.0-0t64`), omite la descarga pesada de LFS en pruebas con mocks (`GIT_LFS_SKIP_SMUDGE: "1"`), ejecuta la suite de pruebas unitarias y genera los artefactos `report.xml` (JUnit) y reporte de cobertura para la interfaz visual de GitLab.
+- **Entonces** instala las dependencias necesarias de Debian 13 (`make`, bibliotecas X11/GL con transición `libglib2.0-0t64`), omite la descarga pesada de LFS en pruebas con mocks (`GIT_LFS_SKIP_SMUDGE: "1"`), ejecuta la suite de pruebas unitarias, genera los artefactos `report.xml` (JUnit) y `coverage.xml`, y exige una cobertura mínima del 85% (`--cov-fail-under=85`).
 
-### AC45.4 — Empaquetado Wheel y Docker Container Registry (`build`)
+### AC45.4 — Empaquetado Wheel y política de Docker Container Registry (`build`)
 - **Dado** la etapa `build` en GitLab CI,
 - **Cuando** se ejecuta tras superar la etapa `quality`,
-- **Entonces** `package_wheel` genera distribuciones en `dist/`, y `build_docker` compila la imagen en CPU y la publica en GitLab Container Registry etiquetada con `$CI_COMMIT_SHORT_SHA` y `latest`.
+- **Entonces** `package_wheel` genera distribuciones en `dist/`, y `build_docker` compila la imagen en CPU verificando reproducibilidad, ejecutando el `docker push` hacia el Container Registry únicamente si el commit proviene de ramas protegidas (`main` o `develop`).
 
 ### AC45.5 — Preservación de capacidades protegidas y cero secretos en Git
 - **Dado** el código fuente y las capacidades de M1–M3,
