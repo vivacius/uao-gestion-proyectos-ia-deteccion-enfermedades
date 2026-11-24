@@ -1,0 +1,75 @@
+# =============================================================================
+# Compose de PRODUCCION (SPEC-047)
+# =============================================================================
+# - La API NO publica el puerto 8000: solo es accesible desde la red interna.
+# - Nginx termina TLS en 80/443 y hace proxy de todo el trafico a api:8000.
+# - certbot renueva certificados por webroot; Nginx sirve el desafio ACME.
+#
+# Uso en la VPS (el job deploy_vps genera el .env):
+#   docker compose -f docker-compose.yml pull
+#   docker compose -f docker-compose.yml up -d --remove-orphans
+#
+# Variables requeridas (sin secretos en este archivo):
+#   REGISTRY_IMAGE, IMAGE_TAG, DOMAIN
+# =============================================================================
+
+name: agroscan-prod
+
+services:
+  api:
+    image: "${REGISTRY_IMAGE:?REGISTRY_IMAGE es obligatorio}:${IMAGE_TAG:?IMAGE_TAG es obligatorio}"
+    container_name: agroscan-api
+    environment:
+      MODEL_DIR: /app/modelo_plantas
+      MAX_IMAGE_SIZE_MB: "10"
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - internal
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: agroscan-web
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      DOMAIN: "${DOMAIN:?DOMAIN es obligatorio}"
+      # Sustituye unicamente ${DOMAIN}; conserva $host, $remote_addr, etc.
+      NGINX_ENVSUBST_FILTER: DOMAIN
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.prod.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - internal
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: agroscan-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h; done'
+    restart: unless-stopped
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge

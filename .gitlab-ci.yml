@@ -12,10 +12,14 @@
 # ETAPAS DEL PIPELINE
 #   1. quality:
 #      - lint      -> Ruff: analisis estatico PEP 8 y formato (~20 s, dependencias dev)
+#   2. test:
 #      - run_test  -> Pruebas unitarias mediante Makefile con reporte JUnit y cobertura
-#   2. build:
+#   3. build:
 #      - package_wheel -> Empaquetado distribuible Wheel y sdist con uv build (dist/)
 #      - build_docker  -> Construccion de imagen CPU multi-etapa y push a Container Registry
+#   4. deploy:
+#      - deploy_vps -> Actualizacion de la VPS por SSH y verificacion HTTPS (SPEC-047)
+#                      Solo se crea si DEPLOY_HOST esta configurado como variable protegida.
 # =============================================================================
 
 variables:
@@ -56,14 +60,22 @@ workflow:
     # No disparar pipeline ante creacion de tags.
     - if: $CI_COMMIT_TAG
       when: never
-    # Ejecutar en push a cualquier rama o en eventos de Merge Request.
+    # Push a cualquier rama (incluye el espejo desde GitHub).
     - if: $CI_PIPELINE_SOURCE == "push"
+    # Pipelines de Merge Request (cuando GitLab MR este habilitado).
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # Ejecucion manual (Run pipeline) y programada para verificacion y espejo.
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    # Permite validar el pipeline por API sin esperar un push.
+    - if: $CI_PIPELINE_SOURCE == "api"
 
 # Etapas secuenciales del pipeline
 stages:
   - quality
+  - test
   - build
+  - deploy
 
 # Configuracion predeterminada para jobs de Python/uv
 default:
@@ -92,9 +104,14 @@ lint:
     - uv run --no-sync ruff check .
     - uv run --no-sync ruff format --check .
 
-# Job 2: Pruebas unitarias completas y reporte de cobertura
+# =============================================================================
+# ETAPA 2: TEST
+# =============================================================================
+
+# Job 2: Pruebas unitarias completas y reporte de cobertura.
+# Debe completarse antes de cualquier empaquetado o construccion de imagen.
 run_test:
-  stage: quality
+  stage: test
   before_script:
     - apt-get update -qq
     - >-
@@ -123,7 +140,7 @@ run_test:
       - report.xml
 
 # =============================================================================
-# ETAPA 2: BUILD
+# ETAPA 3: BUILD
 # =============================================================================
 
 # Job 3: Construccion de paquetes distribuibles Wheel y sdist (HU-08 / M4)
@@ -148,26 +165,130 @@ build_docker:
     - docker:27-dind
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
-    # Descargar pesos reales si se requiere empaquetar el modelo completo
+    # Descargar pesos reales: la imagen de produccion debe contener el modelo.
     GIT_LFS_SKIP_SMUDGE: "0"
   before_script:
+    # git-lfs permite materializar los pesos si el checkout inicial los omitio.
+    - apk add --no-cache git-lfs
     # Login condicional al Container Registry de GitLab si las credenciales existen
     - |
       if [ -n "$CI_REGISTRY_PASSWORD" ] && [ -n "$CI_REGISTRY_USER" ]; then
         echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
       fi
   script:
-    # Construye la imagen multi-etapa en CPU para verificar reproducibilidad
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" .
+    # Materializa los objetos LFS y falla si el archivo es solo un puntero.
+    - git lfs install --local
+    - git lfs pull
+    - |
+      MODEL_BYTES=$(stat -c%s model.safetensors)
+      echo "model.safetensors: ${MODEL_BYTES} bytes"
+      if [ "$MODEL_BYTES" -lt 1000000 ]; then
+        echo "ERROR: model.safetensors parece un puntero Git LFS y no los pesos reales."
+        exit 1
+      fi
+    # Construye la imagen multi-etapa en CPU con trazabilidad OCI por commit.
+    - >-
+      docker build
+      --label "org.opencontainers.image.revision=$CI_COMMIT_SHA"
+      --label "org.opencontainers.image.source=$CI_PROJECT_URL"
+      --label "org.opencontainers.image.title=agroscan-ai"
+      -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
     # Politica de publicacion: Solo ramas protegidas (main y develop) suben al Container Registry
     - |
       if [ -n "$CI_REGISTRY_PASSWORD" ] && { [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" = "develop" ]; }; then
         echo "Publicando imagen oficial en GitLab Container Registry..."
-        docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
-        docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" "$CI_REGISTRY_IMAGE:latest"
+        docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+        docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" "$CI_REGISTRY_IMAGE:latest"
         docker push "$CI_REGISTRY_IMAGE:latest"
       else
         echo "Validacion de build exitosa. Las ramas feature/* no publican al registry para evitar saturacion de imagenes efimeras."
       fi
   rules:
     - if: $CI_COMMIT_BRANCH
+
+# =============================================================================
+# ETAPA 4: DEPLOY (SPEC-047)
+# =============================================================================
+
+# Job 5: Despliegue automatico a la VPS en develop y manual en la rama principal.
+# Requiere variables protegidas: DEPLOY_HOST, DEPLOY_USER, DEPLOY_PATH,
+# SSH_PRIVATE_KEY, SSH_KNOWN_HOSTS, PUBLIC_HOST, LETSENCRYPT_EMAIL,
+# DEPLOY_TOKEN_USER y DEPLOY_TOKEN. Sin DEPLOY_HOST el job no se crea.
+deploy_vps:
+  stage: deploy
+  image: alpine:3.20
+  timeout: 20 minutes
+  interruptible: false
+  resource_group: production
+  needs:
+    - job: build_docker
+      artifacts: false
+  before_script:
+    - apk add --no-cache openssh-client curl
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
+    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - |
+      set -euo pipefail
+      : "${DEPLOY_HOST:?Variable protegida DEPLOY_HOST no configurada}"
+      : "${DEPLOY_USER:?Variable protegida DEPLOY_USER no configurada}"
+      : "${DEPLOY_PATH:?Variable protegida DEPLOY_PATH no configurada}"
+      : "${PUBLIC_HOST:?Variable protegida PUBLIC_HOST no configurada}"
+      : "${LETSENCRYPT_EMAIL:?Variable protegida LETSENCRYPT_EMAIL no configurada}"
+      : "${DEPLOY_TOKEN_USER:?Variable protegida DEPLOY_TOKEN_USER no configurada}"
+      : "${DEPLOY_TOKEN:?Variable protegida DEPLOY_TOKEN no configurada}"
+
+      SSH_OPTS="-i $HOME/.ssh/id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+
+      echo "Preparando directorio remoto en ${DEPLOY_HOST}..."
+      ssh $SSH_OPTS "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p '${DEPLOY_PATH}/certbot/conf' '${DEPLOY_PATH}/certbot/www'"
+
+      echo "Copiando configuracion de produccion..."
+      scp $SSH_OPTS deploy/docker-compose.prod.yml "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/docker-compose.yml"
+      scp $SSH_OPTS deploy/nginx.prod.conf.template "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/nginx.prod.conf.template"
+
+      echo "Desplegando commit ${CI_COMMIT_SHA}..."
+      ssh $SSH_OPTS "${DEPLOY_USER}@${DEPLOY_HOST}" 'bash -s' <<REMOTE
+      set -euo pipefail
+      cd "${DEPLOY_PATH}"
+
+      cat > .env <<ENV
+      REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
+      IMAGE_TAG=${CI_COMMIT_SHA}
+      DOMAIN=${PUBLIC_HOST}
+      MAX_IMAGE_SIZE_MB=10
+      ENV
+
+      echo "${DEPLOY_TOKEN}" | docker login "${CI_REGISTRY}" --username "${DEPLOY_TOKEN_USER}" --password-stdin
+
+      if [ ! -f "certbot/conf/live/${PUBLIC_HOST}/fullchain.pem" ]; then
+        echo "Certificado no encontrado. Emitiendo certificado inicial con certbot (standalone)..."
+        docker compose down --remove-orphans || true
+        docker run --rm -p 80:80 \
+          -v "${DEPLOY_PATH}/certbot/conf:/etc/letsencrypt" \
+          certbot/certbot certonly --standalone --non-interactive --agree-tos \
+          --email "${LETSENCRYPT_EMAIL}" -d "${PUBLIC_HOST}"
+      fi
+
+      docker compose pull
+      docker compose up -d --remove-orphans
+      docker compose ps
+      REMOTE
+
+      echo "Verificando salud publica por HTTPS..."
+      curl --fail --silent --show-error --retry 12 --retry-delay 5 --max-time 10 "https://${PUBLIC_HOST}/health"
+      echo ""
+      echo "Despliegue verificado: https://${PUBLIC_HOST} (commit ${CI_COMMIT_SHA})"
+  environment:
+    name: production
+    url: https://$PUBLIC_HOST
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop" && $DEPLOY_HOST'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $DEPLOY_HOST'
+      when: manual
+      allow_failure: true
+    - when: never

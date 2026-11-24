@@ -1,0 +1,85 @@
+# =============================================================================
+# Espejo GitHub -> GitLab (SPEC-046)
+# =============================================================================
+# GitHub es la fuente oficial de verdad. Este workflow replica las ramas de
+# integracion (develop y main) hacia el proyecto GitLab que ejecuta CI/CD,
+# publica la imagen en el Container Registry y despliega en la VPS.
+#
+# REQUISITOS
+#   - Secreto de repositorio GITLAB_TOKEN con permiso write_repository.
+#     Debe crearlo un administrador del repositorio (Settings > Secrets).
+#   - La identidad del token debe estar autorizada para push a main si esa
+#     rama esta protegida en GitLab; de lo contrario el job fallara de forma
+#     visible y no alterara la rama.
+#
+# SEGURIDAD
+#   - El token nunca se imprime. GitHub lo enmascara en los logs.
+#   - No se usa set -x. El remoto temporal vive solo en el runner efimero.
+# =============================================================================
+
+name: Mirror to GitLab
+
+on:
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mirror-gitlab-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    name: Mirror ${{ github.ref_name }} to GitLab
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout with full history and LFS
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push mirror to GitLab
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          GITLAB_REPO: vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades
+          SOURCE_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GITLAB_TOKEN:-}" ]; then
+            echo "::warning title=Espejo no configurado::Falta el secreto GITLAB_TOKEN. Un administrador debe crearlo para habilitar la sincronizacion GitHub -> GitLab."
+            exit 0
+          fi
+
+          git remote add gitlab "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${GITLAB_REPO}.git"
+
+          echo "Origen: ${SOURCE_BRANCH} @ $(git rev-parse HEAD)"
+          echo "Subiendo objetos Git LFS..."
+          git lfs push --all gitlab
+
+          echo "Replicando rama ${SOURCE_BRANCH}..."
+          # Primero se intenta un push normal (fast-forward). Solo si el historial
+          # de GitLab diverge se recurre al espejo forzado. En ramas protegidas
+          # el push forzado sera rechazado, lo que evita reescribir main.
+          if git push gitlab "HEAD:refs/heads/${SOURCE_BRANCH}"; then
+            echo "Push normal completado."
+          else
+            echo "Push normal rechazado; intentando espejo forzado de ${SOURCE_BRANCH}..."
+            git push --force gitlab "HEAD:refs/heads/${SOURCE_BRANCH}"
+          fi
+
+          {
+            echo "### Espejo GitHub -> GitLab"
+            echo ""
+            echo "| Campo | Valor |"
+            echo "| :--- | :--- |"
+            echo "| Rama | \`${SOURCE_BRANCH}\` |"
+            echo "| SHA | \`$(git rev-parse HEAD)\` |"
+            echo "| Destino | \`${GITLAB_REPO}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
