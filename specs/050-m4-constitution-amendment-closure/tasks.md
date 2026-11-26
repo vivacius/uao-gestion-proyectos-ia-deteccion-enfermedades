@@ -8,7 +8,7 @@ description: "Lista de tareas prospectiva para SPEC-050 (Enmienda Constitucional
 
 ## Phase 1: Enmienda Constitucional M4 (Independiente del despliegue)
 
-- [ ] T001 Redactar propuesta de Enmienda Constitucional M4 en `.specify/memory/constitution.md` (reglas CI/CD GitLab, Registry, VPS/HTTPS y secretos)
+- [x] T001 Redactar propuesta de Enmienda Constitucional M4 en `.specify/memory/constitution.md` (reglas CI/CD GitLab, Registry, VPS/HTTPS y secretos)
 - [ ] T002 Abrir PR de enmienda y recabar aprobación explícita de los 4 integrantes del Grupo 2 antes de fusionar
 
 ## Phase 2: Actualización de Matriz, Kanban y Sustentación (Tras evidencias de `#51`)
