@@ -1,10 +1,26 @@
 # Despliegue M4: GitHub → GitLab → VPS con HTTPS
 
-**Unidades:** `SPEC-046` (integración y Registry) · `SPEC-047` (VPS, TLS y deploy)
-**Fecha:** 2026-11-24
-**Estado:** artefactos locales listos para PR; **sin aprovisionamiento ni despliegue verificado**.
+**Unidades:** `SPEC-046` (sincronización canónica GitHub → GitLab, integrada en `develop` mediante PR #47) · `SPEC-047` (VPS, TLS y deploy)
+**Issues M4:** #46 (sincronización) · #48 (CI/Registry/LFS) · #49 (VPS/firewall/TLS) · #50 (secretos) · #51 (E2E público) · #52 (gobernanza, fuera de alcance)
+**Fecha:** 2026-11-25
+**Estado:** artefactos locales implementados y validados localmente; **sincronización GitLab, pipeline oficial y despliegue VPS pendientes de validación**.
 
 > Este documento no contiene tokens, claves, IPs privadas ni valores de variables. Solo nombres y procedimientos. Cualquier evidencia real se agrega al final, con fecha y responsable.
+
+> **Trazabilidad y honestidad de estado:** esta PR no cierra las Issues #46, #48, #49, #50 ni #51; solo implementa los artefactos locales y deja explícito lo que falta validar en el proyecto GitLab oficial (`89374502`) y en la VPS. Un GitHub Actions en verde **no sustituye** la ejecución del pipeline de GitLab ni el despliegue público.
+
+---
+
+## 0. Alcance implementado y pendiente
+
+| Componente | Issue | Estado en esta PR | Evidencia / pendiente |
+| :--- | :--- | :--- | :--- |
+| Sincronización unidireccional GitHub → GitLab, solo fast-forward y credenciales efímeras | #46 | Implementado localmente; **no verificado** | Workflow revisado; falta `GITLAB_SYNC_TOKEN` y una ejecución real |
+| Pipeline `quality → test → build → deploy`, Git LFS y Registry por SHA | #48 | Implementado localmente; **no ejecutado en GitLab oficial** | `glab ci lint` válido; falta push a GitLab |
+| Compose productivo, Nginx TLS y job `deploy_vps` | #49 | Implementado localmente; **no desplegado** | `docker compose config` válido; sin VPS ni dominio |
+| Variables y secretos protegidos | #50 | Diseñado; **no configurado** | Solo se documentan nombres; no hay valores |
+| Verificación E2E pública `/health`, `/predict` y HTTPS | #51 | **Pendiente** | Requiere VPS, DNS, TLS y ejecución real |
+| Gobernanza, matriz y cierre Kanban | #52 | **Fuera de alcance** | Se gestiona en su Issue independiente |
 
 ---
 
@@ -16,7 +32,8 @@ GitHub (fuente de verdad)
         │ push a develop/main
         ▼
 GitHub Actions · .github/workflows/mirror-to-gitlab.yml
-        │ git push --force + LFS
+        │ git push fast-forward + LFS
+        │ (credencial efímera, sin token en la URL)
         ▼
 GitLab · vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades
         │ quality → test → build → deploy
@@ -27,29 +44,44 @@ registry.gitlab.com/vivacius/...:<sha-completo>
 VPS · Nginx 80/443 → api:8000 (red interna) → FastAPI + DINOv2 CPU
 ```
 
-**Regla:** nadie pushea directamente a GitLab. El espejo sobrescribe `develop`/`main` desde GitHub. Los PRs y la revisión humana siguen en GitHub.
+**Regla:** nadie pushea directamente a GitLab. El espejo solo avanza `develop`/`main` si la rama de GitLab es ancestro del commit de GitHub; si hay divergencia, el workflow falla y exige intervención humana, sin reescribir el historial. Los PRs y la revisión humana siguen en GitHub.
 
 ---
 
-## 2. Estado verificado al 2026-11-24
+## 2. Estado verificado al 2026-11-25
 
 | Elemento | Estado | Evidencia |
 | :--- | :--- | :--- |
 | Proyecto GitLab definitivo | Existe, público | `vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades`, ID 89374502 |
 | Origen | Importado desde GitHub | `import_type: github`, `import_status: finished` |
 | Rol de los 4 integrantes | Owner (50) | `GET /projects/:id/members/all` |
-| `.gitlab-ci.yml` en `develop` | Presente | `develop` = `589444f` |
+| `.gitlab-ci.yml` en `develop` | Base anterior a esta PR | `develop` = `589444f` al abrir la PR |
+| PR #45 | Abierta; correcciones aplicadas; pendiente re-revisión | `gh pr view 45` |
 | CI lint del archivo local | Válido | `glab ci lint` → `CI/CD YAML is valid` |
-| `develop` en GitLab | `589444f` (igual a GitHub) | API de ramas |
+| Etapas del pipeline | `quality → test → build → deploy` | Parseo PyYAML de `stages` |
+| `develop` en GitLab | `589444f` (sin el commit de esta PR) | API de ramas |
 | `main` en GitLab | `a4e23dd` | API de ramas |
-| Pipelines en GitLab | Ninguno todavía | `workflow:rules` excluía `api`/`schedule`; la importación no genera push |
+| Pipelines en GitLab | Ninguno ejecutado todavía | Falta sincronización o push autorizado |
+| Pipeline de GitLab sobre esta PR | **No ejecutado** | Requiere `GITLAB_SYNC_TOKEN` o espejo autorizado |
 | Registry del proyecto | Sin imágenes | API de Registry |
 | Variables CI/CD | Vacías (accesibles) | API de variables |
-| Secreto `GITLAB_TOKEN` en GitHub | No existe | `gh secret list` |
+| Secreto `GITLAB_SYNC_TOKEN` en GitHub | No existe | `gh secret list` |
 | Permisos GitHub de la cuenta | `push`, sin `admin` | API de repo |
 | VPS / dominio | **No aprovisionados** | Cuenta DigitalOcean sin droplets ni claves |
 
-Conclusión: `SPEC-046` tiene la base lista (proyecto, rama y CI válido) pero **falta la primera ejecución real y el espejo automático**. `SPEC-047` está implementada localmente y no verificada. No se declara cumplido `M4-01`, `M4-02`, `M4-05` ni `M4-07` hasta tener evidencia.
+Conclusión: `SPEC-046` tiene la base lista (proyecto, rama y CI válido) pero **falta la primera ejecución real y el espejo automático**. `SPEC-047` está implementada y validada localmente, pero no verificada en VPS. No se declara cumplido `M4-01`, `M4-02`, `M4-05` ni `M4-07` hasta tener evidencia remota. La validación local y GitHub Actions no sustituyen el pipeline oficial de GitLab ni el despliegue público.
+
+### 2.1 Validación local de esta PR (2026-11-25)
+
+| Comprobación | Resultado |
+| :--- | :--- |
+| `glab ci lint` | Válido |
+| Etapas del pipeline | `quality → test → build → deploy` |
+| Ruff | `All checks passed!`; `196 files already formatted` |
+| Pytest unitario | **180 pruebas** (`179 passed`, `1 skipped` por Tcl/Tk); cobertura **97.86 %** |
+| `docker compose config` | Válido; `api` sin `ports`, `web` publica `80:80` y `443:443` |
+| Archivos M1–M3 | Sin cambios en `src/`, `api/`, `ui/`, `tests/`, `Dockerfile`, Compose local ni Nginx local |
+| Credenciales | Sin tokens, claves SSH ni URLs con credenciales embebidas |
 
 ---
 
@@ -57,7 +89,7 @@ Conclusión: `SPEC-046` tiene la base lista (proyecto, rama y CI válido) pero *
 
 | Prerrequisito | Responsable | Dónde |
 | :--- | :--- | :--- |
-| Crear secreto `GITLAB_TOKEN` | Administrador del repo GitHub (`vivacius`) | GitHub → Settings → Secrets and variables → Actions |
+| Crear secreto `GITLAB_SYNC_TOKEN` (alias admitido: `GITLAB_TOKEN`) | Administrador del repo GitHub (`vivacius`) | GitHub → Settings → Secrets and variables → Actions |
 | Crear variables protegidas de deploy | Cualquier Owner de GitLab | GitLab → Settings → CI/CD → Variables |
 | Crear Deploy Token `read_registry` | Cualquier Owner de GitLab | GitLab → Settings → Repository → Deploy tokens |
 | Autorizar push del espejo a `main` | Owner de GitLab | Settings → Repository → Protected branches |
@@ -67,13 +99,13 @@ Conclusión: `SPEC-046` tiene la base lista (proyecto, rama y CI válido) pero *
 ### 3.1 Estado de permisos
 
 - **GitLab:** los cuatro integrantes son Owner, por lo que variables, Deploy Tokens, ramas protegidas y ajustes de CI están disponibles.
-- **GitHub:** la cuenta actual tiene `push` pero **no `admin`**, así que el secreto `GITLAB_TOKEN` debe crearlo el propietario del repositorio.
+- **GitHub:** la cuenta actual tiene `push` pero **no `admin`**, así que el secreto `GITLAB_SYNC_TOKEN` debe crearlo el propietario del repositorio.
 - **Infraestructura:** no hay VPS ni dominio; cualquier aprovisionamiento requiere autorización y costo.
 
 Alternativas para la sincronización automática, en orden de preferencia:
 
 1. **Pull mirroring de GitLab** (si el plan lo permite): el proyecto jala de GitHub cada pocos minutos.
-2. **Push desde GitHub Actions** con `GITLAB_TOKEN` (requiere admin de GitHub).
+2. **Push desde GitHub Actions** con `GITLAB_SYNC_TOKEN` (requiere admin de GitHub).
 3. **Pipeline programado en GitLab** que hace `git fetch` del repo público de GitHub y actualiza `develop`/`main`; no requiere permisos de GitHub, pero la latencia depende del intervalo del schedule.
 
 ---
@@ -81,9 +113,12 @@ Alternativas para la sincronización automática, en orden de preferencia:
 ## 4. Configuración del espejo GitHub → GitLab
 
 1. Crear en GitLab un **Project Access Token** con scope `write_repository` y caducidad corta. Guardar el valor una sola vez.
-2. En GitHub, crear el secreto `GITLAB_TOKEN` con ese valor.
+2. En GitHub, crear el secreto `GITLAB_SYNC_TOKEN` con ese valor (canónico, alineado con `SPEC-046`). El workflow también acepta `GITLAB_TOKEN` como alias de compatibilidad; basta con configurar uno.
 3. Verificar que el workflow `Mirror to GitLab` aparece en Actions.
 4. Si `main` está protegida en GitLab, permitir que la identidad del token haga push (Protected branches → Allowed to push). Si no se permite, el espejo de `main` fallará de forma visible; `develop` seguirá funcionando.
+5. El workflow no escribe el token en la URL del remoto ni en `.git/config`: usa un `GIT_ASKPASS` efímero en `$RUNNER_TEMP`, `GIT_TERMINAL_PROMPT=0` y un `credential.helper` vacío durante la ejecución. El archivo temporal se elimina al finalizar.
+6. Si falta el secreto, el job falla con un mensaje explícito (`Espejo no configurado`); no simula una sincronización exitosa.
+7. El push es estrictamente **fast-forward**. Si la rama de GitLab divergió, el job detecta la condición, falla y no reescribe el historial.
 
 **Verificación:**
 
@@ -232,12 +267,15 @@ No borrar `certbot/conf` ni `certbot/www` durante una reversión. Si el fallo es
 
 | Evidencia | Resultado | Fecha | Responsable |
 | :--- | :--- | :--- | :--- |
-| Workflow `Mirror to GitLab` en verde | Pendiente | — | — |
+| GitHub Actions Quality Gate en verde | Pendiente de confirmar tras el push | — | — |
+| Workflow `Mirror to GitLab` en verde | Pendiente (falta `GITLAB_SYNC_TOKEN`) | — | — |
 | SHA GitHub = SHA GitLab | Pendiente | — | — |
-| Pipeline GitLab `quality → build` en verde | Pendiente | — | — |
+| Pipeline GitLab `quality → test → build → deploy` en verde | Pendiente (no ejecutado en GitLab oficial) | — | — |
 | Tag `<sha>` en Registry | Pendiente | — | — |
-| Job `deploy_vps` en verde | Pendiente | — | — |
+| Job `deploy_vps` en verde | Pendiente (sin VPS) | — | — |
 | `GET /health` 200 por HTTPS | Pendiente | — | — |
 | `POST /predict` 200 con imagen válida | Pendiente | — | — |
 | Puerto 8000 cerrado desde Internet | Pendiente | — | — |
 | Push autorizado actualiza el servicio | Pendiente | — | — |
+
+> **No sustitución de evidencias:** un run verde de GitHub Actions no acredita la sincronización, el pipeline de GitLab ni el despliegue. Las filas de esta tabla solo se completan con salida real del proyecto GitLab oficial y de la VPS.

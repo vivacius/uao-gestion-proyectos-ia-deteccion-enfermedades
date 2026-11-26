@@ -6,15 +6,25 @@
 # publica la imagen en el Container Registry y despliega en la VPS.
 #
 # REQUISITOS
-#   - Secreto de repositorio GITLAB_TOKEN con permiso write_repository.
+#   - Secreto de repositorio GITLAB_SYNC_TOKEN (canonico, alineado con
+#     SPEC-046) con permiso write_repository. Tambien se acepta el alias
+#     GITLAB_TOKEN por compatibilidad; basta con configurar uno.
 #     Debe crearlo un administrador del repositorio (Settings > Secrets).
 #   - La identidad del token debe estar autorizada para push a main si esa
 #     rama esta protegida en GitLab; de lo contrario el job fallara de forma
 #     visible y no alterara la rama.
 #
 # SEGURIDAD
-#   - El token nunca se imprime. GitHub lo enmascara en los logs.
+#   - El token nunca se imprime ni se escribe en la URL del remoto o en
+#     .git/config. Se entrega a Git mediante un GIT_ASKPASS efimero alojado en
+#     RUNNER_TEMP y se elimina al finalizar el paso.
 #   - No se usa set -x. El remoto temporal vive solo en el runner efimero.
+#
+# SINCRONIZACION
+#   - Unidireccional GitHub -> GitLab, solo ramas develop y main.
+#   - Estrictamente fast-forward: si la rama de GitLab no es ancestro del
+#     commit de GitHub, el job falla y exige intervencion humana. No se
+#     reescribe el historial.
 # =============================================================================
 
 name: Mirror to GitLab
@@ -44,34 +54,80 @@ jobs:
           fetch-depth: 0
           lfs: true
 
-      - name: Push mirror to GitLab
+      - name: Push mirror to GitLab (fast-forward only)
         env:
-          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          GITLAB_SYNC_TOKEN: ${{ secrets.GITLAB_SYNC_TOKEN || secrets.GITLAB_TOKEN }}
           GITLAB_REPO: vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades
           SOURCE_BRANCH: ${{ github.ref_name }}
         run: |
           set -euo pipefail
 
-          if [ -z "${GITLAB_TOKEN:-}" ]; then
-            echo "::warning title=Espejo no configurado::Falta el secreto GITLAB_TOKEN. Un administrador debe crearlo para habilitar la sincronizacion GitHub -> GitLab."
-            exit 0
+          if [ -z "${GITLAB_SYNC_TOKEN:-}" ]; then
+            echo "::error title=Espejo no configurado::Falta el secreto GITLAB_SYNC_TOKEN (o el alias GITLAB_TOKEN). Un administrador debe crearlo para habilitar la sincronizacion GitHub -> GitLab."
+            exit 1
           fi
 
-          git remote add gitlab "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${GITLAB_REPO}.git"
+          case "${SOURCE_BRANCH}" in
+            develop|main) ;;
+            *)
+              echo "::error title=Rama no permitida::Solo se sincronizan develop y main; recibido: ${SOURCE_BRANCH}."
+              exit 1
+              ;;
+          esac
 
-          echo "Origen: ${SOURCE_BRANCH} @ $(git rev-parse HEAD)"
+          # La URL no contiene credenciales y puede persistir en .git/config sin riesgo.
+          git remote add gitlab "https://gitlab.com/${GITLAB_REPO}.git"
+
+          # GIT_ASKPASS efimero: lee el token desde el entorno, nunca lo escribe en disco.
+          ASKPASS="${RUNNER_TEMP}/gitlab-askpass.sh"
+          cleanup() {
+            rm -f "${ASKPASS}"
+          }
+          trap cleanup EXIT
+          cat > "${ASKPASS}" <<'ASKPASS_EOF'
+          #!/bin/sh
+          case "$1" in
+            *Username*) printf '%s\n' "oauth2" ;;
+            *) printf '%s\n' "${GITLAB_SYNC_TOKEN}" ;;
+          esac
+          ASKPASS_EOF
+          chmod 700 "${ASKPASS}"
+
+          export GIT_ASKPASS="${ASKPASS}"
+          export GIT_TERMINAL_PROMPT=0
+          # Ignora cualquier credential helper persistente durante esta ejecucion.
+          export GIT_CONFIG_COUNT=1
+          export GIT_CONFIG_KEY_0=credential.helper
+          export GIT_CONFIG_VALUE_0=
+
+          LOCAL_SHA="$(git rev-parse HEAD)"
+          echo "Origen: ${SOURCE_BRANCH} @ ${LOCAL_SHA}"
+
+          # Preflight: detecta divergencia antes de transferir objetos LFS.
+          REMOTE_SHA="$(git ls-remote --heads gitlab "refs/heads/${SOURCE_BRANCH}" | awk '{print $1}')"
+          if [ -n "${REMOTE_SHA}" ]; then
+            if ! git cat-file -e "${REMOTE_SHA}^{commit}" 2>/dev/null; then
+              git fetch --no-tags gitlab "refs/heads/${SOURCE_BRANCH}"
+            fi
+            if ! git merge-base --is-ancestor "${REMOTE_SHA}" HEAD; then
+              echo "::error title=Divergencia de historial::GitLab (${REMOTE_SHA}) no es ancestro de GitHub (${LOCAL_SHA}) en ${SOURCE_BRANCH}. Se requiere intervencion humana; este workflow no reescribe historia."
+              exit 1
+            fi
+          fi
+
           echo "Subiendo objetos Git LFS..."
           git lfs push --all gitlab
 
-          echo "Replicando rama ${SOURCE_BRANCH}..."
-          # Primero se intenta un push normal (fast-forward). Solo si el historial
-          # de GitLab diverge se recurre al espejo forzado. En ramas protegidas
-          # el push forzado sera rechazado, lo que evita reescribir main.
-          if git push gitlab "HEAD:refs/heads/${SOURCE_BRANCH}"; then
-            echo "Push normal completado."
-          else
-            echo "Push normal rechazado; intentando espejo forzado de ${SOURCE_BRANCH}..."
-            git push --force gitlab "HEAD:refs/heads/${SOURCE_BRANCH}"
+          echo "Replicando rama ${SOURCE_BRANCH} (solo fast-forward)..."
+          if ! git push gitlab "HEAD:refs/heads/${SOURCE_BRANCH}"; then
+            echo "::error title=Push rechazado::GitLab rechazo el push fast-forward de ${SOURCE_BRANCH}. Revise permisos del token y la proteccion de rama; no se intento reescritura."
+            exit 1
+          fi
+
+          REMOTE_SHA="$(git ls-remote --heads gitlab "refs/heads/${SOURCE_BRANCH}" | awk '{print $1}')"
+          if [ "${REMOTE_SHA}" != "${LOCAL_SHA}" ]; then
+            echo "::error title=SHA divergente::GitLab=${REMOTE_SHA} GitHub=${LOCAL_SHA} en ${SOURCE_BRANCH}."
+            exit 1
           fi
 
           {
@@ -80,6 +136,10 @@ jobs:
             echo "| Campo | Valor |"
             echo "| :--- | :--- |"
             echo "| Rama | \`${SOURCE_BRANCH}\` |"
-            echo "| SHA | \`$(git rev-parse HEAD)\` |"
+            echo "| SHA | \`${LOCAL_SHA}\` |"
             echo "| Destino | \`${GITLAB_REPO}\` |"
+            echo "| Modo | fast-forward, sin reescritura |"
+            echo "| Verificacion SHA | OK |"
           } >> "$GITHUB_STEP_SUMMARY"
+
+          unset GITLAB_SYNC_TOKEN

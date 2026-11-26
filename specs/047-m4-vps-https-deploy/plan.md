@@ -1,10 +1,12 @@
 # Plan de Implementación (Spec Kit): SPEC-047 VPS, Seguridad, HTTPS y Despliegue Continuo
 
 **Identificador:** `SPEC-047`
-**Feature Branch:** `feature/m4-vps-https-deploy`
+**Feature Branch:** `feature/m4-gitlab-registry-deploy`
+**Issues Relacionadas:** #46 (sincronización canónica) · #48 (CI/Registry/LFS) · #49 (VPS/firewall/TLS) · #50 (secretos) · #51 (E2E público) · #52 (gobernanza, fuera de alcance)
 **Spec Técnica:** [spec.md](./spec.md)
 **Tasks:** [tasks.md](./tasks.md)
 **Fecha SDD (Prospectiva):** 2026-11-24
+**Estado:** Implementado y validado localmente; pendiente de validación en GitLab oficial y VPS
 
 ---
 
@@ -20,7 +22,8 @@
 
 ```text
 push a develop (GitHub)
-  → espejo → GitLab pipeline
+  → espejo fast-forward (GIT_ASKPASS efímero, sin token en la URL)
+  → GitLab pipeline
     → quality (Ruff)
       → test (pytest + cobertura)
         → build (wheel + image :$CI_COMMIT_SHA)
@@ -53,20 +56,21 @@ push a develop (GitHub)
 | `LETSENCRYPT_EMAIL` | GitLab CI/CD | Sí | No | Contacto para Let's Encrypt |
 | `DEPLOY_TOKEN_USER` | GitLab CI/CD | Sí | No | Usuario del Deploy Token |
 | `DEPLOY_TOKEN` | GitLab CI/CD | Sí | Sí | Token con `read_registry` |
-| `GITLAB_TOKEN` | GitHub Secrets | — | — | Token con `write_repository` para el espejo |
+| `GITLAB_SYNC_TOKEN` | GitHub Secrets | — | — | Token con `write_repository` para el espejo (canónico, `SPEC-046`) |
 
-> Ningún valor se versiona. La tabla anterior es la única referencia admitida en documentación.
+> Ningún valor se versiona. La tabla anterior es la única referencia admitida en documentación. El workflow acepta `GITLAB_TOKEN` como alias de compatibilidad, pero la documentación y `SPEC-046` usan `GITLAB_SYNC_TOKEN`.
 
-## 5. Cambios Previstos
+## 5. Cambios Implementados
 
-| Archivo | Cambio |
-| :--- | :--- |
-| `deploy/docker-compose.prod.yml` | Nuevo: API sin puerto público, Nginx TLS, certbot y red interna. |
-| `deploy/nginx.prod.conf.template` | Nuevo: redirección 80→443, TLS, proxy a `api:8000`, ACME webroot. |
-| `deploy/.env.production.example` | Nuevo: variables no secretas de ejemplo. |
-| `.gitlab-ci.yml` | Nuevo stage `deploy` y job `deploy_vps` con reglas por disponibilidad de variables. |
-| `docs/deployment-m4.md` | Nuevo: runbook de VPS, DNS, TLS, variables, verificación y reversión. |
-| `specs/047-.../` | Spec, plan y tareas prospectivas. |
+| Archivo | Cambio | Estado |
+| :--- | :--- | :--- |
+| `deploy/docker-compose.prod.yml` | API sin puerto público, Nginx TLS, certbot y red interna. | Implementado localmente |
+| `deploy/nginx.prod.conf.template` | Redirección 80→443, TLS, proxy a `api:8000`, ACME webroot. | Implementado localmente |
+| `deploy/.env.production.example` | Variables no secretas de ejemplo. | Implementado localmente |
+| `.gitlab-ci.yml` | Stage `deploy` y job `deploy_vps` con reglas por disponibilidad de variables. | Implementado localmente; no ejecutado en GitLab |
+| `docs/deployment-m4.md` | Runbook de VPS, DNS, TLS, variables, verificación y reversión. | Implementado localmente |
+| `specs/047-.../` | Spec, plan y tareas prospectivas. | Implementado localmente |
+| `.github/workflows/mirror-to-gitlab.yml` | Espejo unidireccional fast-forward con credencial efímera. | Implementado localmente; no verificado |
 
 ## 6. Procedimiento Operativo (resumen)
 
@@ -79,16 +83,28 @@ push a develop (GitHub)
 7. **Verificación:** `GET /health` 200 por HTTPS, `/predict` con imagen válida, `http://IP:8000` cerrado.
 8. **Renovación:** el contenedor `certbot` renueva cada 12 h; un cron del host recarga Nginx (`docker compose exec -T web nginx -s reload`).
 
-## 7. Validación Local
+## 7. Validación Local Ejecutada (2026-11-25)
 
-| Comprobación | Comando | Criterio |
+| Comprobación | Comando | Resultado |
 | :--- | :--- | :--- |
-| Sintaxis YAML | Parseo con PyYAML | Sin error |
-| Compose | `docker compose -f deploy/docker-compose.prod.yml config` | Sin error; `api` sin `ports` |
-| Calidad | `uv run ruff check .` / `ruff format --check .` | Código 0 |
-| Pruebas | `uv run pytest tests/unit --cov=src --cov=api` | ≥ 180 pruebas, cobertura ≥ 85 % |
-| Secretos | Búsqueda de `glpat-`, `BEGIN OPENSSH`, `password=` | Sin valores reales |
-| Nginx | Revisión de `nginx -t` en contenedor (si Docker está disponible) | Sintaxis válida |
+| Sintaxis YAML y etapas | Parseo con PyYAML + `glab ci lint` | Válido; `quality → test → build → deploy` |
+| Compose | `docker compose --env-file deploy/.env.production.example -f deploy/docker-compose.prod.yml config` | Válido; `api.ports` vacío, `api.expose=8000`, `web` publica `80:80` y `443:443` |
+| Calidad | `uv run --no-sync ruff check .` / `ruff format --check .` | `All checks passed!`; `196 files already formatted` |
+| Pruebas | `uv run --no-sync pytest tests/unit --cov=src --cov=api --cov-fail-under=85` | **180 pruebas** (`179 passed`, `1 skipped` por Tcl/Tk); cobertura **97.86 %** |
+| Secretos | Búsqueda de `glpat-`, `BEGIN OPENSSH`, `password=` y credenciales en URLs | Sin valores reales |
+| Nginx | Revisión de plantilla y `docker compose config` | Sintaxis y variables consistentes; `nginx -t` en VPS queda pendiente |
+
+### 7.1 Validación remota pendiente
+
+| Comprobación | Estado | Motivo |
+| :--- | :--- | :--- |
+| Espejo GitHub → GitLab | Pendiente | Falta `GITLAB_SYNC_TOKEN` y una ejecución real |
+| Pipeline GitLab `quality → test → build → deploy` | Pendiente | No se ha ejecutado en el proyecto oficial `89374502` |
+| Tag de imagen en Registry | Pendiente | Depende del pipeline de GitLab |
+| VPS, DNS, TLS y `deploy_vps` | Pendiente | Infraestructura no aprovisionada |
+| E2E público `/health` y `/predict` | Pendiente | Depende del despliegue |
+
+> La validación local y cualquier run de GitHub Actions no sustituyen estas comprobaciones remotas.
 
 ## 8. Riesgos y Mitigación
 

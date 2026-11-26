@@ -1,11 +1,12 @@
 # Especificación Técnica (Spec Kit): SPEC-047 VPS, Seguridad, HTTPS y Despliegue Continuo
 
 **Identificador:** `SPEC-047`
-**Feature Branch:** `feature/m4-vps-https-deploy`
+**Feature Branch:** `feature/m4-gitlab-registry-deploy`
+**Issues Relacionadas:** [#46](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues/46) (sincronización canónica) · [#48](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues/48) (CI/Registry/LFS) · [#49](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues/49) (VPS/firewall/TLS) · [#50](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues/50) (secretos) · [#51](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues/51) (E2E público) · [#52](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues/52) (gobernanza, fuera de alcance)
 **Unidad / Historia Asociada:** `M4-01`, `M4-02`, `M4-06`, `M4-07`, `M4-08`, `TOOL-03`, `TOOL-07`
 **Fecha de Elaboración SDD (Prospectiva):** 2026-11-24
 **Trazabilidad Temporal:** **Especificación prospectiva elaborada ANTES de crear el Compose de producción, la configuración TLS y el job de despliegue.**
-**Estado:** En progreso — implementación local, sin aprovisionamiento ni despliegue
+**Estado:** Implementado y validado localmente; **pendiente de validación en GitLab oficial y VPS**
 **Responsable:** Frente B — DevOps (asignación por ratificar por el equipo)
 **Artefactos Relacionados:** [plan.md](./plan.md) · [tasks.md](./tasks.md) · [docs/deployment-m4.md](../../docs/deployment-m4.md)
 
@@ -23,7 +24,20 @@ La unidad cubre:
 4. **Job `deploy` automático en `develop`** (manual y con aprobación en `main`), con *resource group* para evitar despliegues concurrentes, verificación de `/health` y reversión documentada.
 5. **Gestión de secretos** exclusivamente mediante variables protegidas/enmascaradas de GitLab o `.env` fuera de Git.
 
-**Fuera de alcance:** compra del dominio, aprovisionamiento de la VPS sin autorización humana, cambios en el modelo/API/UI y configuración del espejo GitHub → GitLab (`SPEC-046`).
+**Fuera de alcance:** compra del dominio, aprovisionamiento de la VPS sin autorización humana, cambios en el modelo/API/UI y configuración del espejo GitHub → GitLab (`SPEC-046`, cuya especificación canónica ya vive en `develop` tras la PR #47; esta PR no la duplica).
+
+### 1.1 Estado de implementación y validación
+
+| Componente | Estado | Evidencia / pendiente |
+| :--- | :--- | :--- |
+| `deploy/docker-compose.prod.yml`, `deploy/nginx.prod.conf.template`, `deploy/.env.production.example` | Implementado localmente | `docker compose config` válido; `api` solo declara `expose: 8000` |
+| Job `deploy_vps` y stage `deploy` en `.gitlab-ci.yml` | Implementado localmente | `glab ci lint` válido; **no ejecutado en GitLab oficial** |
+| Pipeline `quality → test → build → deploy` | Implementado localmente | Etapas verificadas por parseo; **no ejecutado en GitLab** |
+| VPS, firewall, DNS y TLS | **Pendiente** | No hay VPS ni dominio aprovisionados |
+| Verificación E2E `/health`, `/predict`, HTTPS | **Pendiente** | Requiere despliegue real |
+| Variables y secretos protegidos | Diseñado; no configurado | Solo se documentan nombres; no hay valores |
+
+> **Honestidad de estado:** GitHub Actions en verde no sustituye la validación del pipeline oficial de GitLab ni del despliegue público. La unidad solo se declara verificada con evidencia remota real.
 
 ---
 
@@ -38,6 +52,7 @@ La unidad cubre:
 | **Certificados en `./certbot/conf` y validación en `./certbot/www`.** | *Bind mounts* simples, inspeccionables y fáciles de respaldar. |
 | **Primer certificado con `certbot --standalone`; renovación con `--webroot`.** | Permite emitir TLS antes de que Nginx tenga certificados y renovar sin detener el servicio. |
 | **Credenciales de Registry en la VPS mediante Deploy Token (`read_registry`).** | El `CI_JOB_TOKEN` caduca y no debe persistir en la VPS. |
+| **Sincronización GitHub → GitLab solo fast-forward y con credencial efímera.** | `SPEC-046` prohíbe reescribir historia; el token se entrega con `GIT_ASKPASS` temporal y nunca se embebe en la URL ni en `.git/config`. |
 | **`deploy` automático solo en `develop`; manual en `main`.** | Un push de integración se demuestra en vivo; producción principal conserva aprobación humana. |
 
 ### 2.1 Supuestos que deben confirmarse antes de ejecutar
@@ -109,4 +124,4 @@ La unidad cubre:
 
 ## 6. Criterio de Cierre
 
-La unidad se considera **verificada** solo con evidencia real de: VPS operativa, firewall activo, DNS resolviendo, certificado válido, `/health` 200 por HTTPS, puerto 8000 no accesible desde Internet, job `deploy_vps` ejecutado y una actualización visible tras un push autorizado. Sin VPS ni dominio, el estado máximo es **implementado localmente, no verificado**.
+La unidad se considera **verificada** solo con evidencia real de: VPS operativa, firewall activo, DNS resolviendo, certificado válido, `/health` 200 por HTTPS, puerto 8000 no accesible desde Internet, job `deploy_vps` ejecutado y una actualización visible tras un push autorizado. Sin VPS ni dominio, el estado máximo es **implementado y validado localmente, no verificado**. Un GitHub Actions en verde no cuenta como evidencia de esta unidad.
