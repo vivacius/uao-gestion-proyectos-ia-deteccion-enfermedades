@@ -98,5 +98,5 @@ specs/046-m4-github-gitlab-sync/
 
 > **Referencias normativas:** [AGENTS.md](../../AGENTS.md) · [Constitución](../../.specify/memory/constitution.md) · [Matriz Académica M1–M4](../../docs/academic-compliance-matrix.md) · [Makefile](../../Makefile) · Skills: [`quality-and-make`](../../.agents/skills/quality-and-make/SKILL.md), [`github-gitlab-operations`](../../.agents/skills/github-gitlab-operations/SKILL.md), [`secure-cicd-deployment`](../../.agents/skills/secure-cicd-deployment/SKILL.md)
 
-- **Validación sin regresiones:** Al no modificar código Python ni `.gitlab-ci.yml` en esta unidad de diseño, el Quality Gate local (`ruff`, `pytest`) permanece intacto. Cuando se implemente `.github/workflows/sync-gitlab.yml`, se validará sintaxis YAML, ausencia de secretos y ejecución controlada tras PR aprobada.
+- **Validación sin regresiones:** Al no modificar código Python ni `.gitlab-ci.yml` en esta unidad de diseño, el Quality Gate local (`ruff`, `pytest`) permanece intacto. En la ejecución posterior (PR `#45`), el workflow se integró como `.github/workflows/mirror-to-gitlab.yml` y el PrAT `GITLAB_SYNC_TOKEN` opera con rol `Developer (30)` (válido para `develop`, sin permiso de *push* directo sobre `main` protegida).
 <!-- [/M1-M4 GOVERNANCE EXTENSION] -->
