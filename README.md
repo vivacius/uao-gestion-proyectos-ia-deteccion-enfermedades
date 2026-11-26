@@ -82,7 +82,7 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 ![Arquitectura del Sistema — Archify](docs/architecture/system-architecture.png)
 
 ### Flujo de comunicación
-1. El usuario carga una fotografía foliar en la **interfaz de escritorio en Tkinter (`ui/desktop_app.py`)** (o en la nueva interfaz web independiente sin Streamlit en curso bajo HU-06), que se comunica vía HTTP con el backend.
+1. El usuario carga una fotografía foliar en la **interfaz web desacoplada (`ui/web/static/`, servida por FastAPI en `/` o vía Nginx)** o en la **interfaz de escritorio en Tkinter (`ui/desktop_app.py`)**, ambas comunicadas exclusivamente vía HTTP con el backend.
 2. El cliente (`ui/api_client.py`) envía la imagen mediante `POST /predict` (`multipart/form-data`) al backend **FastAPI** (`api/main.py`), **sin cargar pesos ni importar PyTorch/Transformers en la capa de presentación**.
 3. **FastAPI** delega en `src/inference.py`, que valida la imagen (`src/preprocessing.py`), aplica las transformaciones exactas de `preprocessor_config.json`, ejecuta el pase hacia adelante (`forward`) sobre **CPU** con `torch.no_grad()` y formatea el Top-3 (`src/postprocessing.py`).
 4. La respuesta JSON estructurada regresa al frontend, mostrando la predicción, probabilidades Top-3, advertencia por baja confianza ($\tau = 0.60$) y descargo agronómico.
