@@ -1,45 +1,48 @@
-# Guion de Sustentación Final M1–M4 (`28/11/2026`)
+# Guion de Sustentación Final M4 (`28/11/2026`, 15 min en vivo)
 
-**Duración máxima:** `15:00` minutos (sin videos ni diapositivas; demostración 100 % en vivo).  
+**Lugar:** Salón 2103 (A2) · **Formato:** 100 % en vivo (sin videos ni diapositivas).  
 **URL pública HTTPS:** `https://agroscan-uao.duckdns.org/`  
-**Repositorio principal (GitHub):** `vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades`  
-**Pipeline CI/CD y Registry (GitLab):** `vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades` (`ID 89374502`)
+**GitHub:** `vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades`  
+**GitLab (`ID 89374502`):** `vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades`
 
 ---
 
-## Reparto de Bloques (14:00 min + 1:00 min margen)
-
-### 1. `00:00–03:30` — Producto y Demo Pública HTTPS (John Restrepo)
-- **Qué mostrar en vivo:** `https://agroscan-uao.duckdns.org/` y `https://agroscan-uao.duckdns.org/docs`.
-- **Puntos clave:**
-  - Problema fitosanitario, modelo `rodynaemad/plant-disease-dinov2-small` (`38` clases, `SafeTensors` en CPU), umbral $\tau=0.60$ y descargo agronómico orientativo.
-  - Subir hoja real/de prueba desde la interfaz web HTTPS, mostrar petición `POST /predict` en Network (`200 OK`), ranking Top-3 y prueba de error controlado (`415` con formato no soportado).
-  - Mostrar brevemente `docs/model-card.md` (honestidad metodológica: sin métricas inventadas sobre imágenes sintéticas).
-
-### 2. `03:30–07:00` — Pipeline GitLab, Registry y Despliegue VPS (José Silva)
-- **Qué mostrar en vivo:** Pipeline de GitLab (`89374502`), Container Registry y verificación HTTPS/puerto `8000`.
-- **Puntos clave:**
-  - Explicar `Mirror to GitLab` desde GitHub (`develop`/`main`, fast-forward sin `--force`, Git LFS con `model.safetensors`).
-  - Mostrar las 4 etapas ejecutadas en verde: `quality` (`lint`), `test` (`run_test`), `build` (`package_wheel`, `build_docker` con SHA en Registry) y `deploy` (`deploy_vps`).
-  - Mostrar `GET https://agroscan-uao.duckdns.org/health` (`200 OK`, `device: "cpu"`, `model_path: "/app/modelo_plantas"`), certificado TLS válido y que el puerto `8000` no está expuesto al público.
-
-### 3. `07:00–10:30` — Gobernanza, Kanban, QA y Enmienda Constitucional (Santiago Correa)
-- **Qué mostrar en vivo:** GitHub (`main` y `develop` protegidas), `Project #1` (`M3` y `M4 - Sprint activo`), Constitución `v2.0.0` y `pytest` / `ruff`.
-- **Puntos clave:**
-  - Protección de `main` y `develop` en GitHub (PR, 1 aprobación, CI `Ruff & Unit Tests`, bloqueo de `force push` y borrado).
-  - Tablero Kanban (`Backlog`, `In Progress` WIP `4`, `In Review` WIP `2`, `Done`), `docs/kanban-flow-metrics.md` (`35+` PRs fusionados) y `docs/post-mortem-m1-m4.md`.
-  - Suite ampliada a **365 pruebas unitarias** (`SPEC-051`) + `6` de integración, **`98 %` cobertura** en `src/` y `api/`, Ruff limpio y Enmienda Constitucional **`v2.0.0`** aprobada por consenso unánime (`PR #54`).
-
-### 4. `10:30–14:00` — Arquitectura Backend, Seguridad y MLflow (Jhonatan Tapia)
-- **Qué mostrar en vivo:** `https://agroscan-uao.duckdns.org/docs`, `https://agroscan-uao.duckdns.org/model-info` y MLflow UI local (`http://127.0.0.1:5050`).
-- **Puntos clave:**
-  - Contratos Pydantic v2, singleton CPU `local_files_only=True`, preprocesamiento `[1, 3, 224, 224]` y manejo de excepciones (`400`/`413`/`415`).
-  - Secretos protegidos/enmascarados en GitHub Secrets y GitLab CI/CD Variables (`SPEC-048`), revisión de pares y trazabilidad en `docs/academic-compliance-matrix.md`.
-  - MLflow local con 3 runs comparables ($\tau \in \{0.60, 0.80, 0.40\}$) y Model Registry (`dinov2-plant-disease-classifier`).
+## 1. Entorno Abierto Antes de Entrar (Checklist 5.4)
+- [ ] **VS Code** abierto en la raíz del repositorio con terminal integrada (`uv`, `pytest`, `ruff`, `docker` disponibles).
+- [ ] **GitHub:** repositorio, PRs, reglas de protección (`main` / `develop`) y **Projects (Kanban `M4 - Sprint activo`)** abiertos.
+- [ ] **GitLab:** proyecto `89374502`, **Pipelines** y **Container Registry** abiertos.
+- [ ] **GitLab CLI (`glab`):** `glab auth status` y `glab pipeline status` funcionando en terminal.
+- [ ] **GitLab MCP:** conectado en el cliente/agente de demostración.
+- [ ] **Navegador:** `https://agroscan-uao.duckdns.org/`, `https://agroscan-uao.duckdns.org/docs`, `https://agroscan-uao.duckdns.org/health` y **MLflow UI** (`http://127.0.0.1:5050`) abiertos.
+- [ ] **Variables CI:** pestaña de variables enmascaradas/protegidas lista (cero `.env` ni llaves en el repo).
 
 ---
 
-## Checklist Previo al Inicio de la Sustentación
-1. Verificar `https://agroscan-uao.duckdns.org/health` = `200 OK`.
-2. Tener abierto MLflow UI local en `http://127.0.0.1:5050`.
-3. Tener abiertas las pestañas: GitHub (`develop`/`main`), `Project #1` (`M4 - Sprint activo`), GitLab Pipelines (`89374502`) y Container Registry.
+## 2. Guion Cronometrado por Bloques Oficiales (5.3)
+
+### `0:00 – 2:00` · Contexto y Repositorio — **John Restrepo**
+- Presenta el problema fitosanitario, el modelo `DINOv2-small` (`38` clases, `SafeTensors` en CPU) y la app web en `https://agroscan-uao.duckdns.org/` (`POST /predict` + Top-3 + $\tau=0.60$).
+- Muestra en VS Code/GitHub: `README.md` (badges + diagrama Archify), `CONSTITUTION.md`, `LICENSE`, `.gitignore`, `docs/model-card.md` y trazabilidad de PRs.
+
+### `2:00 – 5:00` · Calidad y Docker — **Santiago Correa**
+- En terminal ejecuta en vivo:
+  - `uv sync --frozen` (o verifica entorno `uv`, cero `pip` / `requirements.txt`).
+  - `uv run ruff check .` y `uv run pytest tests/unit -q` (**365 unitarias + 6 integración, 98 % cobertura**).
+- Muestra `Dockerfile` multi-etapa CPU, `.dockerignore`, `docker-compose.yml` y la imagen con tag SHA en el **Container Registry** de GitLab (o `docker build`/`docker run` local).
+- Muestra el Kanban (`Project #1` con WIP `4/2`) y `CONSTITUTION.md` (`v2.0.0`).
+
+### `5:00 – 10:00` · Pipeline y Deploy en Vivo — **José Silva**
+- Explica `.gitlab-ci.yml` (`quality: lint` → `test: run_test` → `build: package_wheel, build_docker` → `deploy: deploy_vps`) y `Mirror to GitLab`.
+- **Cambio mínimo en vivo:** aplica un cambio mínimo controlado (vía PR rápido aprobado por un par hacia `develop` o commit de demostración acordado), muestra el disparo de `Mirror to GitLab` → pipeline de GitLab → actualización de imagen en Registry → `deploy_vps` → `https://agroscan-uao.duckdns.org/` actualizada sin caídas y `GET /health` `200 OK`.
+
+### `10:00 – 13:00` · Infraestructura, Secretos y Herramientas — **Jhonatan Tapia**
+- Muestra el Droplet/VPS activo, firewall (`22/80/443`, puerto `8000` cerrado al público), Nginx + TLS/HTTPS válido en `https://agroscan-uao.duckdns.org/`.
+- Muestra variables CI protegidas y enmascaradas en GitLab (`DEPLOY_HOST`, llaves SSH, `DEPLOY_TOKEN`), **GitLab MCP conectado** y `glab auth status` / `glab pipeline status` en terminal.
+- Cierra mostrando `/docs`, `/model-info` y **MLflow UI** (`http://127.0.0.1:5050` con los 3 runs y Model Registry).
+
+### `13:00 – 15:00` · Preguntas Individuales — **Todos (4 integrantes)**
+- Cada integrante explica su parte, una decisión de diseño clave y qué haría si falla el deploy:
+  - **Santiago:** separación mocks (`tests/unit`, 365 pruebas rápidas) vs. modelo real (`tests/integration`); rollback verificando logs de `run_test` / `lint` o revirtiendo al SHA previo en Registry.
+  - **José:** imagen CPU multi-etapa sin `uv`/dev deps y puerto `8000` interno; reversión con `IMAGE_TAG=<sha-anterior>` en `/opt/agroscan` (`docs/deployment-m4.md` § 9).
+  - **Jhonatan:** carga local `SafeTensors` singleton en CPU + secretos mínimos en CI; diagnóstico en `deploy_vps` / logs Nginx / `docker compose ps` en VPS.
+  - **John:** frontend desacoplado vía HTTP sin `torch` en UI + umbral $\tau=0.60$; diagnóstico en Network / `/health` / validación de errores `400`/`415`.
