@@ -2,7 +2,7 @@ name: Quality Gate CI (M3)
 
 on:
   pull_request:
-    branches: [develop]
+    branches: [develop, main]
   push:
     branches: [develop]
   workflow_dispatch:
