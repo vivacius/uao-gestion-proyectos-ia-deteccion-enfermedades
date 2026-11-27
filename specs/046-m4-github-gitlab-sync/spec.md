@@ -104,7 +104,12 @@ Como equipo M4, quiero verificar mediante `glab` CLI (y GitLab MCP cuando esté 
 
 > **Referencias normativas:** [AGENTS.md](../../AGENTS.md) · [Constitución](../../.specify/memory/constitution.md) · [Matriz Académica M1–M4](../../docs/academic-compliance-matrix.md) · Skills: [`academic-compliance`](../../.agents/skills/academic-compliance/SKILL.md), [`sdd-workflow`](../../.agents/skills/sdd-workflow/SKILL.md)
 
-- **ID Estable y Trazabilidad:** `SPEC-046` | **Historia / Issue (GitHub Projects):** `M4 / TOOL-05` (Issue `#46`) | **Condición temporal:** **Prospectiva** (elaborada ANTES de implementar `.github/workflows/sync-gitlab.yml` y antes de configurar secretos/mirroring).
+- **ID Estable y Trazabilidad:** `SPEC-046` | **Historia / Issue (GitHub Projects):** `M4 / TOOL-05` (Issue `#46`) | **Condición temporal:** **Prospectiva** (elaborada ANTES de implementar `.github/workflows/mirror-to-gitlab.yml` —originalmente propuesto como `sync-gitlab.yml`— y antes de configurar secretos/mirroring).
+
+### Nota de Desviación Posterior a la Implementación (`2026-11-25`)
+- **Workflow implementado:** `.github/workflows/mirror-to-gitlab.yml` (integrado vía PR `#45`, en lugar del nombre preliminar `sync-gitlab.yml`).
+- **Rol del PrAT:** `GITLAB_SYNC_TOKEN` (`id: 30015655`) se creó con `access_level: 30` (`Developer`) y scope `write_repository` en lugar de `Maintainer (40)`; permite *push fast-forward* a `develop` protegida (`push: Developers + Maintainers`), pero no a `main` protegida (`push: Maintainers`).
+- **Pendiente:** validar en vivo la sincronización hacia `develop` tras su protección (`352179308`).
 - **Requisitos académicos aplicables (Matriz § 1):** `TOOL-01`, `TOOL-03`, `TOOL-04`, `TOOL-05`, `TOOL-06`, `TOOL-07`, `M4-03`, `M4-04`, `M4-05`, `M4-06` — Cumplimiento acumulativo `M1`–`M4`.
 - **Tecnologías prohibidas:** Streamlit (frontend evaluable M3/M4), `pip`, `requirements.txt`, notebooks `.ipynb`.
 - **Capacidades protegidas a conservar (Matriz § 2):** Modelo DINOv2-small / `model.safetensors` (`local_files_only=True`), 38 clases, $\tau=0.60$, descargo agronómico, FastAPI (`/health`, `/model-info`, `/predict`, `/docs`), UI desacoplada HTTP, MLflow (`mlflow_tracking.db`, `mlruns/`), `pytest` AAA ($\ge 120$ pruebas, $\ge 85\%$ cov.), Docker CPU/Nginx, `.gitlab-ci.yml` (sin alterar en esta unidad), `.github/workflows/ci.yml`, Constitución y `specs/001..040/`.
