@@ -37,6 +37,6 @@ Como integrante del Grupo 2, quiero documentar de forma trazable en Spec Kit el 
 
 - **ID Estable y Trazabilidad:** `SPEC-058` | **Vínculo:** PR #45, PR #60 · Issue #49, #51 | **Condición temporal:** **Retrospectiva**.
 - **Requisitos académicos aplicables:** `M4-01, M4-02, M4-07`.
-- **Tecnologías prohibidas:** Streamlit, `pip`, equirements.txt`, `.ipynb`.
+- **Tecnologías prohibidas:** Streamlit, `pip`, `requirements.txt`, `.ipynb`.
 - **Capacidades protegidas:** Contratos M1–M4 vigentes y honestidad temporal SDD.
 <!-- [/M1-M4 GOVERNANCE EXTENSION] -->
