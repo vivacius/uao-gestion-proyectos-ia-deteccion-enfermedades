@@ -412,6 +412,7 @@ El repositorio incluye un [`Makefile`](Makefile) en la raíz para ejecutar los f
 - **Dataset de entrenamiento (*PlantVillage*):** Publicado por Hughes & Salathé (2015) y Mohanty, Hughes & Salathé (2016). La distribución `mohanty/PlantVillage` en Hugging Face declara licencia **CC BY-SA 3.0**; esa licencia aplica al conjunto de datos y no se sustituye por la licencia de los pesos ajustados.
 - **Pesos ajustados del modelo:** La Model Card de `rodynaemad/plant-disease-dinov2-small` declara **CC BY-SA 4.0**. Esta licencia aplica exclusivamente a los pesos distribuidos por la autora y no relicencia el dataset de origen.
 - **Alcance de la licencia MIT:** La licencia MIT se limita al código fuente original del Grupo 2 y no se extiende a los pesos, la arquitectura base ni los datos de terceros, que conservan sus licencias y atribuciones obligatorias.
+- **Gobernanza y Constitución M1–M4:** Consulta [`CONSTITUTION.md`](CONSTITUTION.md) (y el texto íntegro en [`.specify/memory/constitution.md`](.specify/memory/constitution.md)) junto con la matriz académica en [`docs/academic-compliance-matrix.md`](docs/academic-compliance-matrix.md).
 
 ---
 
