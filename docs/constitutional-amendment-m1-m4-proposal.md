@@ -97,4 +97,4 @@ Para ratificar esta enmienda como **Versión 2.0.0** de `.specify/memory/constit
 - [ ] Santiago Correa
 - [ ] José Silva
 - [ ] Jhonatan Tapia
-- [ ] John Restrepo
+- [x] John Restrepo — ratificado en Issue #52 (2026-11-26)
