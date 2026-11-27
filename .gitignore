@@ -11,6 +11,13 @@ htmlcov/
 .ruff_cache/
 .mypy_cache/
 
+# Variables de entorno locales y de producción (secretos fuera de Git — M4-06)
+.env
+.env.*
+!.env.example
+!.env.production.example
+!deploy/.env.production.example
+
 # Artefactos de empaquetado (HU-08)
 dist/
 build/

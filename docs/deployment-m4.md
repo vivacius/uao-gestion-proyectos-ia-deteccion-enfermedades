@@ -267,15 +267,32 @@ No borrar `certbot/conf` ni `certbot/www` durante una reversión. Si el fallo es
 
 | Evidencia | Resultado | Fecha | Responsable |
 | :--- | :--- | :--- | :--- |
-| GitHub Actions Quality Gate en verde | Pendiente de confirmar tras el push | — | — |
-| Workflow `Mirror to GitLab` en verde | Pendiente (falta `GITLAB_SYNC_TOKEN`) | — | — |
-| SHA GitHub = SHA GitLab | Pendiente | — | — |
-| Pipeline GitLab `quality → test → build → deploy` en verde | Pendiente (no ejecutado en GitLab oficial) | — | — |
-| Tag `<sha>` en Registry | Pendiente | — | — |
-| Job `deploy_vps` en verde | Pendiente (sin VPS) | — | — |
-| `GET /health` 200 por HTTPS | Pendiente | — | — |
-| `POST /predict` 200 con imagen válida | Pendiente | — | — |
-| Puerto 8000 cerrado desde Internet | Pendiente | — | — |
-| Push autorizado actualiza el servicio | Pendiente | — | — |
+| GitHub Actions Quality Gate en verde | Verificado (`Quality Gate CI (M3)` en verde sobre `develop`) | 2026-11-26 | `@josesilvacalderon111` |
+| Workflow `Mirror to GitLab` en verde | Verificado (`#45748907446`, `#45749582913` y sincronización en `develop` protegida) | 2026-11-26 | `@JhonatanTC99` / `@josesilvacalderon111` |
+| SHA GitHub = SHA GitLab | Verificado (`develop` sincronizado a `33ff9a2caf8220bd5e3b0fee60c77a7066c4219c`) | 2026-11-26 | `@josesilvacalderon111` |
+| Pipeline GitLab `quality → test → build → deploy` en verde | Verificado en proyecto oficial `89374502` (4 etapas en `success`) | 2026-11-26 | `@josesilvacalderon111` |
+| Tag `<sha>` en Registry | Verificado (`registry.gitlab.com/...:33ff9a2caf8220bd5e3b0fee60c77a7066c4219c` y `latest`) | 2026-11-26 | `@josesilvacalderon111` |
+| Job `deploy_vps` en verde | Verificado en VPS DigitalOcean (Ubuntu 24.04 LTS, Docker `29.10.1`, Compose `v5.8.0`, TLS Let's Encrypt) | 2026-11-26 | `@josesilvacalderon111` |
+| `GET /health` 200 por HTTPS | Verificado (`HTTP/1.1 200 OK` en `https://agroscan-uao.duckdns.org/health`, `301` desde HTTP, HSTS y cabeceras de seguridad) | 2026-11-26 | `@josesilvacalderon111` |
+| `POST /predict` 200 con imagen válida | Verificado (`HTTP/1.1 200 OK`, Top-3 en español, descargo agronómico, `175.42 ms` en CPU; corrupto `400`, `.bin` `415`) | 2026-11-26 | `@josesilvacalderon111` |
+| Puerto 8000 cerrado desde Internet | Verificado (`ufw status` solo `22/80/443`; `curl --connect-timeout 5 http://<IP_REDACTADA>:8000/health` → `Connection timed out`) | 2026-11-26 | `@josesilvacalderon111` |
+| Push autorizado actualiza el servicio | Pendiente de confirmar actualización automática tras el merge de esta PR hacia `develop` (`T006`) | — | `@josesilvacalderon111` |
+
+### 11.1 Evidencia E2E pública HTTPS verificada (`2026-11-26`, commit `33ff9a2c`)
+
+- **URL pública:** `https://agroscan-uao.duckdns.org` (DNS → VPS DigitalOcean `x86_64`, 2 GB RAM + 2 GB swap, Docker `29.10.1`, Compose `v5.8.0`).
+- **Firewall (`ufw status`):** `Status: active` — únicamente `22/tcp`, `80/tcp`, `443/tcp` en `ALLOW`; política entrante por defecto `deny`.
+- **Redirección y TLS:**
+  - `curl -I http://agroscan-uao.duckdns.org/health` → `HTTP/1.1 301 Moved Permanently` hacia `https://agroscan-uao.duckdns.org/health`.
+  - `curl -i https://agroscan-uao.duckdns.org/health` → `HTTP/1.1 200 OK` con certificado Let's Encrypt válido y cabeceras `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`.
+- **Endpoints verificados:**
+  - `GET /` (UI web desacoplada): `HTTP 200`.
+  - `GET /docs` (OpenAPI/Swagger): `HTTP 200`.
+  - `GET /health`: `HTTP 200` (`status: ok`, `model_available: true`, `device: cpu`, `num_classes: 38`).
+  - `GET /model-info`: `HTTP 200` (`rodynaemad/plant-disease-dinov2-small`).
+  - `POST /predict` (JPG válida): `HTTP 200`, Top-3 en español, descargo agronómico no prescriptivo, `inference_time_ms: 175.42`.
+  - `POST /predict` (JPG corrupta): `HTTP 400 Bad Request` (`CorruptedImageError`).
+  - `POST /predict` (archivo `.bin`): `HTTP 415 Unsupported Media Type` (`UnsupportedImageFormatError`).
+- **Aislamiento de red:** `curl --connect-timeout 5 http://<IP_REDACTADA>:8000/health` → `curl: (28) Connection timed out after 5003 milliseconds`.
 
 > **No sustitución de evidencias:** un run verde de GitHub Actions no acredita la sincronización, el pipeline de GitLab ni el despliegue. Las filas de esta tabla solo se completan con salida real del proyecto GitLab oficial y de la VPS.
