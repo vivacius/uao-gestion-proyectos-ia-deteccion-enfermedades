@@ -250,3 +250,15 @@ With multiple developers:
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+
+---
+
+<!-- [M1-M4 GOVERNANCE EXTENSION] -->
+## M1–M4 Governance, Proportional Verification & Authorization Gate
+
+> **Referencias normativas:** [AGENTS.md](../../AGENTS.md) · [Matriz Académica M1–M4](../../docs/academic-compliance-matrix.md) · [Makefile](../../Makefile) · Skills: [`sdd-workflow`](../../.agents/skills/sdd-workflow/SKILL.md), [`quality-and-make`](../../.agents/skills/quality-and-make/SKILL.md), [`github-gitlab-operations`](../../.agents/skills/github-gitlab-operations/SKILL.md)
+
+- **Trazabilidad:** Vincular cada tarea a `HU-XX / #__`, `M1..M4`/`TOOL-XX` y flujo Kanban (`Backlog → In Progress (máx. 4) → In Review (máx. 2) → Done`).
+- **Verificación proporcional:** Usar `Makefile`/`uv` acorde al alcance real; registrar resultados observados y no marcar `[x]` sin evidencia.
+- **Separación de fases y autorización Git:** Distinguir *implementación*, *validación*, *publicación* e *integración*. Prohibido ejecutar `git commit`, `git push`, `gh pr create`, `gh pr merge`, conmutar ramas por scripts o desplegar sin autorización humana expresa.
+<!-- [/M1-M4 GOVERNANCE EXTENSION] -->

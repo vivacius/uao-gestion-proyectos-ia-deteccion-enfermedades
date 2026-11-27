@@ -82,7 +82,7 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 ![Arquitectura del Sistema — Archify](docs/architecture/system-architecture.png)
 
 ### Flujo de comunicación
-1. El usuario carga una fotografía foliar en la **interfaz de escritorio en Tkinter (`ui/desktop_app.py`)** (o en la nueva interfaz web independiente sin Streamlit en curso bajo HU-06), que se comunica vía HTTP con el backend.
+1. El usuario carga una fotografía foliar en la **interfaz web desacoplada (`ui/web/static/`, servida por FastAPI en `/` o vía Nginx)** o en la **interfaz de escritorio en Tkinter (`ui/desktop_app.py`)**, ambas comunicadas exclusivamente vía HTTP con el backend.
 2. El cliente (`ui/api_client.py`) envía la imagen mediante `POST /predict` (`multipart/form-data`) al backend **FastAPI** (`api/main.py`), **sin cargar pesos ni importar PyTorch/Transformers en la capa de presentación**.
 3. **FastAPI** delega en `src/inference.py`, que valida la imagen (`src/preprocessing.py`), aplica las transformaciones exactas de `preprocessor_config.json`, ejecuta el pase hacia adelante (`forward`) sobre **CPU** con `torch.no_grad()` y formatea el Top-3 (`src/postprocessing.py`).
 4. La respuesta JSON estructurada regresa al frontend, mostrando la predicción, probabilidades Top-3, advertencia por baja confianza ($\tau = 0.60$) y descargo agronómico.
@@ -377,6 +377,23 @@ uv run ruff check .
 uv run ruff format --check .
 ```
 
+### 9.1 Comandos consolidados con `Makefile` (M1–M4)
+
+El repositorio incluye un [`Makefile`](Makefile) en la raíz para ejecutar los flujos cotidianos de forma uniforme en **Linux** y **Windows 11** (requiere **GNU Make** instalado, `uv` y, para los targets `docker-*`, Docker Desktop/Engine activo):
+
+| Target | Propósito | Requisitos |
+| :--- | :--- | :--- |
+| `make help` | Lista los targets disponibles y sus requisitos | GNU Make |
+| `make sync` | Sincroniza `.venv` con `uv sync --frozen` | `uv` |
+| `make lint` / `make format-check` | Ejecuta `ruff check .` y `ruff format --check .` | `uv` |
+| `make test-unit` / `make coverage` | Ejecuta pruebas unitarias (y cobertura en `src/`, `api/`) | `uv` |
+| `make test-integration` / `make test` | Ejecuta pruebas de integración CPU / suite completa | `uv`, `model.safetensors` |
+| `make build` | Genera paquetes Wheel y sdist en `dist/` | `uv` |
+| `make api` / `make health` | Inicia FastAPI (`:8000`) o consulta `GET /health` | `uv`, `model.safetensors` |
+| `make mlflow` | Inicia MLflow UI local (`:5050`) sobre `mlflow_tracking.db` | `uv` |
+| `make docker-build` / `docker-up` / `docker-down` / `docker-ps` | Construye, levanta, detiene o lista contenedores CPU | Docker activo, pesos locales |
+| `make ci` | Ejecuta `lint` + `format-check` + `coverage` | `uv` |
+
 ---
 
 ## ⚠️ 10. Limitaciones del Modelo
@@ -395,6 +412,7 @@ uv run ruff format --check .
 - **Dataset de entrenamiento (*PlantVillage*):** Publicado por Hughes & Salathé (2015) y Mohanty, Hughes & Salathé (2016). La distribución `mohanty/PlantVillage` en Hugging Face declara licencia **CC BY-SA 3.0**; esa licencia aplica al conjunto de datos y no se sustituye por la licencia de los pesos ajustados.
 - **Pesos ajustados del modelo:** La Model Card de `rodynaemad/plant-disease-dinov2-small` declara **CC BY-SA 4.0**. Esta licencia aplica exclusivamente a los pesos distribuidos por la autora y no relicencia el dataset de origen.
 - **Alcance de la licencia MIT:** La licencia MIT se limita al código fuente original del Grupo 2 y no se extiende a los pesos, la arquitectura base ni los datos de terceros, que conservan sus licencias y atribuciones obligatorias.
+- **Gobernanza y Constitución M1–M4:** Consulta [`CONSTITUTION.md`](CONSTITUTION.md) (y el texto íntegro en [`.specify/memory/constitution.md`](.specify/memory/constitution.md)) junto con la matriz académica en [`docs/academic-compliance-matrix.md`](docs/academic-compliance-matrix.md).
 
 ---
 
