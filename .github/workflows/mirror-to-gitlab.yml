@@ -2,23 +2,21 @@
 # Espejo GitHub -> GitLab (SPEC-046)
 # =============================================================================
 # GitHub es la fuente oficial de verdad. Este workflow replica las ramas de
-# integracion (develop y main) hacia el proyecto GitLab que ejecuta CI/CD,
-# publica la imagen en el Container Registry y despliega en la VPS.
+# integracion (develop y main) hacia el proyecto GitLab oficial (89374502).
 #
-# REQUISITOS
-#   - Secreto de repositorio GITLAB_SYNC_TOKEN (canonico, alineado con
-#     SPEC-046) con permiso write_repository. Tambien se acepta el alias
-#     GITLAB_TOKEN por compatibilidad; basta con configurar uno.
-#     Debe crearlo un administrador del repositorio (Settings > Secrets).
-#   - La identidad del token debe estar autorizada para push a main si esa
-#     rama esta protegida en GitLab; de lo contrario el job fallara de forma
-#     visible y no alterara la rama.
+# REQUISITOS DE AUTENTICACION
+#   - develop: secreto de repositorio GITLAB_SYNC_TOKEN (o alias GITLAB_TOKEN)
+#     con permiso write_repository y rol Developer (30).
+#   - main: secreto GITLAB_MAIN_DEPLOY_KEY dentro del GitHub Environment
+#     `gitlab-main-mirror` (restringido exclusivamente a `main`), asociado a la
+#     Deploy Key SSH `github-main-mirror` autorizada sobre `main` en GitLab.
 #
 # SEGURIDAD
-#   - El token nunca se imprime ni se escribe en la URL del remoto o en
-#     .git/config. Se entrega a Git mediante un GIT_ASKPASS efimero alojado en
-#     RUNNER_TEMP y se elimina al finalizar el paso.
-#   - No se usa set -x. El remoto temporal vive solo en el runner efimero.
+#   - Los secretos nunca se imprimen ni se escriben en URLs o .git/config.
+#   - develop usa GIT_ASKPASS efimero en RUNNER_TEMP y lo elimina al salir.
+#   - main usa llave SSH efimera (0600) en RUNNER_TEMP, StrictHostKeyChecking=yes
+#     y verificacion explicita de huella Ed25519 de gitlab.com.
+#   - No se usa set -x.
 #
 # SINCRONIZACION
 #   - Unidireccional GitHub -> GitLab, solo ramas develop y main.
@@ -42,8 +40,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  mirror:
-    name: Mirror ${{ github.ref_name }} to GitLab
+  mirror_develop:
+    if: github.ref == 'refs/heads/develop'
+    name: Mirror develop to GitLab
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -54,11 +53,11 @@ jobs:
           fetch-depth: 0
           lfs: true
 
-      - name: Push mirror to GitLab (fast-forward only)
+      - name: Push develop mirror to GitLab (fast-forward only)
         env:
           GITLAB_SYNC_TOKEN: ${{ secrets.GITLAB_SYNC_TOKEN || secrets.GITLAB_TOKEN }}
           GITLAB_REPO: vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades
-          SOURCE_BRANCH: ${{ github.ref_name }}
+          SOURCE_BRANCH: develop
         run: |
           set -euo pipefail
 
@@ -66,14 +65,6 @@ jobs:
             echo "::error title=Espejo no configurado::Falta el secreto GITLAB_SYNC_TOKEN (o el alias GITLAB_TOKEN). Un administrador debe crearlo para habilitar la sincronizacion GitHub -> GitLab."
             exit 1
           fi
-
-          case "${SOURCE_BRANCH}" in
-            develop|main) ;;
-            *)
-              echo "::error title=Rama no permitida::Solo se sincronizan develop y main; recibido: ${SOURCE_BRANCH}."
-              exit 1
-              ;;
-          esac
 
           # La URL no contiene credenciales y puede persistir en .git/config sin riesgo.
           git remote add gitlab "https://gitlab.com/${GITLAB_REPO}.git"
@@ -138,8 +129,108 @@ jobs:
             echo "| Rama | \`${SOURCE_BRANCH}\` |"
             echo "| SHA | \`${LOCAL_SHA}\` |"
             echo "| Destino | \`${GITLAB_REPO}\` |"
+            echo "| Autenticacion | \`GITLAB_SYNC_TOKEN\` (HTTPS) |"
             echo "| Modo | fast-forward, sin reescritura |"
             echo "| Verificacion SHA | OK |"
           } >> "$GITHUB_STEP_SUMMARY"
 
           unset GITLAB_SYNC_TOKEN
+
+  mirror_main:
+    if: github.ref == 'refs/heads/main'
+    name: Mirror main to GitLab
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: gitlab-main-mirror
+
+    steps:
+      - name: Checkout with full history and LFS
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push main mirror to GitLab via Deploy Key (fast-forward only)
+        env:
+          GITLAB_MAIN_DEPLOY_KEY: ${{ secrets.GITLAB_MAIN_DEPLOY_KEY }}
+          GITLAB_REPO: vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades
+          SOURCE_BRANCH: main
+          GITLAB_ED25519_FINGERPRINT: SHA256:eUXGGm1YGsMAS7vkcx6JOJdOGHPem5gQp4taiCfCLB8
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GITLAB_MAIN_DEPLOY_KEY:-}" ]; then
+            echo "::error title=Espejo main no configurado::Falta el secreto GITLAB_MAIN_DEPLOY_KEY en el Environment gitlab-main-mirror."
+            exit 1
+          fi
+
+          SSH_DIR="${RUNNER_TEMP}/gitlab-mirror-ssh"
+          KEY_FILE="${SSH_DIR}/id_ed25519"
+          KNOWN_HOSTS="${SSH_DIR}/known_hosts"
+          cleanup() {
+            rm -rf "${SSH_DIR}"
+          }
+          trap cleanup EXIT
+
+          mkdir -p "${SSH_DIR}"
+          chmod 700 "${SSH_DIR}"
+
+          printf '%s\n' "${GITLAB_MAIN_DEPLOY_KEY}" | tr -d '\r' > "${KEY_FILE}"
+          chmod 600 "${KEY_FILE}"
+          unset GITLAB_MAIN_DEPLOY_KEY
+
+          ssh-keyscan -t ed25519 gitlab.com 2>/dev/null > "${KNOWN_HOSTS}"
+          ACTUAL_FP="$(ssh-keygen -lf "${KNOWN_HOSTS}" | awk '{print $2}' | head -n 1)"
+          if [ "${ACTUAL_FP}" != "${GITLAB_ED25519_FINGERPRINT}" ]; then
+            echo "::error title=Host key invalida::Huella SSH de gitlab.com (${ACTUAL_FP}) no coincide con la esperada (${GITLAB_ED25519_FINGERPRINT})."
+            exit 1
+          fi
+          chmod 644 "${KNOWN_HOSTS}"
+
+          export GIT_SSH_COMMAND="ssh -i ${KEY_FILE} -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=${KNOWN_HOSTS}"
+          export GIT_TERMINAL_PROMPT=0
+
+          git remote add gitlab "git@gitlab.com:${GITLAB_REPO}.git"
+
+          LOCAL_SHA="$(git rev-parse HEAD)"
+          echo "Origen: ${SOURCE_BRANCH} @ ${LOCAL_SHA}"
+
+          # Preflight: detecta divergencia antes de transferir objetos LFS.
+          REMOTE_SHA="$(git ls-remote --heads gitlab "refs/heads/${SOURCE_BRANCH}" | awk '{print $1}')"
+          if [ -n "${REMOTE_SHA}" ]; then
+            if ! git cat-file -e "${REMOTE_SHA}^{commit}" 2>/dev/null; then
+              git fetch --no-tags gitlab "refs/heads/${SOURCE_BRANCH}"
+            fi
+            if ! git merge-base --is-ancestor "${REMOTE_SHA}" HEAD; then
+              echo "::error title=Divergencia de historial::GitLab (${REMOTE_SHA}) no es ancestro de GitHub (${LOCAL_SHA}) en ${SOURCE_BRANCH}. Se requiere intervencion humana; este workflow no reescribe historia."
+              exit 1
+            fi
+          fi
+
+          echo "Subiendo objetos Git LFS..."
+          git lfs push --all gitlab
+
+          echo "Replicando rama ${SOURCE_BRANCH} (solo fast-forward)..."
+          if ! git push gitlab "HEAD:refs/heads/${SOURCE_BRANCH}"; then
+            echo "::error title=Push rechazado::GitLab rechazo el push fast-forward de ${SOURCE_BRANCH}. Revise la Deploy Key y la proteccion de rama; no se intento reescritura."
+            exit 1
+          fi
+
+          REMOTE_SHA="$(git ls-remote --heads gitlab "refs/heads/${SOURCE_BRANCH}" | awk '{print $1}')"
+          if [ "${REMOTE_SHA}" != "${LOCAL_SHA}" ]; then
+            echo "::error title=SHA divergente::GitLab=${REMOTE_SHA} GitHub=${LOCAL_SHA} en ${SOURCE_BRANCH}."
+            exit 1
+          fi
+
+          {
+            echo "### Espejo GitHub -> GitLab"
+            echo ""
+            echo "| Campo | Valor |"
+            echo "| :--- | :--- |"
+            echo "| Rama | \`${SOURCE_BRANCH}\` |"
+            echo "| SHA | \`${LOCAL_SHA}\` |"
+            echo "| Destino | \`${GITLAB_REPO}\` |"
+            echo "| Autenticacion | \`GITLAB_MAIN_DEPLOY_KEY\` (SSH Deploy Key) |"
+            echo "| Modo | fast-forward, sin reescritura |"
+            echo "| Verificacion SHA | OK |"
+          } >> "$GITHUB_STEP_SUMMARY"
