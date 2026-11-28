@@ -280,7 +280,7 @@ Actualizar `.env` persiste el SHA revertido ante futuros `docker compose up -d`.
 | `GET /health` 200 por HTTPS | Verificado (`HTTP/1.1 200 OK` en `https://agroscan-uao.duckdns.org/health`, `301` desde HTTP, HSTS y cabeceras de seguridad) | 2026-11-26 | `@josesilvacalderon111` |
 | `POST /predict` 200 con imagen válida | Verificado (`HTTP/1.1 200 OK`, Top-3 en español, descargo agronómico, `175.42 ms` en CPU; corrupto `400`, `.bin` `415`) | 2026-11-26 | `@josesilvacalderon111` |
 | Puerto 8000 cerrado desde Internet | Verificado (`ufw status` solo `22/80/443`; `curl --connect-timeout 5 http://<IP_REDACTADA>:8000/health` → `Connection timed out`) | 2026-11-26 | `@josesilvacalderon111` |
-| Push autorizado actualiza el servicio | Pendiente de confirmar actualización automática tras el merge de esta PR hacia `develop` (`T006`) | — | `@josesilvacalderon111` |
+| Push autorizado actualiza el servicio | Verificado tras promoción `develop → main` (`PR #67`, `PR #69` / `Mirror to GitLab` + `deploy_vps` en verde) | 2026-11-26 | `@josesilvacalderon111` / `@JhonatanTC99` |
 
 ### 11.1 Evidencia E2E pública HTTPS verificada (`2026-11-26`, commit `33ff9a2c`)
 
