@@ -33,7 +33,7 @@
 
 ### `5:00 – 10:00` · Pipeline y Deploy en Vivo — **José Silva**
 - Explica `.gitlab-ci.yml` (`quality: lint` → `test: run_test` → `build: package_wheel, build_docker` → `deploy: deploy_vps`) y `Mirror to GitLab`.
-- **Cambio mínimo en vivo:** aplica un cambio mínimo controlado (vía PR rápido aprobado por un par hacia `develop` o commit de demostración acordado), muestra el disparo de `Mirror to GitLab` → pipeline de GitLab → actualización de imagen en Registry → `deploy_vps` → `https://agroscan-uao.duckdns.org/` actualizada sin caídas y `GET /health` `200 OK`.
+- **Cambio mínimo en vivo:** aplica un cambio mínimo controlado (vía PR de promoción `develop → main` aprobado por un par), muestra el disparo de `Mirror to GitLab` → pipeline de GitLab → actualización de imagen en Registry (`<sha>` y `latest`) → `deploy_vps` automático → `https://agroscan-uao.duckdns.org/` actualizada y `GET /health` `200 OK`.
 
 ### `10:00 – 13:00` · Infraestructura, Secretos y Herramientas — **Jhonatan Tapia**
 - Muestra el Droplet/VPS activo, firewall (`22/80/443`, puerto `8000` cerrado al público), Nginx + TLS/HTTPS válido en `https://agroscan-uao.duckdns.org/`.

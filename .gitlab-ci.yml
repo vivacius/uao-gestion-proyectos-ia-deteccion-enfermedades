@@ -198,8 +198,10 @@ build_docker:
       if [ -n "$CI_REGISTRY_PASSWORD" ] && { [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" = "develop" ]; }; then
         echo "Publicando imagen oficial en GitLab Container Registry..."
         docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
-        docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" "$CI_REGISTRY_IMAGE:latest"
-        docker push "$CI_REGISTRY_IMAGE:latest"
+        if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then
+          docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" "$CI_REGISTRY_IMAGE:latest"
+          docker push "$CI_REGISTRY_IMAGE:latest"
+        fi
       else
         echo "Validacion de build exitosa. Las ramas feature/* no publican al registry para evitar saturacion de imagenes efimeras."
       fi
@@ -210,7 +212,7 @@ build_docker:
 # ETAPA 4: DEPLOY (SPEC-047)
 # =============================================================================
 
-# Job 5: Despliegue automatico a la VPS en develop y manual en la rama principal.
+# Job 5: Despliegue automatico a la VPS exclusivamente desde la rama principal (main).
 # Requiere variables protegidas: DEPLOY_HOST, DEPLOY_USER, DEPLOY_PATH,
 # SSH_PRIVATE_KEY, SSH_KNOWN_HOSTS, PUBLIC_HOST, LETSENCRYPT_EMAIL,
 # DEPLOY_TOKEN_USER y DEPLOY_TOKEN. Sin DEPLOY_HOST el job no se crea.
@@ -286,9 +288,6 @@ deploy_vps:
     name: production
     url: https://$PUBLIC_HOST
   rules:
-    - if: '$CI_COMMIT_BRANCH == "develop" && $DEPLOY_HOST'
-      when: on_success
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $DEPLOY_HOST'
-      when: manual
-      allow_failure: true
+      when: on_success
     - when: never
