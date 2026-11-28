@@ -44,7 +44,7 @@
 
 body {
   font-family: var(--font-family);
-  background-color: var(--neutral-50);
+  background-color: #bae6fd; /* Azul celeste demo M4 */
   color: var(--neutral-800);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
