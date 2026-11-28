@@ -100,6 +100,8 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 
 ![Arquitectura del Sistema — Archify](docs/architecture/system-architecture.png)
 
+> **Nota sobre el diagrama Archify:** El diagrama `docs/architecture/system-architecture.*` representa la arquitectura de la aplicación M3 (`src/`, `api/`, `ui/`). El flujo completo M4 (GitHub → Mirror → GitLab CI/CD → Registry → VPS Nginx/HTTPS) se detalla en la sección [8.5](#85-pipeline-cicd-container-registry-y-despliegue-en-producción-m4) y en [`docs/deployment-m4.md`](docs/deployment-m4.md); `.agents/skills/archify/` permanece en cuarentena conforme a `AGENTS.md` (§ 5).
+
 ### Flujo de comunicación
 1. El usuario carga una fotografía foliar en la **interfaz web desacoplada (`ui/web/static/`, servida por FastAPI en `/` o vía Nginx)** o en la **interfaz de escritorio en Tkinter (`ui/desktop_app.py`)**, ambas comunicadas exclusivamente vía HTTP con el backend.
 2. El cliente (`ui/api_client.py`) envía la imagen mediante `POST /predict` (`multipart/form-data`) al backend **FastAPI** (`api/main.py`), **sin cargar pesos ni importar PyTorch/Transformers en la capa de presentación**.
@@ -179,7 +181,7 @@ El modelo clasifica fotografías foliares en **38 categorías** distribuidas en 
 
 - **Sistema Operativo:** Windows 10/11, Linux o macOS (64 bits).
 - **Hardware:** Procesador estándar **CPU** (no requiere GPU ni librerías CUDA). Mínimo recomendado: 4 GB de RAM.
-- **Python:** **Python 3.13** (verificado en `CPython 3.13.18`).
+- **Python:** **Python 3.13** (gestionado por `uv`, verificado en `CPython 3.13.13`).
 - **Gestor de paquetes y entornos:** [`uv`](https://docs.astral.sh/uv/) (prohibido usar `pip` o `requirements.txt`).
 - **Librerías principales:** `torch` (CPU), `transformers`, `safetensors`, `pillow`, `fastapi`, `uvicorn`, `pydantic`, `pytest`, `ruff`.
 
@@ -414,20 +416,20 @@ uv run ruff format --check .
 
 ### 9.1 Comandos consolidados con `Makefile` (M1–M4)
 
-El repositorio incluye un [`Makefile`](Makefile) en la raíz para ejecutar los flujos cotidianos de forma uniforme en **Linux** y **Windows 11** (requiere **GNU Make** instalado, `uv` y, para los targets `docker-*`, Docker Desktop/Engine activo):
+El repositorio incluye un [`Makefile`](Makefile) en la raíz para ejecutar los flujos cotidianos de forma uniforme en **Linux** y **Windows 11**. **GNU Make es opcional en Windows:** si no está instalado en el equipo, todos los comandos equivalentes (`uv run ...` y `docker compose ...` de las secciones 6, 8 y 9) pueden ejecutarse directamente sin `make` ni modificar el `PATH` global.
 
 | Target | Propósito | Requisitos |
 | :--- | :--- | :--- |
 | `make help` | Lista los targets disponibles y sus requisitos | GNU Make |
 | `make sync` | Sincroniza `.venv` con `uv sync --frozen` | `uv` |
 | `make lint` / `make format-check` | Ejecuta `ruff check .` y `ruff format --check .` | `uv` |
-| `make test-unit` / `make coverage` | Ejecuta pruebas unitarias (y cobertura en `src/`, `api/`) | `uv` |
+| `make test-unit` / `make coverage` | Ejecuta pruebas unitarias y cobertura mínima $\ge 85\%$ (`src/`, `api/`) | `uv` |
 | `make test-integration` / `make test` | Ejecuta pruebas de integración CPU / suite completa | `uv`, `model.safetensors` |
 | `make build` | Genera paquetes Wheel y sdist en `dist/` | `uv` |
 | `make api` / `make health` | Inicia FastAPI (`:8000`) o consulta `GET /health` | `uv`, `model.safetensors` |
 | `make mlflow` | Inicia MLflow UI local (`:5050`) sobre `mlflow_tracking.db` | `uv` |
 | `make docker-build` / `docker-up` / `docker-down` / `docker-ps` | Construye, levanta, detiene o lista contenedores CPU | Docker activo, pesos locales |
-| `make ci` | Ejecuta `lint` + `format-check` + `coverage` | `uv` |
+| `make ci` | Ejecuta `lint` + `format-check` + `coverage` ($\ge 85\%$) | `uv` |
 
 ---
 
