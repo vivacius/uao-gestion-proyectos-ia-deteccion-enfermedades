@@ -53,8 +53,8 @@ test-integration: ## Ejecuta pruebas de integracion con DINOv2 real en CPU
 
 test: test-unit test-integration ## Ejecuta la suite completa de pruebas (unitarias e integracion)
 
-coverage: ## Ejecuta pruebas unitarias con cobertura combinada en src/ y api/
-	$(UV) run pytest tests/unit -v --cov=src --cov=api --cov-report=term-missing
+coverage: ## Ejecuta pruebas unitarias con cobertura combinada en src/ y api/ (>= 85%)
+	$(UV) run pytest tests/unit -v --cov=src --cov=api --cov-report=term-missing --cov-fail-under=85
 
 build: ## Empaqueta distribucion Wheel y sdist mediante uv build
 	$(UV) build

@@ -6,16 +6,24 @@
 ![Python 3.13](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)
 ![uv](https://img.shields.io/badge/uv-package%20manager-DE5FE9?logo=uv&logoColor=white)
 ![Ruff](https://img.shields.io/badge/code%20style-ruff-D7FF64?logo=ruff&logoColor=black)
-![pytest](https://img.shields.io/badge/pytest-158%20unit%20%7C%206%20integration-0A9EDC?logo=pytest&logoColor=white)
+![pytest](https://img.shields.io/badge/pytest-365%20unit%20%7C%206%20integration-0A9EDC?logo=pytest&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend%20CPU-009688?logo=fastapi&logoColor=white)
-[![Quality Gate CI (M3)](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/actions/workflows/ci.yml)
+[![Quality Gate CI (GitHub)](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/actions/workflows/ci.yml)
+[![GitLab CI/CD (M4)](https://img.shields.io/badge/GitLab-CI%2FCD%20%26%20Registry-FC6D26?logo=gitlab&logoColor=white)](https://gitlab.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/-/pipelines)
+[![Despliegue HTTPS](https://img.shields.io/badge/Prod-agroscan--uao.duckdns.org-2E7D32?logo=letsencrypt&logoColor=white)](https://agroscan-uao.duckdns.org/)
 ![License](https://img.shields.io/badge/Code%20MIT%20%7C%20Weights%20CC%20BY--SA%204.0-lightgrey)
 
 ---
 
-Aplicación modular de Inteligencia Artificial para la **clasificación asistida de posibles enfermedades foliares en cultivos agrícolas** a partir de fotografías de hojas. Desarrollada para la asignatura **Gestión de Proyectos en IA y Ciencia de Datos (UAO)** bajo arquitectura desacoplada **Model-as-a-Service (MaaS)** con **FastAPI**, gestión reproducible de dependencias con **`uv`** (Python 3.13) y ejecución íntegra en **CPU** mediante **PyTorch**, **SafeTensors** y **Hugging Face Transformers**.
+Aplicación modular de Inteligencia Artificial (**AgroScan UAO**) para la **clasificación asistida de posibles enfermedades foliares en cultivos agrícolas** a partir de fotografías de hojas. Desarrollada para la asignatura **Gestión de Proyectos en IA y Ciencia de Datos (UAO)** bajo arquitectura desacoplada **Model-as-a-Service (MaaS)** con **FastAPI**, gestión reproducible de dependencias con **`uv`** (Python 3.13), ejecución íntegra en **CPU** mediante **PyTorch**, **SafeTensors** y **Hugging Face Transformers**, y despliegue automatizado **CI/CD en GitLab + Container Registry + VPS con HTTPS (M4)**.
 
-> **Decisión arquitectónica M3 (D-01):** Por decisión confirmada del equipo, la interfaz gráfica para la entrega del Módulo 3 **NO utiliza Streamlit**; el frontend web independiente consume la API FastAPI exclusivamente vía HTTP sin cargar pesos del modelo.
+> **🌐 Aplicación en producción (M4):**
+> - **Interfaz Web (HTTPS):** [https://agroscan-uao.duckdns.org/](https://agroscan-uao.duckdns.org/)
+> - **Healthcheck (`GET /health`):** [https://agroscan-uao.duckdns.org/health](https://agroscan-uao.duckdns.org/health)
+> - **Documentación API (Swagger UI):** [https://agroscan-uao.duckdns.org/docs](https://agroscan-uao.duckdns.org/docs)
+> - **Pipelines y Container Registry (GitLab):** [gitlab.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades](https://gitlab.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades)
+
+> **Decisión arquitectónica M3/M4 (D-01):** Por decisión confirmada del equipo, la interfaz gráfica **NO utiliza Streamlit**; tanto el frontend web independiente como la aplicación de escritorio Tkinter consumen la API FastAPI exclusivamente vía HTTP sin cargar pesos del modelo.
 
 ---
 
@@ -59,18 +67,29 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 │   ├── api_client.py                # Cliente HTTP desacoplado que consume la API REST (sin duplicar el modelo)
 │   ├── desktop_app.py               # Interfaz gráfica nativa de escritorio en español (Tkinter — operativa M3)
 │   └── web/                         # Frontend HTML/CSS/JS y servidor de previsualización con mocks
-├── deploy/
-│   └── nginx.conf                   # Proxy same-origin del frontend web para Docker Compose
-├── docs/                            # Documentación técnica, diagramas Archify y guías de reproducción
-│   ├── architecture/                # Diagramas C4/componentes (.html, .svg, .json)
+├── deploy/                          # Configuración de proxy y despliegue productivo (M3/M4)
+│   ├── nginx.conf                   # Proxy same-origin del frontend web para Docker Compose local
+│   ├── docker-compose.prod.yml      # Orquestación de producción en VPS (API interna + Nginx TLS + Certbot)
+│   ├── nginx.prod.conf.template     # Plantilla Nginx con terminación TLS 1.2/1.3 y desafío ACME
+│   └── .env.production.example      # Plantilla de variables sin secretos para despliegue productivo
+├── docs/                            # Documentación técnica, diagramas Archify y guías de operación
+│   ├── architecture/                # Diagramas C4/componentes (.html, .svg, .png, .json)
+│   ├── academic-compliance-matrix.md # Matriz SSOT de cumplimiento académico acumulado (M1–M4)
+│   ├── deployment-m4.md             # Guía de espejo GitHub → GitLab, CI/CD, Registry y VPS HTTPS
 │   ├── getting-started.md           # Guía de arranque reproducible en Windows con uv y Spec Kit
 │   ├── model-card.md                # Ficha técnica oficial del modelo (Mitchell et al., 2019)
 │   └── qa-e2e-benchmarks.md         # Reporte empírico de validación E2E y benchmarks en CPU
+├── .github/workflows/               # Workflows de GitHub Actions (ci.yml y mirror-to-gitlab.yml)
+├── .gitlab-ci.yml                   # Pipeline CI/CD M4 en GitLab (quality → test → build → deploy)
+├── Dockerfile                       # Imagen Docker CPU multi-etapa (sin uv ni dev deps, usuario no root)
+├── docker-compose.yml               # Orquestación local API + Nginx
+├── Makefile                         # Interfaz operativa consolidada de 17 targets (uv, ruff, pytest, docker)
 ├── specs/                           # Especificaciones SDD (Spec Kit) por unidad de trabajo
-├── tests/                           # Suite de pruebas automatizadas con pytest
+├── tests/                           # Suite de pruebas automatizadas con pytest (AAA)
 │   ├── conftest.py                  # Generadores de imágenes sintéticas (JPG, PNG, RGBA, grises, corruptas, GIF)
-│   ├── unit/                        # Pruebas unitarias rápidas aisladas con mocks (sin pesos reales)
-│   └── integration/                 # Pruebas de integración contra el modelo DINOv2-small real en CPU
+│   ├── unit/                        # Pruebas unitarias rápidas aisladas con mocks (365 pruebas)
+│   └── integration/                 # Pruebas de integración contra el modelo DINOv2-small real en CPU (6 pruebas)
+├── CONSTITUTION.md                  # Constitución del proyecto (v2.0.0, Enmienda M4 ratificada)
 ├── AGENTS.md                        # Gobernanza, matriz de responsabilidades y reglas para agentes IA
 ├── pyproject.toml                   # Definición del proyecto, dependencias y configuración de pytest/uv/ruff
 ├── uv.lock                          # Archivo de bloqueo exacto de dependencias
@@ -79,7 +98,7 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 
 > Consulta el diagrama visual de arquitectura en [`docs/architecture/system-architecture.svg`](docs/architecture/system-architecture.svg) (o la vista interactiva [`docs/architecture/system-architecture.html`](docs/architecture/system-architecture.html)).
 
-![Arquitectura del Sistema — Archify](docs/architecture/system-architecture.png)
+![Arquitectura del Sistema M4 — Archify](docs/architecture/system-architecture.png)
 
 ### Flujo de comunicación
 1. El usuario carga una fotografía foliar en la **interfaz web desacoplada (`ui/web/static/`, servida por FastAPI en `/` o vía Nginx)** o en la **interfaz de escritorio en Tkinter (`ui/desktop_app.py`)**, ambas comunicadas exclusivamente vía HTTP con el backend.
@@ -160,7 +179,7 @@ El modelo clasifica fotografías foliares en **38 categorías** distribuidas en 
 
 - **Sistema Operativo:** Windows 10/11, Linux o macOS (64 bits).
 - **Hardware:** Procesador estándar **CPU** (no requiere GPU ni librerías CUDA). Mínimo recomendado: 4 GB de RAM.
-- **Python:** **Python 3.13** (verificado en `CPython 3.13.18`).
+- **Python:** **Python 3.13** (gestionado por `uv`, verificado en `CPython 3.13.13`).
 - **Gestor de paquetes y entornos:** [`uv`](https://docs.astral.sh/uv/) (prohibido usar `pip` o `requirements.txt`).
 - **Librerías principales:** `torch` (CPU), `transformers`, `safetensors`, `pillow`, `fastapi`, `uvicorn`, `pydantic`, `pytest`, `ruff`.
 
@@ -195,7 +214,7 @@ En una **segunda ventana de PowerShell** (manteniendo la API FastAPI activa), in
 uv run python ui/desktop_app.py
 ```
 
-> **Nota M3 (D-01):** La interfaz Streamlit fue retirada de la entrega M3. Como interfaz operativa inmediata se dispone de la aplicación de escritorio **Tkinter (`ui/desktop_app.py`)**, mientras la interfaz web desacoplada en HTML/CSS/JS avanza bajo **HU-06 (Issue #9)**. Ambas consumen la API FastAPI exclusivamente vía HTTP.
+> **Nota M3/M4 (D-01):** La interfaz Streamlit fue retirada del proyecto. Se dispone de dos interfaces desacopladas operativas: el **frontend web estático (`ui/web/static/`, servido en `/` por FastAPI y publicado en [https://agroscan-uao.duckdns.org/](https://agroscan-uao.duckdns.org/))** y la aplicación de escritorio **Tkinter (`ui/desktop_app.py`)**. Ambas consumen la API FastAPI exclusivamente vía HTTP.
 
 ---
 
@@ -351,11 +370,27 @@ Compose levanta dos servicios en la red interna compartida:
 
 El servicio `api` cuenta con *healthcheck* y el servicio `web` espera a que esté saludable antes de arrancar.
 
-### 8.4 Requisitos
+### 8.4 Requisitos locales
 
 - Archivos locales `model.safetensors`, `config.json` y `preprocessor_config.json` presentes en la raíz.
 - Docker Desktop o Docker Engine con el daemon activo.
 - No se requiere Streamlit ni ninguna interfaz adicional.
+
+### 8.5 Pipeline CI/CD, Container Registry y Despliegue en Producción (M4)
+
+El ciclo de entrega continua combina **GitHub** (repositorio fuente, Issues, Kanban y revisión de PRs) con **GitLab** (CI/CD, Container Registry y despliegue a la VPS de producción en DigitalOcean):
+
+1. **Espejo automático GitHub → GitLab (`.github/workflows/mirror-to-gitlab.yml`):** Cada actualización autorizada en `develop` o `main` se sincroniza de forma unidireccional y estrictamente *fast-forward* hacia GitLab (incluyendo objetos Git LFS), con credenciales separadas y protegidas (`GITLAB_SYNC_TOKEN` para `develop` y `GITLAB_MAIN_DEPLOY_KEY` para `main`).
+2. **Pipeline GitLab CI/CD (`.gitlab-ci.yml`) — 4 etapas, 5 jobs:**
+   - `quality` (`lint`): verificación estática y de formato con `ruff`.
+   - `test` (`run_test`): suite unitaria `pytest` vía `make test-unit` con reporte JUnit y umbral mínimo de cobertura del 85 % (`src/`, `api/`).
+   - `build` (`package_wheel` y `build_docker`): empaquetado Wheel/sdist (`uv build`), materialización verificada de pesos Git LFS (`model.safetensors`) y construcción/publicación de la imagen CPU en **GitLab Container Registry** etiquetada por `CI_COMMIT_SHA`.
+   - `deploy` (`deploy_vps`): conexión SSH a la VPS Ubuntu con variables protegidas, copia de `deploy/docker-compose.prod.yml` y `deploy/nginx.prod.conf.template`, descarga de la imagen exacta por `IMAGE_TAG=$CI_COMMIT_SHA`, actualización de contenedores (`api` aislada en red interna `:8000`, `web` Nginx con HTTPS `:80/:443` y `certbot` Let's Encrypt) y verificación automática de `https://agroscan-uao.duckdns.org/health`.
+3. **Política de liberación por rama:**
+   - `develop`: ejecuta `quality → test → build` y publica la imagen etiquetada por `CI_COMMIT_SHA` (sin sobrescribir `:latest` ni desplegar en producción).
+   - `main`: tras PR aprobada, ejecuta el pipeline completo, actualiza `:latest` y dispara `deploy_vps` automáticamente sobre [https://agroscan-uao.duckdns.org/](https://agroscan-uao.duckdns.org/).
+
+> Consulta el detalle operativo y las evidencias de despliegue en [`docs/deployment-m4.md`](docs/deployment-m4.md).
 
 ---
 
@@ -379,20 +414,20 @@ uv run ruff format --check .
 
 ### 9.1 Comandos consolidados con `Makefile` (M1–M4)
 
-El repositorio incluye un [`Makefile`](Makefile) en la raíz para ejecutar los flujos cotidianos de forma uniforme en **Linux** y **Windows 11** (requiere **GNU Make** instalado, `uv` y, para los targets `docker-*`, Docker Desktop/Engine activo):
+El repositorio incluye un [`Makefile`](Makefile) en la raíz para ejecutar los flujos cotidianos de forma uniforme en **Linux** y **Windows 11**. **GNU Make es opcional en Windows:** si no está instalado en el equipo, todos los comandos equivalentes (`uv run ...` y `docker compose ...` de las secciones 6, 8 y 9) pueden ejecutarse directamente sin `make` ni modificar el `PATH` global.
 
 | Target | Propósito | Requisitos |
 | :--- | :--- | :--- |
 | `make help` | Lista los targets disponibles y sus requisitos | GNU Make |
 | `make sync` | Sincroniza `.venv` con `uv sync --frozen` | `uv` |
 | `make lint` / `make format-check` | Ejecuta `ruff check .` y `ruff format --check .` | `uv` |
-| `make test-unit` / `make coverage` | Ejecuta pruebas unitarias (y cobertura en `src/`, `api/`) | `uv` |
+| `make test-unit` / `make coverage` | Ejecuta pruebas unitarias y cobertura mínima $\ge 85\%$ (`src/`, `api/`) | `uv` |
 | `make test-integration` / `make test` | Ejecuta pruebas de integración CPU / suite completa | `uv`, `model.safetensors` |
 | `make build` | Genera paquetes Wheel y sdist en `dist/` | `uv` |
 | `make api` / `make health` | Inicia FastAPI (`:8000`) o consulta `GET /health` | `uv`, `model.safetensors` |
 | `make mlflow` | Inicia MLflow UI local (`:5050`) sobre `mlflow_tracking.db` | `uv` |
 | `make docker-build` / `docker-up` / `docker-down` / `docker-ps` | Construye, levanta, detiene o lista contenedores CPU | Docker activo, pesos locales |
-| `make ci` | Ejecuta `lint` + `format-check` + `coverage` | `uv` |
+| `make ci` | Ejecuta `lint` + `format-check` + `coverage` ($\ge 85\%$) | `uv` |
 
 ---
 
@@ -425,9 +460,14 @@ El repositorio incluye un [`Makefile`](Makefile) en la raíz para ejecutar los f
 | **Jhonatan Andrés Tapia Córdoba** (`@JhonatanTC99`) | ML/Backend, API FastAPI y Code Reviewer | HU-03 (#6), HU-05 (#8) |
 | **John Restrepo Aparicio** (`@JohnRestrepo-coder`) | Postprocesamiento, Taxonomía y Frontend | HU-04 (#7), HU-06 (#9) |
 
+- **Constitución del Proyecto (v2.0.0 — M1–M4):** [`CONSTITUTION.md`](CONSTITUTION.md) ([`.specify/memory/constitution.md`](.specify/memory/constitution.md))
+- **Matriz Académica SSOT (M1–M4):** [`docs/academic-compliance-matrix.md`](docs/academic-compliance-matrix.md)
 - **Gobernanza y Reglas de Agentes:** [`AGENTS.md`](AGENTS.md)
+- **Despliegue CI/CD y Producción (M4):** [`docs/deployment-m4.md`](docs/deployment-m4.md)
+- **Model Card Oficial:** [`docs/model-card.md`](docs/model-card.md)
 - **Guía de Reproducción (Windows + `uv` + Spec Kit):** [`docs/getting-started.md`](docs/getting-started.md)
-- **Especificaciones SDD (Spec Kit):** [`specs/001-m3-sdd-setup/`](specs/001-m3-sdd-setup/)
+- **Especificaciones SDD (Spec Kit):** [`specs/`](specs/)
 - **Tablero Kanban (GitHub Projects):** [GitHub Projects #1](https://github.com/users/vivacius/projects/1)
-- **Tickets de Historias (Issues):** [Issues #4 a #11](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues)
+- **Pipelines y Registry (GitLab):** [GitLab Proyecto #89374502](https://gitlab.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades)
+- **Tickets de Historias (Issues):** [Issues del repositorio](https://github.com/vivacius/uao-gestion-proyectos-ia-deteccion-enfermedades/issues)
 

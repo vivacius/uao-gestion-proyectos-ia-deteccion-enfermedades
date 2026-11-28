@@ -93,7 +93,7 @@ Antigravity descubre automáticamente las skills del proyecto en `.agents/skills
 - [`quality-and-make`](.agents/skills/quality-and-make/SKILL.md): Activar al ejecutar o validar `Makefile`, `uv`, Ruff y `pytest` AAA según alcance real del cambio.
 - [`github-gitlab-operations`](.agents/skills/github-gitlab-operations/SKILL.md): Activar para consultas o acciones autorizadas en GitHub (`gh`/MCP) y GitLab (`glab`/MCP), Gitflow y limpieza de ramas.
 - [`secure-cicd-deployment`](.agents/skills/secure-cicd-deployment/SKILL.md): Activar en unidades M4 de CI/CD, Docker CPU, Registry, VPS, HTTPS y secretos protegidos.
-- *Nota de seguridad:* `.agents/skills/archify/` permanece en cuarentena (`.gitignore`) y no debe ejecutarse ni reutilizarse.
+- *Nota sobre Archify:* `.agents/skills/archify/` es la herramienta local autorizada para diagramas de arquitectura (Mermaid está descartado y prohibido en este proyecto). Su ejecución local está permitida, manteniendo sus archivos internos excluidos de Git (`.gitignore`), mientras que las fuentes y artefactos generados en `docs/architecture/` (`system-architecture.json`, `.html`, `.svg`, `.png`) sí deben versionarse.
 
 ---
 
