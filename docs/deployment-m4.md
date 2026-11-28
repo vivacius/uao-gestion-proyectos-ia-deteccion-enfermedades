@@ -46,6 +46,8 @@ VPS · Nginx 80/443 → api:8000 (red interna) → FastAPI + DINOv2 CPU
 
 **Regla:** nadie pushea directamente a GitLab. El espejo solo avanza `develop`/`main` si la rama de GitLab es ancestro del commit de GitHub; si hay divergencia, el workflow falla y exige intervención humana, sin reescribir el historial. Los PRs y la revisión humana siguen en GitHub.
 
+**Política de liberación:** `develop` ejecuta `quality → test → build` y publica únicamente la imagen etiquetada por `CI_COMMIT_SHA` (sin sobrescribir `:latest` ni ejecutar `deploy_vps`). Únicamente `main` (`$CI_DEFAULT_BRANCH`), tras una PR aprobada, actualiza `:latest` y ejecuta `deploy_vps` automáticamente sobre producción con `IMAGE_TAG=${CI_COMMIT_SHA}`.
+
 ---
 
 ## 2. Estado verificado al 2026-11-25
@@ -242,11 +244,13 @@ Registrar: fecha, commit, salida de `/health`, código de `/predict`, resultado 
 
 ```bash
 cd /opt/agroscan
-IMAGE_TAG=<sha-anterior-verificado> docker compose up -d --remove-orphans
+sed -i 's/^IMAGE_TAG=.*/IMAGE_TAG=<sha-anterior-verificado>/' .env
+docker compose pull
+docker compose up -d --remove-orphans
 curl -fsS https://<dominio>/health
 ```
 
-No borrar `certbot/conf` ni `certbot/www` durante una reversión. Si el fallo es de configuración, restaurar el `docker-compose.yml` y la plantilla Nginx del commit anterior.
+Actualizar `.env` persiste el SHA revertido ante futuros `docker compose up -d`. No borrar `certbot/conf` ni `certbot/www` durante una reversión. Si el fallo es de configuración, restaurar el `docker-compose.yml` y la plantilla Nginx del commit anterior.
 
 ---
 
