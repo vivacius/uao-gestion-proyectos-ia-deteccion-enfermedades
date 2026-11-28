@@ -2,284 +2,271 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Arquitectura del Sistema: Detección Fitosanitaria con DINOv2",
-    "output": "system-architecture.html",
+    "title": "Arquitectura del Sistema M4 — AgroScan UAO",
+    "output": "docs/architecture/system-architecture.html",
     "quality_profile": "showcase"
   },
   "components": [
     {
+      "id": "devs",
+      "type": "external",
+      "label": "Desarrolladores",
+      "sublabel": "Equipo Grupo 2 (UAO)",
+      "pos": [40, 100],
+      "size": [140, 62]
+    },
+    {
+      "id": "github",
+      "type": "cloud",
+      "label": "GitHub Principal",
+      "sublabel": "PR + Revisión · develop/main",
+      "pos": [245, 100],
+      "size": [165, 62],
+      "tag": "Ramas Protegidas"
+    },
+    {
+      "id": "gh_mirror",
+      "type": "messagebus",
+      "label": "GitHub Actions Mirror",
+      "sublabel": "mirror-to-gitlab.yml (LFS)",
+      "pos": [470, 100],
+      "size": [175, 62],
+      "tag": "Fast-Forward"
+    },
+    {
+      "id": "gl_dev",
+      "type": "backend",
+      "label": "GitLab CI (develop)",
+      "sublabel": "lint · test · build (sin deploy)",
+      "pos": [710, 42],
+      "size": [175, 60],
+      "tag": "Solo CI"
+    },
+    {
+      "id": "gl_main",
+      "type": "backend",
+      "label": "GitLab CI/CD (main)",
+      "sublabel": "lint · test · build · deploy_vps",
+      "pos": [710, 148],
+      "size": [175, 60],
+      "tag": "CD Automático"
+    },
+    {
+      "id": "gl_reg",
+      "type": "database",
+      "label": "Container Registry",
+      "sublabel": ":$SHA (dev/main) · :latest (main)",
+      "pos": [955, 95],
+      "size": [185, 64],
+      "tag": "GitLab 89374502"
+    },
+    {
       "id": "user",
       "type": "external",
-      "label": "Técnico Agrícola",
-      "sublabel": "Navegador Web / Campo",
-      "pos": [40, 220],
-      "size": [130, 60]
+      "label": "Usuario / Navegador",
+      "sublabel": "https://agroscan-uao.duckdns.org",
+      "pos": [40, 345],
+      "size": [170, 62]
     },
     {
-      "id": "ui_app",
-      "type": "frontend",
-      "label": "Desktop App",
-      "sublabel": "ui/desktop_app.py",
-      "pos": [230, 220],
-      "size": [130, 60],
-      "tag": "Implementado (M3)"
+      "id": "nginx",
+      "type": "security",
+      "label": "Nginx Proxy Inverso",
+      "sublabel": "web :80/:443 · TLS 1.2/1.3",
+      "pos": [275, 345],
+      "size": [170, 62],
+      "tag": "HTTPS Público"
     },
     {
-      "id": "ui_client",
-      "type": "frontend",
-      "label": "API Client",
-      "sublabel": "ui/api_client.py",
-      "pos": [410, 220],
-      "size": [130, 60],
-      "tag": "Implementado (M3)"
+      "id": "certbot",
+      "type": "security",
+      "label": "Certbot Let's Encrypt",
+      "sublabel": "Renovación ACME webroot",
+      "pos": [275, 470],
+      "size": [170, 60],
+      "tag": "Certificados TLS"
     },
     {
-      "id": "api_service",
+      "id": "fastapi",
       "type": "backend",
-      "label": "FastAPI Service",
-      "sublabel": "api/main.py :8000",
-      "pos": [600, 220],
-      "size": [140, 60],
-      "tag": "Implementado (M3)"
+      "label": "FastAPI + Web UI",
+      "sublabel": "api :8000 (interno) · /health",
+      "pos": [520, 345],
+      "size": [170, 62],
+      "tag": "Docker CPU"
     },
     {
-      "id": "api_schemas",
+      "id": "dinov2",
       "type": "backend",
-      "label": "Contratos Pydantic",
-      "sublabel": "api/schemas.py",
-      "pos": [600, 90],
-      "size": [140, 60],
-      "tag": "Implementado (M3)"
+      "label": "DINOv2-small CPU",
+      "sublabel": "38 clases ES · Softmax · tau=0.60",
+      "pos": [755, 345],
+      "size": [175, 62],
+      "tag": "torch.no_grad()"
     },
     {
-      "id": "ml_prep",
-      "type": "backend",
-      "label": "Preprocesamiento",
-      "sublabel": "src/preprocessing.py",
-      "pos": [800, 220],
-      "size": [140, 60],
-      "tag": "Implementado (M3)"
-    },
-    {
-      "id": "ml_loader",
-      "type": "backend",
-      "label": "SafeTensors Loader",
-      "sublabel": "src/model_loader.py",
-      "pos": [800, 360],
-      "size": [140, 60],
-      "tag": "Implementado (M3)"
-    },
-    {
-      "id": "local_weights",
+      "id": "weights",
       "type": "database",
       "label": "Pesos SafeTensors",
-      "sublabel": "model.safetensors (84MB)",
-      "pos": [600, 360],
-      "size": [140, 60],
-      "tag": "Local CPU"
+      "sublabel": "/app/modelo_plantas (88 MB)",
+      "pos": [985, 345],
+      "size": [165, 62],
+      "tag": "local_files_only"
     },
     {
-      "id": "ml_infer",
-      "type": "backend",
-      "label": "Motor Inferencia",
-      "sublabel": "src/inference.py (CPU)",
-      "pos": [1000, 220],
-      "size": [140, 60],
-      "tag": "DINOv2 CPU"
-    },
-    {
-      "id": "ml_post",
-      "type": "backend",
-      "label": "Postprocesamiento",
-      "sublabel": "src/postprocessing.py",
-      "pos": [1000, 90],
-      "size": [140, 60],
-      "tag": "Filtro Tau=0.60"
-    },
-    {
-      "id": "ml_labels",
+      "id": "mlflow",
       "type": "database",
-      "label": "Catálogo 38 Clases",
-      "sublabel": "src/labels.py (ES)",
-      "pos": [800, 90],
-      "size": [140, 60],
-      "tag": "Taxonomía ES"
-    },
-    {
-      "id": "docker_pkg",
-      "type": "cloud",
-      "label": "Contenedor Docker",
-      "sublabel": "Dockerfile CPU",
-      "pos": [410, 480],
-      "size": [140, 60],
-      "tag": "Previsto (M4)"
-    },
-    {
-      "id": "docker_net",
-      "type": "cloud",
-      "label": "Orquestación Compose",
-      "sublabel": "docker-compose.yml",
-      "pos": [600, 480],
-      "size": [140, 60],
-      "tag": "Previsto (M4)"
-    },
-    {
-      "id": "wheel_dist",
-      "type": "cloud",
-      "label": "Paquete Wheel",
-      "sublabel": "dist/*.whl (uv build)",
-      "pos": [230, 480],
-      "size": [140, 60],
-      "tag": "Previsto (M4)"
+      "label": "MLflow Tracking Local",
+      "sublabel": "mlflow_tracking.db (3 runs)",
+      "pos": [755, 585],
+      "size": [175, 60],
+      "tag": "Local M2/M3"
     }
   ],
   "boundaries": [
     {
       "kind": "region",
-      "label": "Componentes Implementados (M3 — En Memoria / Local CPU)",
-      "wraps": [
-        "ui_app",
-        "ui_client",
-        "api_service",
-        "api_schemas",
-        "ml_prep",
-        "ml_loader",
-        "ml_infer",
-        "ml_post",
-        "ml_labels",
-        "local_weights"
-      ]
+      "label": "Desarrollo y CI/CD (GitHub -> GitLab ID 89374502)",
+      "wraps": ["github", "gh_mirror", "gl_dev", "gl_main", "gl_reg"],
+      "pad": 18
+    },
+    {
+      "kind": "region",
+      "label": "VPS DigitalOcean Ubuntu — Docker Compose (Producción)",
+      "wraps": ["nginx", "certbot", "fastapi", "dinov2", "weights"],
+      "pad": 18
     },
     {
       "kind": "security-group",
-      "label": "Componentes Previstos para Despliegue (M4 — Diferidos)",
-      "wraps": [
-        "wheel_dist",
-        "docker_pkg",
-        "docker_net"
-      ]
+      "label": "Red Interna Docker (puerto :8000 no expuesto al público)",
+      "wraps": ["fastapi", "dinov2", "weights"],
+      "pad": 12
     }
   ],
   "connections": [
     {
-      "id": "user-to-ui",
-      "from": "user",
-      "to": "ui_app",
-      "label": "Carga imagen JPG/PNG",
+      "id": "devs-to-gh",
+      "from": "devs",
+      "to": "github",
+      "label": "PR + Revisión",
       "variant": "emphasis"
     },
     {
-      "id": "ui-to-client",
-      "from": "ui_app",
-      "to": "ui_client",
-      "label": "predict_image()"
+      "id": "gh-to-mirror",
+      "from": "github",
+      "to": "gh_mirror",
+      "label": "Push protegido"
     },
     {
-      "id": "client-to-api",
-      "from": "ui_client",
-      "to": "api_service",
-      "label": "POST /predict",
+      "id": "mirror-to-dev",
+      "from": "gh_mirror",
+      "to": "gl_dev",
+      "label": "Sync develop"
+    },
+    {
+      "id": "mirror-to-main",
+      "from": "gh_mirror",
+      "to": "gl_main",
+      "label": "Sync main (SSH)"
+    },
+    {
+      "id": "dev-to-reg",
+      "from": "gl_dev",
+      "to": "gl_reg",
+      "label": "Push :$SHA"
+    },
+    {
+      "id": "main-to-reg",
+      "from": "gl_main",
+      "to": "gl_reg",
+      "label": "Push :$SHA + :latest",
       "variant": "emphasis"
     },
     {
-      "id": "api-to-schemas",
-      "from": "api_service",
-      "to": "api_schemas",
-      "label": "Valida Pydantic",
-      "variant": "security"
-    },
-    {
-      "id": "api-to-prep",
-      "from": "api_service",
-      "to": "ml_prep",
-      "label": "bytes imagen"
-    },
-    {
-      "id": "prep-to-infer",
-      "from": "ml_prep",
-      "to": "ml_infer",
-      "label": "Tensor [1,3,224,224]"
-    },
-    {
-      "id": "weights-to-loader",
-      "from": "local_weights",
-      "to": "ml_loader",
-      "label": "Lectura local"
-    },
-    {
-      "id": "loader-to-infer",
-      "from": "ml_loader",
-      "to": "ml_infer",
-      "label": "Pesos CPU",
-      "fromSide": "right",
-      "toSide": "bottom"
-    },
-    {
-      "id": "infer-to-post",
-      "from": "ml_infer",
-      "to": "ml_post",
-      "label": "Logits (38)",
-      "fromSide": "top",
-      "toSide": "bottom"
-    },
-    {
-      "id": "labels-to-post",
-      "from": "ml_labels",
-      "to": "ml_post",
-      "label": "Nombres ES",
-      "fromSide": "right",
-      "toSide": "left"
-    },
-    {
-      "id": "post-to-api",
-      "from": "ml_post",
-      "to": "api_service",
-      "label": "Top-3 + Alerta Tau",
-      "fromSide": "left",
+      "id": "main-to-vps",
+      "from": "gl_main",
+      "to": "fastapi",
+      "label": "SSH deploy_vps (.env)",
+      "variant": "security",
+      "fromSide": "bottom",
       "toSide": "top"
     },
     {
-      "id": "wheel-to-docker",
-      "from": "wheel_dist",
-      "to": "docker_pkg",
-      "label": "uv build",
+      "id": "reg-to-api",
+      "from": "gl_reg",
+      "to": "fastapi",
+      "label": "docker pull :$SHA",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "user-to-nginx",
+      "from": "user",
+      "to": "nginx",
+      "label": "HTTPS :443",
+      "variant": "emphasis"
+    },
+    {
+      "id": "certbot-to-nginx",
+      "from": "certbot",
+      "to": "nginx",
+      "label": "TLS",
       "variant": "dashed"
     },
     {
-      "id": "docker-to-compose",
-      "from": "docker_pkg",
-      "to": "docker_net",
-      "label": "Servicios CPU",
+      "id": "nginx-to-api",
+      "from": "nginx",
+      "to": "fastapi",
+      "label": "HTTP interno :8000",
+      "variant": "security"
+    },
+    {
+      "id": "api-to-dino",
+      "from": "fastapi",
+      "to": "dinov2",
+      "label": "POST /predict"
+    },
+    {
+      "id": "weights-to-dino",
+      "from": "weights",
+      "to": "dinov2",
+      "label": "Carga CPU"
+    },
+    {
+      "id": "dino-to-mlflow",
+      "from": "dinov2",
+      "to": "mlflow",
+      "label": "Benchmarks locales",
       "variant": "dashed"
     }
   ],
   "cards": [
     {
-      "dot": "emerald",
-      "title": "Pipeline ML y CPU (Implementado M3)",
+      "dot": "cyan",
+      "title": "Gobernanza y CI/CD (GitHub + GitLab 89374502)",
       "items": [
-        "Preprocesamiento: Bicúbica 224x224, float32, media y std ImageNet",
-        "Inferencia determinista: PyTorch 2.6.0 CPU bajo torch.no_grad()",
-        "SafeTensors: Carga local sin conexión a red en runtime",
-        "Postproceso: Softmax, mapeo a español, filtro tau=0.60 y descargo agronómico"
+        "GitHub es la fuente oficial con PRs, revisión independiente y ramas protegidas",
+        "develop ejecuta quality, test y build (:$SHA) sin desplegar ni sobrescribir :latest",
+        "main actualiza :latest y ejecuta deploy_vps automático por SSH (IMAGE_TAG=$SHA)"
       ]
     },
     {
-      "dot": "cyan",
-      "title": "Servicio Web y UI (Implementado M3)",
+      "dot": "emerald",
+      "title": "Producción VPS (Docker Compose + HTTPS)",
       "items": [
-        "FastAPI: Endpoints asíncronos /health, /predict y /docs OpenAPI",
-        "Tkinter: Interfaz de escritorio interactiva con visualización Top-3",
-        "Alerta de baja certeza para técnicos agrícolas ante incertidumbre alta"
+        "Nginx termina TLS 1.2/1.3 (Certbot Let's Encrypt) y proxea hacia api:8000",
+        "El puerto 8000 permanece aislado en red interna Docker (UFW solo 22/80/443)",
+        "FastAPI sirve la Web UI desacoplada, /health, /model-info, /docs y /predict"
       ]
     },
     {
       "dot": "amber",
-      "title": "Infraestructura Prevista (Diferida a M4)",
+      "title": "Inferencia CPU y Trazabilidad",
       "items": [
-        "Empaquetado Wheel distribuible vía uv build",
-        "Contenerización Docker CPU multi-etapa",
-        "Orquestación Docker Compose para API y UI en red compartida"
+        "DINOv2-small carga model.safetensors local (local_files_only=True) en CPU",
+        "Postproceso con 38 clases en español, umbral tau=0.60 y descargo agronómico",
+        "MLflow local (mlflow_tracking.db) conserva los 3 runs comparables M2/M3"
       ]
     }
   ]
