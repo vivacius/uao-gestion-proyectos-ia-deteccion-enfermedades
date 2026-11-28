@@ -98,9 +98,7 @@ El proyecto implementa una arquitectura modular y desacoplada en capas para gara
 
 > Consulta el diagrama visual de arquitectura en [`docs/architecture/system-architecture.svg`](docs/architecture/system-architecture.svg) (o la vista interactiva [`docs/architecture/system-architecture.html`](docs/architecture/system-architecture.html)).
 
-![Arquitectura del Sistema — Archify](docs/architecture/system-architecture.png)
-
-> **Nota sobre el diagrama Archify:** El diagrama `docs/architecture/system-architecture.*` representa la arquitectura de la aplicación M3 (`src/`, `api/`, `ui/`). El flujo completo M4 (GitHub → Mirror → GitLab CI/CD → Registry → VPS Nginx/HTTPS) se detalla en la sección [8.5](#85-pipeline-cicd-container-registry-y-despliegue-en-producción-m4) y en [`docs/deployment-m4.md`](docs/deployment-m4.md); `.agents/skills/archify/` permanece en cuarentena conforme a `AGENTS.md` (§ 5).
+![Arquitectura del Sistema M4 — Archify](docs/architecture/system-architecture.png)
 
 ### Flujo de comunicación
 1. El usuario carga una fotografía foliar en la **interfaz web desacoplada (`ui/web/static/`, servida por FastAPI en `/` o vía Nginx)** o en la **interfaz de escritorio en Tkinter (`ui/desktop_app.py`)**, ambas comunicadas exclusivamente vía HTTP con el backend.
