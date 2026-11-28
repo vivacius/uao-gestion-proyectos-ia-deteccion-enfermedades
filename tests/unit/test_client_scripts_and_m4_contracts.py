@@ -276,6 +276,27 @@ def test_gitlab_ci_defines_four_stages_and_coverage_gate() -> None:
     assert "--cov-fail-under=85" in content
 
 
+def test_gitlab_ci_deploys_and_tags_latest_only_on_default_branch() -> None:
+    """Verifica que solo main ($CI_DEFAULT_BRANCH) despliega y publica :latest."""
+    # Arrange
+    content = (ROOT / ".gitlab-ci.yml").read_text(encoding="utf-8")
+    parsed = yaml.safe_load(content)
+    deploy_job = parsed["deploy_vps"]
+    build_script = "\n".join(parsed["build_docker"]["script"])
+    deploy_script = "\n".join(deploy_job["script"])
+
+    # Assert
+    assert deploy_job["resource_group"] == "production"
+    assert deploy_job["environment"]["name"] == "production"
+    assert "IMAGE_TAG=${CI_COMMIT_SHA}" in deploy_script
+    assert deploy_job["rules"] == [
+        {"if": "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $DEPLOY_HOST", "when": "on_success"},
+        {"when": "never"},
+    ]
+    assert 'if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then' in build_script
+    assert 'docker push "$CI_REGISTRY_IMAGE:latest"' in build_script
+
+
 def test_github_mirror_workflow_forbids_force_push_and_url_tokens() -> None:
     """Verifica que mirror-to-gitlab.yml no usa --force ni incrusta tokens en la URL."""
     # Arrange
